@@ -11,6 +11,7 @@ import { createDeferredCore } from "../../../src/shared/deferred.js";
 import type { ModelCatalogResult } from "../api/types.ts";
 import type { ApplicationGateway } from "../app/context.ts";
 import { t } from "../i18n/index.ts";
+import { registerModelControlsEnglish } from "../i18n/locales/en-model-controls.ts";
 import {
   invalidateModelCatalogCache,
   invalidateModelCatalogEntry,
@@ -29,6 +30,8 @@ import {
   type ModelCatalogRequestLane,
 } from "./model-catalog-cache.ts";
 import { subscribeToSharedRequest } from "./shared-request-subscription.ts";
+
+registerModelControlsEnglish();
 
 export type ChatModelCatalogState = {
   hasSnapshot: boolean;

@@ -42,6 +42,32 @@ import {
   resolveModelCatalogIdentityKey,
 } from "./openai-model-routes.js";
 
+/** Keep capability donors bound to one model and runtime without merging sibling metadata. */
+export function selectModelCatalogRuntimeEntry(params: {
+  entry: ModelCatalogEntry;
+  routeVariants: readonly ModelCatalogEntry[];
+  runtimeId: string;
+}): { entry: ModelCatalogEntry; variants: ModelCatalogEntry[] } {
+  const key = resolveModelCatalogIdentityKey(params.entry);
+  const observed = params.routeVariants.filter(
+    (variant) => resolveModelCatalogIdentityKey(variant) === key,
+  );
+  const variants = (observed.length ? observed : [params.entry])
+    .filter((variant) => !variant.nativeRuntime || variant.nativeRuntime === params.runtimeId)
+    .toSorted(
+      (a, b) =>
+        Number(b.nativeRuntime === params.runtimeId) - Number(a.nativeRuntime === params.runtimeId),
+    );
+  return {
+    variants,
+    entry: variants[0] ?? {
+      id: params.entry.id,
+      name: params.entry.name,
+      provider: params.entry.provider,
+    },
+  };
+}
+
 /** Indexes physical variants for paired logical catalog projection. */
 export function createModelCatalogView(params: {
   cfg: OpenClawConfig;
