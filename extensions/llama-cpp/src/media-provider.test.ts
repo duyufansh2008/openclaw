@@ -243,7 +243,6 @@ describe("llama-cpp registered media provider", () => {
     "https://cloud.example.test/v1",
     "http://localhost:19432/v1",
     "http://127.0.0.1.example.test:19432/v1",
-    "http://user:password@127.0.0.1:19432/v1",
     "not-a-url",
   ])("rejects an untrusted managed endpoint before transport: %s", async (baseUrl) => {
     const req = request();
@@ -254,6 +253,26 @@ describe("llama-cpp registered media provider", () => {
     provider.baseUrl = baseUrl;
     await expect(providerMethods().multiple(req)).rejects.toThrow("loopback");
     expect(transport.managed).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { username: "fixture-user", password: "" },
+    { username: "", password: "fixture-password" },
+    { username: "fixture-user", password: "fixture-password" },
+  ])("rejects synthetic URL credentials before transport: %j", async (credentials) => {
+    const endpoint = new URL("http://127.0.0.1:19432/v1");
+    endpoint.username = credentials.username;
+    endpoint.password = credentials.password;
+    const req = request();
+    const provider = req.cfg.models?.providers?.["llama-cpp"];
+    if (!provider) {
+      throw new Error("fixture provider missing");
+    }
+    provider.baseUrl = endpoint.href;
+    await expect(providerMethods().multiple(req)).rejects.toThrow("loopback");
+    expect(transport.managed).not.toHaveBeenCalled();
+    expect(transport.single).not.toHaveBeenCalled();
+    expect(transport.multiple).not.toHaveBeenCalled();
   });
 
   it.each(["http://127.0.0.1/v1", "http://127.0.0.1:19432/v1", "http://[::1]:19432/v1"])(
