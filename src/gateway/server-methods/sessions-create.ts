@@ -62,7 +62,10 @@ import {
   resolveSessionRepositoryCreation,
   validateSessionProjectPreparation,
 } from "./session-create-project.js";
-import { prepareSessionCreateFilesystemRoot } from "./session-create-root.js";
+import {
+  prepareSessionCreateFilesystemRoot,
+  resolveSessionCreateRootParameters,
+} from "./session-create-root.js";
 import { resolveSessionCreateSpawnContext } from "./session-create-spawn.js";
 import { resolveOperatorSessionCreation } from "./session-creation-provenance.js";
 import { sessionLog } from "./sessions-shared.js";
@@ -385,7 +388,6 @@ export const sessionCreateHandlers: GatewayRequestHandlers = {
       return;
     }
     sessionCwd = preparedRoot?.value.sessionCwd;
-    const sessionRoot = preparedRoot?.value.sessionRoot;
     if (repository) {
       prepareLifecycle = prepareSessionRepositoryWorkspace(repository, {
         runSetupScript: clientScopes.includes(ADMIN_SCOPE),
@@ -580,8 +582,7 @@ export const sessionCreateHandlers: GatewayRequestHandlers = {
       allowExistingModelSelection,
       parentSessionKey,
       spawnDepth: p.spawnDepth,
-      spawnedCwd: p.worktree === true ? undefined : sessionCwd,
-      sessionRoot: p.worktree === true ? undefined : sessionRoot,
+      ...resolveSessionCreateRootParameters(p, preparedRoot?.value),
       permissionMode: p.permissionMode,
       ...(p.toolOverrides !== undefined ? { toolOverrides: p.toolOverrides } : {}),
       prepareLifecycle,
@@ -616,7 +617,6 @@ export const sessionCreateHandlers: GatewayRequestHandlers = {
       loadGatewayModelCatalog: () => context.loadGatewayModelCatalog({ agentId: sessionAgentId }),
       commitGuard,
       afterCreate: async (session) => {
-        const { key, agentId } = session;
         if (!authority.hasActive()) {
           return;
         }
@@ -628,8 +628,8 @@ export const sessionCreateHandlers: GatewayRequestHandlers = {
         await sendChat({
           req,
           params: {
-            sessionKey: key,
-            agentId,
+            sessionKey: session.key,
+            agentId: session.agentId,
             message: message ?? "",
             idempotencyKey: initialRunId,
             ...(p.timeoutMs !== undefined ? { timeoutMs: p.timeoutMs } : {}),
