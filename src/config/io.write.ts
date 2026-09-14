@@ -26,7 +26,10 @@ import {
   resolveManagedUnsetPathsForWrite,
 } from "./config-path-mutation.js";
 import { assertConfigWriteAllowedInCurrentMode } from "./config-write-guard.js";
-import { preserveDeferredPluginMigrationConfig } from "./deferred-plugin-migration-config.js";
+import {
+  preserveDeferredPluginMigrationConfig,
+  setDeferredPluginMigrationConfigFacts,
+} from "./deferred-plugin-migration-config.js";
 import {
   EnvRefArrayMutationError,
   restoreEnvRefsFromMap,
@@ -599,6 +602,7 @@ export async function writeConfigFileFromContext(
     if (!options.skipPluginValidation) {
       logConfigWarningsOnce({ configPath, warnings: validated.warnings, logger: deps.logger });
     }
+    setDeferredPluginMigrationConfigFacts(sourceConfigForPreflight, deferredPluginMigrations);
     return {
       persistedHash: nextHash,
       persistedConfig: stampedOutputConfig,

@@ -141,7 +141,14 @@ const note = vi.hoisted(() => vi.fn());
 const pendingPluginMigrations = vi.hoisted(() => vi.fn((): DeferredPluginMigration[] => []));
 const recordDeferredPluginMigrations = vi.hoisted(() => vi.fn());
 const inspectPluginMigrationAvailability = vi.hoisted(() =>
-  vi.fn(async (): Promise<DeferredPluginMigration[]> => []),
+  vi.fn<
+    typeof import("./doctor/shared/plugin-migration-availability.js").inspectPluginMigrationAvailability
+  >(async () => ({
+    pending: [],
+    requiredPluginIds: [],
+    inspectionRequiredPluginIds: [],
+    statelessPluginIds: [],
+  })),
 );
 
 vi.mock("../infra/deferred-plugin-migrations.js", async (importOriginal) => ({
@@ -255,7 +262,12 @@ export const preflightStateMigrationMocks = {
 export function resetStateMigrationPreflightMocks(): void {
   vi.clearAllMocks();
   pendingPluginMigrations.mockReset().mockReturnValue([]);
-  inspectPluginMigrationAvailability.mockReset().mockResolvedValue([]);
+  inspectPluginMigrationAvailability.mockReset().mockResolvedValue({
+    pending: [],
+    requiredPluginIds: [],
+    inspectionRequiredPluginIds: [],
+    statelessPluginIds: [],
+  });
   acquireStartupMigrationLeaseWithWait.mockResolvedValue(startupMigrationLease);
   pluginMigrationFingerprint.mockReset();
   pluginMigrationFingerprint.mockReturnValue("plugin-migrations");

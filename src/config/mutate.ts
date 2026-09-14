@@ -27,7 +27,10 @@ import {
 } from "./config-path-mutation.js";
 import { getConfigValueAtPath, setConfigValueAtPath } from "./config-paths.js";
 import { assertConfigWriteAllowedInCurrentMode } from "./config-write-guard.js";
-import { preserveDeferredPluginMigrationConfig } from "./deferred-plugin-migration-config.js";
+import {
+  preserveDeferredPluginMigrationConfig,
+  setDeferredPluginMigrationConfigFacts,
+} from "./deferred-plugin-migration-config.js";
 import { restoreEnvVarRefs, resolveWriteEnvSnapshotForPath } from "./env-preserve.js";
 import { resolveConfigEnvVars } from "./env-substitution.js";
 import { GATEWAY_CONFIG_SELECTION_ENV_KEYS } from "./gateway-env-selection.js";
@@ -1188,7 +1191,9 @@ async function replaceConfigFileUnlocked(
     writeOptions: mergedWriteOptions,
     io: params.io,
   });
-  if (!writeResult) {
+  if (writeResult) {
+    setDeferredPluginMigrationConfigFacts(writeResult.persistedConfig, deferredPluginMigrations);
+  } else {
     const fallbackWriteOptions: ConfigWriteOptions = copyRuntimeConfigWriteApplication(
       mergedWriteOptions,
       {

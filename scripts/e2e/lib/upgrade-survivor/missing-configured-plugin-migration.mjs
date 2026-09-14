@@ -186,7 +186,13 @@ function diagnostics() {
   write(path.join(evidenceRoot, "support-warnings.jsonl"), logs);
 }
 
-function resumed() {
+function resumed(expectedVersion) {
+  assert(expectedVersion, "Missing expected Codex package version");
+  const installed = readPluginInstallRecords().codex;
+  assert(installed?.installPath, "Doctor did not install the configured Codex plugin");
+  const packageJson = readJson(path.join(installed.installPath, "package.json"));
+  assert.equal(packageJson.name, "@openclaw/codex");
+  assert.equal(packageJson.version, expectedVersion, "Doctor installed a different Codex version");
   const fixture = readJson(fixturePath);
   const imported = withDatabase((db) => {
     const receipt = db.prepare("SELECT status FROM migration_runs WHERE id = ?").get(migrationId);
@@ -217,9 +223,22 @@ function resumed() {
   });
   const config = readJson(configPath);
   assert.equal(config.plugins.entries.codex.config.codexDynamicToolsProfile, undefined);
-  const doctor = fs.readFileSync(path.join(artifactRoot, "doctor.log"), "utf8");
-  assert(!isPendingWarning(doctor), "Resumed Doctor still reports an active migration warning");
-  writeJson(path.join(evidenceRoot, "resumed.json"), { migrationStatus: "completed", imported });
+  const status = cli("update-status-resumed", ["update", "status", "--json"]);
+  assert.equal(
+    status.migrationWarnings,
+    undefined,
+    "Completed migrations still have active warnings",
+  );
+  assert.equal(
+    status.migrationWarningsError,
+    undefined,
+    "Completed migration status is unreadable",
+  );
+  writeJson(path.join(evidenceRoot, "resumed.json"), {
+    migrationStatus: "completed",
+    installed: { name: packageJson.name, version: packageJson.version },
+    imported,
+  });
 }
 
 async function serve([portFile, npmUpstream, clawhubUpstream]) {
@@ -288,7 +307,7 @@ if (command === "seed") {
 } else if (command === "diagnostics") {
   diagnostics();
 } else if (command === "resumed") {
-  resumed();
+  resumed(args[0]);
 } else if (command === "serve") {
   await serve(args);
 } else if (command === "available") {

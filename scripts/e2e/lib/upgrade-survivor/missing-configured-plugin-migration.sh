@@ -40,10 +40,8 @@ run_missing_configured_plugin_migration() {
   phase assert-deferred-doctor node "$helper" pending post-doctor
 
   phase expose-codex-artifact node "$helper" available "$port_file"
-  phase install-codex-artifact openclaw_e2e_fixture_plugin_command openclaw -- \
-    plugins install "@openclaw/codex@$candidate_version"
   phase resume-plugin-migration run_doctor
-  phase assert-resumed-plugin-migration node "$helper" resumed
+  phase assert-resumed-plugin-migration node "$helper" resumed "$candidate_version"
   phase validate-resumed-config validate_post_doctor_config
   echo "Missing Codex upgrade passed: 2026.9.2 -> $candidate_version; Gateway served while migration was pending, then Doctor imported both retained bindings."
 }
