@@ -1,5 +1,5 @@
 // Regression: resizing the chat pane must not jump the transcript. The reader's
-// anchor row (topmost visible row) should stay in place while rows re-wrap.
+// anchor row (first row starting in view) should stay in place while rows re-wrap.
 import { chromium, type Browser, type BrowserContext, type Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
@@ -51,7 +51,12 @@ async function sampleAnchor(page: Page, anchorKey: string | null): Promise<Ancho
       }))
       .filter(({ rect }) => rect.bottom > scrollerRect.top && rect.top < scrollerRect.bottom)
       .toSorted((left, right) => left.rect.top - right.rect.top);
-    const anchor = key === null ? rows[0] : rows.find((row) => row.key === key);
+    // A fold-spanning row can leave only a bottom sliver that disappears as
+    // its text re-wraps. Track the first row whose text starts in view.
+    const anchor =
+      key === null
+        ? rows.find((row) => row.rect.top >= scrollerRect.top)
+        : rows.find((row) => row.key === key);
     return {
       key: anchor?.key ?? null,
       topDelta: anchor ? anchor.rect.top - scrollerRect.top : Number.NaN,
@@ -127,6 +132,7 @@ describeControlUiE2e("Chat transcript resize anchoring", () => {
 
     const before = await sampleAnchor(page, null);
     expect(before.key).not.toBeNull();
+    expect(before.topDelta, "initial anchor starts in view").toBeGreaterThanOrEqual(0);
 
     const widths = [1000, 820, 1280];
     const observations: { width: number; sample: AnchorSample }[] = [];
@@ -146,10 +152,8 @@ describeControlUiE2e("Chat transcript resize anchoring", () => {
       // The anchor row must remain visible after every width change...
       expect(sample.key, `anchor visible at width ${width}`).toBe(before.key);
       // ...and roughly hold its viewport position while its own text re-wraps.
-      // The fold-spanning anchor row's own re-wrap moves its top by a font-
-      // metric-dependent amount (42px on macOS, 63px on Linux CI at 820px);
-      // the pre-fix failure mode is the anchor leaving the viewport entirely
-      // with 250px+ scroll drift, so 120px keeps a wide detection margin.
+      // Retain the original 120px drift budget. Clearing offscreen measurements
+      // must still fail this check even with a readable initial anchor.
       expect(
         Math.abs(sample.topDelta - before.topDelta),
         `anchor drift at width ${width}`,
