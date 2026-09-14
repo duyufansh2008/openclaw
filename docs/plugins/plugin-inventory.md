@@ -260,7 +260,7 @@ Each entry lists the package, distribution route, and description.
 
 - **[line](/plugins/reference/line)** (`@openclaw/line`) - npm or ClawHub. OpenClaw LINE channel plugin for LINE Bot API chats.
 
-- **[llama-cpp](/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm or ClawHub. Managed and external llama.cpp servers for GGUF chat and embeddings.
+- **[llama-cpp](/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm or ClawHub. Managed and external llama.cpp servers for GGUF chat, embeddings and local images.
 
 - **[lobster](/plugins/reference/lobster)** (`@openclaw/lobster`) - npm or ClawHub. Lobster workflow tool plugin for typed pipelines and resumable approvals.
 

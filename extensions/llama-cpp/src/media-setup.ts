@@ -261,32 +261,13 @@ export async function runLlamaCppMediaSetup(
       existing,
       managed,
       modelInventory: [
-        ...(existing?.models ?? [])
-          .filter((model) => !selectedIds.has(model.id))
-          .map((model) =>
-            model.baseUrl === existing?.baseUrl
-              ? Object.assign({}, model, { baseUrl: managed.baseUrl })
-              : model,
-          ),
+        ...(existing?.models ?? []).filter((model) => !selectedIds.has(model.id)),
         ...recipes.map((recipe) => modelDefinition(recipe, device, managed.baseUrl)),
       ],
     });
     provider.params = {
       ...existing?.params,
       mediaModels: { ocr: recommendation.ocr.id, vision: recommendation.vision.id },
-    };
-    // Preserve custom environment/working directory and lifecycle settings. The
-    // candidate has its own endpoint and preset, and only its idle policy is short.
-    provider.localService = {
-      ...existing?.localService,
-      ...provider.localService,
-      command: managed.command,
-      ...(existing?.localService?.readyTimeoutMs !== undefined
-        ? { readyTimeoutMs: existing.localService.readyTimeoutMs }
-        : {}),
-      ...(existing?.localService?.idleStopMs !== undefined
-        ? { idleStopMs: existing.localService.idleStopMs }
-        : {}),
     };
     const configPatch: NonNullable<ProviderAuthResult["configPatch"]> = {
       models: {

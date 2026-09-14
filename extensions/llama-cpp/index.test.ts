@@ -346,6 +346,24 @@ describe("llama.cpp provider plugin", () => {
     });
   });
 
+  it("keeps media preset sections and residency when refreshing embeddings", async () => {
+    const options = configuredOptions();
+    const provider: ModelProviderConfig = options.config.models.providers[LLAMA_CPP_PROVIDER_ID];
+    provider.params = { mediaModels: { ocr: "ocr", vision: "vision" } };
+    provider.localService?.args?.push("--models-max", "1");
+
+    await llamaCppEmbeddingProviderAdapter.create(options);
+
+    expect(mocks.prepareServer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chatModel: { mode: "preserve" },
+        configuredChatModelIds: undefined,
+        mediaModels: [],
+        localService: provider.localService,
+      }),
+    );
+  });
+
   it("routes embeddings without requiring a configured chat model", async () => {
     const options = {
       ...configuredOptions(),

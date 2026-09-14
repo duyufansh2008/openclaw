@@ -39,6 +39,7 @@ vi.mock("openclaw/plugin-sdk/media-understanding", async (original) => ({
 }));
 import plugin from "../index.js";
 import { buildLlamaCppProviderConfig } from "./defaults.js";
+import { resolveLlamaCppPresetPath } from "./managed-server.js";
 import { LLAMA_CPP_MEDIA_RECIPES } from "./media-catalog.js";
 import { LLAMA_CPP_OCR_FIXTURE, LLAMA_CPP_VISION_FIXTURE } from "./media-verification-fixtures.js";
 
@@ -48,6 +49,7 @@ let root: string;
 let preset: string;
 let registeredMedia: MediaUnderstandingProvider;
 let setup: ProviderPlugin["auth"][number]["run"];
+let ordinarySetup: ProviderPlugin["auth"][number]["run"];
 
 function context(consent = true): ProviderAuthContext {
   return {
@@ -121,11 +123,13 @@ beforeEach(async () => {
     }),
   );
   const method = provider?.auth.find((entry) => entry.id === "local-media");
-  if (!method || !media) {
+  const ordinary = provider?.auth.find((entry) => entry.id === "local");
+  if (!method || !ordinary || !media) {
     throw new Error("Missing production local media registration");
   }
   registeredMedia = media;
   setup = method.run;
+  ordinarySetup = ordinary.run;
 });
 
 afterEach(() => {
@@ -134,6 +138,135 @@ afterEach(() => {
 });
 
 describe("registered local media setup transaction", () => {
+  it.each(["chat", "embedding-only"])(
+    "retains working image routes, presets and residency through subsequent %s setup",
+    async (mode) => {
+      const actual =
+        await vi.importActual<typeof import("./managed-server.js")>("./managed-server.js");
+      let port = 20010;
+      // Hardware, downloads and inference are mocked; the registered setup methods
+      // and on-disk preset/config transitions use their real owners.
+      mocks.prepare.mockImplementation(
+        (params: Parameters<typeof actual.prepareManagedLlamaServer>[0]) =>
+          actual.prepareManagedLlamaServer({ ...params, port: port++ }),
+      );
+      const cached = new Set<string>();
+      mocks.ensureModel.mockImplementation(async ({ source, download }) => {
+        if (!download && !cached.has(source)) {
+          throw new Error("not cached");
+        }
+        cached.add(source);
+        const file = path.join(root, source.includes("mmproj") ? "projector.gguf" : "model.gguf");
+        await fs.writeFile(file, "GGUF");
+        return file;
+      });
+      const ctx = context();
+      let chatDefault: string | undefined;
+      if (mode === "chat") {
+        mocks.hardware.mockResolvedValue({
+          ...(await mocks.hardware()),
+          totalMemoryBytes: 16 * GIB,
+          availableMemoryBytes: 14 * GIB,
+        });
+        const initial = await ordinarySetup(ctx);
+        expect(initial.defaultModel).toBeDefined();
+        chatDefault = initial.defaultModel;
+        ctx.config = { ...ctx.config, ...initial.configPatch };
+        ctx.config.agents = { defaults: { model: { primary: initial.defaultModel } } };
+      }
+      const media = await setup(ctx);
+      ctx.config = { ...ctx.config, ...media.configPatch };
+      ctx.config.memory = { search: { provider: "local" } };
+      const provider = ctx.config.models?.providers?.["llama-cpp"];
+      const currentPreset = resolveLlamaCppPresetPath(provider?.localService);
+      if (!provider?.localService || !currentPreset) {
+        throw new Error("Missing installed media router");
+      }
+      provider.localService.env = { MODEL_SETTING: "retained" };
+      provider.localService.cwd = root;
+      provider.localService.readyTimeoutMs = 42000;
+      provider.localService.idleStopMs = 1234;
+      provider.localService.args?.push("--threads", "2");
+      const customSection =
+        "[operator-model]\n; keep operator settings\nmodel = /models/operator.gguf\n";
+      await fs.appendFile(currentPreset, `\n${customSection}`);
+      if (mode === "chat") {
+        const chat = provider.models.find((model) => !model.input.includes("image"));
+        if (!chat) {
+          throw new Error("Missing installed chat model");
+        }
+        chat.baseUrl = provider.baseUrl;
+        provider.models.push({ ...chat, id: "custom-route", baseUrl: "https://custom.example/v1" });
+      } else {
+        mocks.hardware.mockResolvedValue({
+          ...(await mocks.hardware()),
+          totalMemoryBytes: 7 * GIB,
+          availableMemoryBytes: 6 * GIB,
+        });
+      }
+      const before = structuredClone(ctx.config);
+      const activePreset = await fs.readFile(currentPreset, "utf8");
+      const result = await ordinarySetup(ctx);
+      const updated = result.configPatch?.models?.providers?.["llama-cpp"];
+      const nextPreset = resolveLlamaCppPresetPath(updated?.localService);
+      if (!updated?.localService || !nextPreset) {
+        throw new Error("Missing replacement router");
+      }
+      expect(ctx.config).toEqual(before);
+      expect(result.configPatch?.agents).toBeUndefined();
+      expect(result.configPatch?.tools).toBeUndefined();
+      expect(result.configPatch?.memory).toBeUndefined();
+      expect(result.defaultModel).toBe(chatDefault);
+      expect(updated.baseUrl).not.toBe(provider.baseUrl);
+      expect(updated.params).toEqual(provider.params);
+      expect(updated.models.map((model) => model.id)).toEqual(
+        provider.models.map((model) => model.id),
+      );
+      for (const model of updated.models) {
+        expect(model.baseUrl).toBe(
+          model.id === "custom-route" ? "https://custom.example/v1" : updated.baseUrl,
+        );
+      }
+      expect(updated.localService).toMatchObject({
+        env: { MODEL_SETTING: "retained" },
+        cwd: root,
+        readyTimeoutMs: 42000,
+        idleStopMs: 1234,
+      });
+      expect(updated.localService.args).toEqual(expect.arrayContaining(["--threads", "2"]));
+      const limit = updated.localService.args?.indexOf("--models-max") ?? -1;
+      expect(limit).toBeGreaterThanOrEqual(0);
+      expect(updated.localService.args?.[limit + 1]).toBe("1");
+      expect(nextPreset).not.toBe(currentPreset);
+      expect(await fs.readFile(currentPreset, "utf8")).toBe(activePreset);
+      const rewritten = await fs.readFile(nextPreset, "utf8");
+      expect(rewritten).toContain(customSection);
+      expect(rewritten).toContain("[embeddinggemma-300m-qat-q8_0]");
+      ctx.config = { ...ctx.config, ...result.configPatch };
+      for (const recipe of LLAMA_CPP_MEDIA_RECIPES) {
+        expect(rewritten).toContain(`[${recipe.id}]`);
+        expect(rewritten).toContain(`mmproj = ${path.join(root, "projector.gguf")}`);
+        await expect(
+          registeredMedia.describeImage?.({
+            cfg: ctx.config,
+            agentDir: root,
+            provider: "llama-cpp",
+            model: recipe.id,
+            buffer: recipe.capability === "ocr" ? LLAMA_CPP_OCR_FIXTURE : LLAMA_CPP_VISION_FIXTURE,
+            fileName: "fixture.png",
+            mime: "image/png",
+            prompt: "Describe the image.",
+            timeoutMs: 1000,
+          }),
+        ).resolves.toMatchObject({ model: recipe.id });
+      }
+      expect(mocks.inference).toHaveBeenLastCalledWith(
+        expect.objectContaining({ cfg: ctx.config }),
+        expect.any(Function),
+      );
+    },
+  );
+
   it("declining consent neither downloads nor prepares or changes configuration", async () => {
     const ctx = context(false);
     const before = structuredClone(ctx.config);
