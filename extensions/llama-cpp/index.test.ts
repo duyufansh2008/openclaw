@@ -185,10 +185,15 @@ describe("llama.cpp provider plugin", () => {
         ]),
       }),
     );
-    expect(provider.auth.map((method) => method.id)).toEqual(["local", "existing-server"]);
+    expect(provider.auth.map((method) => method.id)).toEqual([
+      "local",
+      "existing-server",
+      "local-media",
+    ]);
     expect(provider.auth.map((method) => method.wizard?.choiceId)).toEqual([
       "llama-cpp",
       "llama-cpp-existing-server",
+      undefined,
     ]);
     expect(
       provider.wrapSimpleCompletionStreamFn?.({

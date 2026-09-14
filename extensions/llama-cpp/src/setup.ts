@@ -36,6 +36,7 @@ import {
   prepareManagedLlamaServer,
   type ManagedLlamaServer,
 } from "./managed-server.js";
+import { resolveLlamaCppMediaModels } from "./media-config.js";
 import { recommendLlamaCppModel, resolveLlamaCppModelCandidates } from "./model-catalog.js";
 
 const BYTES_PER_GB = 1_000_000_000;
@@ -89,7 +90,9 @@ function configuredCandidates(
   const primaryId = primary?.startsWith(`${LLAMA_CPP_PROVIDER_ID}/`)
     ? primary.slice(LLAMA_CPP_PROVIDER_ID.length + 1)
     : undefined;
+  const mediaModels = resolveLlamaCppMediaModels(managedExisting);
   return provider.models
+    .filter((model) => model.id !== mediaModels?.ocr && model.id !== mediaModels?.vision)
     .map((model) => ({ model, provider }))
     .toSorted((a, b) => Number(b.model.id === primaryId) - Number(a.model.id === primaryId));
 }
