@@ -5,7 +5,7 @@ import * as agentEn from "./en-agents.ts";
 
 export const en: TranslationMap & {
   board: TranslationMap & { widget: TranslationMap };
-  chat: TranslationMap & { backgroundTasks: TranslationMap };
+  chat: TranslationMap & { backgroundTasks: TranslationMap; pullRequests: TranslationMap };
   browser: TranslationMap & { errors: TranslationMap };
   configPage: TranslationMap;
   connection: TranslationMap;

@@ -9,6 +9,7 @@ import { registerAppsEnglish } from "../../ui/src/i18n/locales/en-apps.ts";
 import { registerBackgroundTasksEnglish } from "../../ui/src/i18n/locales/en-background-tasks.ts";
 import { registerBoardWebsiteEnglish } from "../../ui/src/i18n/locales/en-board-website.ts";
 import { registerBrowserEnglish } from "../../ui/src/i18n/locales/en-browser.ts";
+import { registerChatCiEnglish } from "../../ui/src/i18n/locales/en-chat-ci.ts";
 import { registerCronEnglish } from "../../ui/src/i18n/locales/en-cron.ts";
 import { registerDebugEnglish } from "../../ui/src/i18n/locales/en-debug.ts";
 import { registerDesktopEnglish } from "../../ui/src/i18n/locales/en-desktop.ts";
@@ -48,6 +49,7 @@ const sourceFiles = [
   "en-background-tasks.ts",
   "en-board-website.ts",
   "en-browser.ts",
+  "en-chat-ci.ts",
   "en-cron.ts",
   "en-debug.ts",
   "en-desktop.ts",
@@ -105,6 +107,7 @@ export function loadControlUiSourceCatalog(): TranslationMap {
     registerAppsEnglish.catalog,
     registerBackgroundTasksEnglish.catalog,
     registerBrowserEnglish.catalog,
+    registerChatCiEnglish.catalog,
     registerCronEnglish.catalog,
     registerDevicesEnglish.catalog,
     registerLoginEnglish.catalog,
