@@ -30,15 +30,18 @@ async function describeManagedImages(req: ImagesDescriptionRequest) {
   // A managed media route cannot turn into an external endpoint after setup.
   const preparedProvider =
     req.preparedModelRuntime?.config.models?.providers?.[LLAMA_CPP_PROVIDER_ID];
-  if (
-    req.provider !== LLAMA_CPP_PROVIDER_ID ||
-    !isManagedLlamaCppMediaProvider(provider) ||
-    (req.preparedModelRuntime && !isManagedLlamaCppMediaProvider(preparedProvider))
-  ) {
-    throw new Error(
-      "Managed local images require a direct loopback llama.cpp server. Remove models.providers.llama-cpp.request.proxy if explicit, and add the server address to NO_PROXY when using an environment proxy. Rerun local media setup.",
-    );
-  }
+  const assertDirectLoopback = () => {
+    if (
+      req.provider !== LLAMA_CPP_PROVIDER_ID ||
+      !isManagedLlamaCppMediaProvider(provider) ||
+      (req.preparedModelRuntime && !isManagedLlamaCppMediaProvider(preparedProvider))
+    ) {
+      throw new Error(
+        "Managed local images require a direct loopback llama.cpp server. Remove models.providers.llama-cpp.request.proxy if explicit, and add the server address to NO_PROXY when using an environment proxy. Rerun local media setup.",
+      );
+    }
+  };
+  assertDirectLoopback();
   const configuredModel = provider?.models.find((model) => model.id === req.model);
   const models = [
     configuredModel,
@@ -100,6 +103,8 @@ async function describeManagedImages(req: ImagesDescriptionRequest) {
   const result = await describeImagesWithModelPayloadTransform(
     { ...req, prompt, maxTokens: Math.min(Math.floor(maxTokens), LLAMA_CPP_MEDIA_MAX_TOKENS) },
     (payload, model) => {
+      // Environment proxy routing can change while the shared runtime prepares the model.
+      assertDirectLoopback();
       // A retained runtime may resolve different metadata than the request config.
       // Validate the final transport target before handing it any image bytes.
       if (

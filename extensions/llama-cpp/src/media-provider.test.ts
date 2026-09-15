@@ -473,6 +473,34 @@ describe("llama-cpp registered media provider", () => {
     },
   );
 
+  it.each([false, true])(
+    "rechecks an environment proxy enabled during model preparation (bypassed=%s)",
+    async (bypassed) => {
+      const send = vi.fn();
+      transport.managed.mockImplementationOnce(async (_req, transform) => {
+        await Promise.resolve();
+        vi.stubEnv("http_proxy", "http://proxy.example.test:8080");
+        vi.stubEnv("no_proxy", bypassed ? "127.0.0.1" : "");
+        if (!transform) {
+          throw new Error("fixture transform missing");
+        }
+        await transform({ messages: [{ role: "user", content: [] }] }, REQUEST_MODEL);
+        send();
+        return { text: "local result" };
+      });
+      const result = providerMethods().multiple(request());
+      if (bypassed) {
+        await expect(result).resolves.toEqual({ text: "local result" });
+        expect(send).toHaveBeenCalledOnce();
+      } else {
+        await expect(result).rejects.toThrow("NO_PROXY");
+        expect(send).not.toHaveBeenCalled();
+      }
+      expect(transport.single).not.toHaveBeenCalled();
+      expect(transport.multiple).not.toHaveBeenCalled();
+    },
+  );
+
   it("rejects a retained runtime's explicit proxy before transport", async () => {
     const req = request();
     const config = structuredClone(req.cfg);
