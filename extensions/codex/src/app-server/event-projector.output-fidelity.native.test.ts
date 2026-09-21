@@ -136,7 +136,9 @@ describe("native Codex tool response fidelity", () => {
           'cli_auth_credentials_store="ephemeral"',
           'web_search="disabled"',
           'approval_policy="never"',
-          'sandbox_mode="read-only"',
+          // Output fidelity is the subject here; hosted Linux runners cannot
+          // initialize bubblewrap loopback inside their outer container.
+          'sandbox_mode="danger-full-access"',
           "allow_login_shell=false",
           // The synthetic model uses fallback metadata; give the full-result case
           // an explicit history budget instead of relying on a model catalog default.
