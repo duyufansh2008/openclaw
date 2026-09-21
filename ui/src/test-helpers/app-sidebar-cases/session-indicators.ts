@@ -118,10 +118,14 @@ describe("AppSidebar session indicators", () => {
       { type: "human", id: "profile-bob", label: "Bob" },
     ];
 
+    let resolveAvatarBlob!: (blob: Blob) => void;
+    const avatarBlob = new Promise<Blob>((resolve) => {
+      resolveAvatarBlob = resolve;
+    });
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      blob: async () => new Blob(["avatar"], { type: "image/png" }),
+      blob: () => avatarBlob,
     });
     vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
     vi.stubGlobal(
@@ -135,11 +139,14 @@ describe("AppSidebar session indicators", () => {
     gatewayHarness.gateway.connection.token = "avatar-token";
     const { sidebar } = await mountSidebar(gatewayHarness.gateway, sessions.sessions);
 
-    await waitForFast(() => {
-      expect(
-        sidebar.querySelector(`[data-session-key="${avatarKey}"] .channel-avatar`),
-      ).not.toBeNull();
-    });
+    const avatarHost = sidebar.querySelector<
+      HTMLElement & { updateComplete: Promise<boolean> }
+    >(`[data-session-key="${avatarKey}"] openclaw-channel-avatar`);
+    expect(avatarHost).not.toBeNull();
+    resolveAvatarBlob(new Blob(["avatar"], { type: "image/png" }));
+    await avatarBlob;
+    await avatarHost?.updateComplete;
+    expect(avatarHost?.querySelector(".channel-avatar")).not.toBeNull();
 
     const icon = sidebar.querySelector(`[data-session-key="${iconKey}"]`);
     expect(icon?.querySelector(".session-glyph__emoji")?.textContent).toBe("🦞");
