@@ -139,9 +139,9 @@ describe("AppSidebar session indicators", () => {
     gatewayHarness.gateway.connection.token = "avatar-token";
     const { sidebar } = await mountSidebar(gatewayHarness.gateway, sessions.sessions);
 
-    const avatarHost = sidebar.querySelector<
-      HTMLElement & { updateComplete: Promise<boolean> }
-    >(`[data-session-key="${avatarKey}"] openclaw-channel-avatar`);
+    const avatarHost = sidebar.querySelector<HTMLElement & { updateComplete: Promise<boolean> }>(
+      `[data-session-key="${avatarKey}"] openclaw-channel-avatar`,
+    );
     expect(avatarHost).not.toBeNull();
     resolveAvatarBlob(new Blob(["avatar"], { type: "image/png" }));
     await avatarBlob;
