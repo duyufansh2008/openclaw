@@ -33,10 +33,10 @@ import {
   LLAMA_SERVER_COMMIT,
   type LlamaServerAsset,
 } from "./llama-server-assets.js";
+import { listLlamaServerDevices } from "./llama-server-command.js";
 import {
   downloadVerifiedFile,
   ensureLlamaServerInstalled,
-  listLlamaServerDevices,
   resolveManagedLlamaServerPaths,
   selectLlamaServerAsset,
   sha256File,
