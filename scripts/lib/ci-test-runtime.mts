@@ -33,6 +33,8 @@ const runtimePartitions = new Map<
         "packages/markdown-core/src/render-aware-chunking.test.ts",
         "src/agents/sandbox/docker.execDockerRaw.enoent.test.ts",
         "src/cli/cli-process-diagnostics.test.ts",
+        // Native heap accounting, GC, and Worker limits require V8.
+        "src/infra/worker-task-pool.memory.test.ts",
         "src/process/spawn-broker/callback-context.test.ts",
         "src/process/spawn-broker/cleanup.test.ts",
         "src/process/spawn-broker/handoff.test.ts",
@@ -41,6 +43,8 @@ const runtimePartitions = new Map<
         "src/process/spawn-broker/startup.test.ts",
         "src/process/spawn-broker/stdin-handoff.test.ts",
         "src/process/spawn-broker/transports.test.ts",
+        // Preserve native Node process and SQLite lifecycle semantics for this benchmark.
+        "test/scripts/bench-session-history.test.ts",
         "test/scripts/update-restart-module-outcome.test.ts",
       ]),
     },
