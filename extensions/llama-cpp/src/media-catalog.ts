@@ -4,7 +4,6 @@ import {
   selectLlamaServerAsset,
   type LlamaServerAsset,
 } from "./llama-server-assets.js";
-import type { LlamaServerDevice } from "./llama-server-install.js";
 import { resolveLlamaCppModelCandidates } from "./model-catalog.js";
 
 const GIB = 1024 ** 3;
@@ -85,7 +84,7 @@ export const LLAMA_CPP_MEDIA_RECIPES: readonly LlamaCppMediaRecipe[] = [
       484_403_648,
       "9c4b58e33e316ed142eb5dcb41abec3844d3e6e5dc361ffb782c3fa9d175141f",
     ),
-    supportedBackends: ["cpu", "metal", "cuda"],
+    supportedBackends: ["cpu"],
     supportedRuntimeBuild: 10_809,
     minimumSystemMemoryBytes: 6 * GIB,
     memoryBytes: 4 * GIB,
@@ -117,7 +116,7 @@ export const LLAMA_CPP_MEDIA_RECIPES: readonly LlamaCppMediaRecipe[] = [
       592_523_200,
       "ae07ea1facd07dd3230c4483b63e8cda96c6944ad2481f33d531f79e892dd024",
     ),
-    supportedBackends: ["cpu", "metal", "cuda"],
+    supportedBackends: ["cpu"],
     supportedRuntimeBuild: 10_809,
     minimumSystemMemoryBytes: 6 * GIB,
     memoryBytes: 5 * GIB,
@@ -290,49 +289,4 @@ export function recommendLlamaCppMedia(
   return unavailable(
     "There is not enough disk space for a complete OCR and vision pair and the managed runtime. Free space in the model cache and retry setup.",
   );
-}
-
-/** Confirm one actual CUDA backend device; nvidia-smi row indices are not CUDA ordinals. */
-export function resolveLlamaCppMediaDevice(
-  hardware: LlamaCppHardware,
-  actualDevices: readonly LlamaServerDevice[],
-  requiredMemoryBytes: number,
-): string {
-  if (!Number.isFinite(requiredMemoryBytes) || requiredMemoryBytes <= 0) {
-    throw new Error("A positive local media memory requirement is needed to select a CUDA device.");
-  }
-  let selected: { id: string; budget: number } | undefined;
-  for (const device of actualDevices.toSorted((left, right) =>
-    left.id.localeCompare(right.id, "en", { numeric: true }),
-  )) {
-    if (
-      !/^CUDA\d+$/u.test(device.id) ||
-      !Number.isSafeInteger(device.totalMemoryBytes) ||
-      device.totalMemoryBytes <= 0 ||
-      !Number.isSafeInteger(device.availableMemoryBytes) ||
-      device.availableMemoryBytes < 0
-    ) {
-      continue;
-    }
-    const budget = resolveLlamaCppModelCandidates(
-      {
-        ...hardware,
-        accelerator: {
-          kind: "cuda",
-          // The budget owner reads only memory; the runtime does not report a driver version.
-          devices: [{ ...device, driverVersion: "" }],
-        },
-      },
-      "cuda",
-    ).memoryBudgetBytes;
-    if (budget >= requiredMemoryBytes && (!selected || budget > selected.budget)) {
-      selected = { id: device.id, budget };
-    }
-  }
-  if (!selected) {
-    throw new Error(
-      `No visible llama-server CUDA device fits ${formatLlamaCppMemory(requiredMemoryBytes)} after memory headroom. Close other GPU applications or check the local service CUDA visibility settings and retry setup. CPU fallback was not activated.`,
-    );
-  }
-  return selected.id;
 }

@@ -15,7 +15,6 @@ const mocks = vi.hoisted(() => ({
   hardware: vi.fn(),
   ensureModel: vi.fn(),
   install: vi.fn(),
-  listDevices: vi.fn(),
   prepare: vi.fn(),
   inference: vi.fn(),
 }));
@@ -31,7 +30,6 @@ vi.mock("./managed-server.js", async (original) => ({
 vi.mock("./llama-server-install.js", async (original) => ({
   ...(await original<typeof import("./llama-server-install.js")>()),
   ensureLlamaServerInstalled: mocks.install,
-  listLlamaServerDevices: mocks.listDevices,
 }));
 vi.mock("openclaw/plugin-sdk/media-understanding", async (original) => ({
   ...(await original<typeof import("openclaw/plugin-sdk/media-understanding")>()),
@@ -91,7 +89,6 @@ beforeEach(async () => {
     return path.join(root, source.includes("mmproj") ? "projector.gguf" : "model.gguf");
   });
   mocks.install.mockResolvedValue({ command: path.join(root, "llama-server") });
-  mocks.listDevices.mockResolvedValue([]);
   mocks.prepare.mockImplementation(async () => {
     await fs.writeFile(preset, "candidate preset");
     return {
@@ -320,56 +317,39 @@ describe("registered local media setup transaction", () => {
     await expect(fs.stat(verificationDir!)).rejects.toMatchObject({ code: "ENOENT" });
   });
 
-  it("rejects reduced actual CUDA memory before model downloads or candidate configuration", async () => {
-    const controller = new AbortController();
-    const ctx = { ...context(), signal: controller.signal };
-    const before = structuredClone(ctx.config);
-    mocks.hardware.mockResolvedValue({
-      platform: "win32",
-      arch: "x64",
-      accelerator: {
-        kind: "cuda",
-        devices: [
-          {
-            name: "Test NVIDIA GPU",
-            totalMemoryBytes: 16 * GIB,
-            availableMemoryBytes: 15 * GIB,
-            driverVersion: "580.1",
-            computeCapability: 8.6,
-          },
-        ],
-      },
-      totalMemoryBytes: 16 * GIB,
-      availableMemoryBytes: 15 * GIB,
-      availableDiskBytes: 20 * GIB,
-      availableRuntimeDiskBytes: 20 * GIB,
-      sharedDisk: true,
-    });
-    mocks.listDevices.mockResolvedValue([
-      {
-        id: "CUDA0",
-        name: "Test NVIDIA GPU",
+  it.each([
+    { platform: "darwin" as const, arch: "arm64" },
+    { platform: "win32" as const, arch: "x64" },
+    { platform: "linux" as const, arch: "arm64" },
+  ])(
+    "leaves configuration untouched outside the verified Linux x64 scope: $platform/$arch",
+    async ({ platform, arch }) => {
+      const ctx = context();
+      const before = structuredClone(ctx.config);
+      mocks.hardware.mockResolvedValue({
+        platform,
+        arch,
+        accelerator: { kind: "cpu", reason: "CPU host" },
         totalMemoryBytes: 16 * GIB,
-        availableMemoryBytes: GIB,
-      },
-    ]);
+        availableMemoryBytes: 15 * GIB,
+        availableDiskBytes: 20 * GIB,
+        availableRuntimeDiskBytes: 20 * GIB,
+        sharedDisk: true,
+      });
 
-    await expect(setup(ctx)).rejects.toThrow("No visible llama-server CUDA device fits");
+      await expect(setup(ctx)).resolves.toEqual({ profiles: [] });
 
-    expect(mocks.install).toHaveBeenCalledOnce();
-    expect(mocks.listDevices).toHaveBeenCalledWith(
-      expect.objectContaining({
-        command: path.join(root, "llama-server"),
-        signal: controller.signal,
-      }),
-    );
-    expect(mocks.ensureModel).toHaveBeenCalled();
-    expect(mocks.ensureModel.mock.calls.every(([arg]) => arg.download === false)).toBe(true);
-    expect(mocks.prepare).not.toHaveBeenCalled();
-    expect(mocks.inference).not.toHaveBeenCalled();
-    expect(ctx.config).toEqual(before);
-    await expect(fs.stat(preset)).rejects.toMatchObject({ code: "ENOENT" });
-  });
+      expect(ctx.prompter.note).toHaveBeenCalledWith(
+        expect.stringContaining("supports Linux x64 with CPU execution only"),
+        "Local media unavailable",
+      );
+      expect(mocks.ensureModel).not.toHaveBeenCalled();
+      expect(mocks.install).not.toHaveBeenCalled();
+      expect(mocks.prepare).not.toHaveBeenCalled();
+      expect(mocks.inference).not.toHaveBeenCalled();
+      expect(ctx.config).toEqual(before);
+    },
+  );
 
   it.each(["ocr", "vision"])(
     "%s failure removes candidate state and never produces a patch",

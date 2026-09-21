@@ -173,6 +173,10 @@ current available memory, supported runtime backend, and free disk. It shows the
 host, backend, model and projector downloads, memory budget, rejected candidates,
 and degraded modes before asking permission. No download occurs before consent.
 
+The initial automatic media setup scope is **Linux x64 with CPU execution**. Other
+managed backends remain available for chat and embeddings, but automatic OCR and
+vision activation on those hosts waits for matching end-to-end verification.
+
 The curated recipes use pinned repository revisions, sizes and SHA-256 checksums
 for **both** the model and multimodal projector. The existing managed installer
 verifies the llama.cpp runtime. Setup then runs two real images through the
@@ -189,11 +193,10 @@ downloads remain cached for retry.
 
 A complete pair needs at least 6 GiB host RAM, sufficient **available** memory
 after headroom, and disk for missing files plus runtime staging. These are
-eligibility floors, not guarantees of speed or accuracy. The same
-[managed backends](/plugins/llama-cpp#execution-backends) apply. Separate GPUs are never pooled;
-CUDA media recipes use one selected device. Only one router model is resident at
-a time, including existing chat and embedding models. Switching tasks can incur
-model-loading latency. No additional model process manager is installed.
+eligibility floors, not guarantees of speed or accuracy. Only one router model
+is resident at a time, including existing chat and embedding models. Switching
+tasks can incur model-loading latency. No additional model process manager is
+installed.
 
 ### Choose the image task
 
@@ -301,8 +304,12 @@ manager, or machine owns the process.
 
 OpenClaw reads `/health`, `/models` (falling back to `/v1/models`), and
 `/props`. Router property probes use `autoload=false`. Discovery never loads,
-wakes, unloads, downloads, or reloads models. Explicit configured model rows
-remain authoritative over discovered rows with the same ID.
+wakes, unloads, downloads, or reloads models.
+
+For discovered models, OpenClaw advertises reasoning and effort controls only
+when `/props` sets `chat_template_caps.supports_reasoning_effort` to `true`.
+Missing or false values leave those capabilities unadvertised. Explicit
+configured model rows remain authoritative over discovered rows with the same ID.
 
 Refreshing a configured external server reports authentication rejection or
 unavailability when discovery fails. Previously discovered models remain visible
@@ -374,8 +381,9 @@ declarations](/gateway/config-tools#custom-provider-capability-declarations).
 
 Both ownership choices use OpenClaw's normal chat, image, streaming, and tool
 transport. The llama.cpp compatibility family cleans unsupported tool-schema
-constraints, maps thinking-off requests to the Qwen chat-template flag, and
-adapts JSON Schema requests for older llama-server builds.
+constraints. Agent turns and standalone completions also map thinking-off
+requests to the server's chat-template flag and adapt JSON Schema requests
+for older llama-server builds.
 
 Local memory embeddings require managed mode:
 

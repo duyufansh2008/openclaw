@@ -16,7 +16,6 @@ import {
 import { detectLlamaCppHardware, formatLlamaCppMemory } from "./hardware.js";
 import {
   ensureLlamaServerInstalled,
-  listLlamaServerDevices,
   resolveManagedLlamaServerPaths,
   selectLlamaServerAsset,
 } from "./llama-server-install.js";
@@ -29,7 +28,6 @@ import {
 import {
   LLAMA_CPP_MEDIA_RECIPES,
   recommendLlamaCppMedia,
-  resolveLlamaCppMediaDevice,
   type LlamaCppMediaRecipe,
 } from "./media-catalog.js";
 import {
@@ -103,17 +101,18 @@ export async function runLlamaCppMediaSetup(
   }
   const cacheDir = resolveLlamaCppModelCacheDir(existing);
   const hardware = await detectLlamaCppHardware({ cacheDir, signal: ctx.signal });
-  let asset;
-  let degraded: string | undefined;
-  try {
-    asset = selectLlamaServerAsset(hardware.platform, hardware.arch, hardware.accelerator);
-  } catch (error) {
-    if (hardware.accelerator.kind !== "cuda") {
-      throw error;
-    }
-    asset = selectLlamaServerAsset(hardware.platform, hardware.arch, { kind: "cpu" });
-    degraded = `${error instanceof Error ? error.message : String(error)} This setup uses CPU execution.`;
+  if (hardware.platform !== "linux" || hardware.arch !== "x64") {
+    await ctx.prompter.note(
+      `Automatic local OCR and vision setup currently supports Linux x64 with CPU execution only; this Gateway is ${hardware.platform}/${hardware.arch}. Existing llama.cpp chat and embedding setup is unchanged.`,
+      "Local media unavailable",
+    );
+    return { profiles: [] };
   }
+  const asset = selectLlamaServerAsset(hardware.platform, hardware.arch, { kind: "cpu" });
+  const degraded =
+    hardware.accelerator.kind === "cpu"
+      ? undefined
+      : "Initial local media support uses CPU execution even when an accelerator is detected.";
   const cached = new Map<string, string>();
   for (const recipe of LLAMA_CPP_MEDIA_RECIPES) {
     for (const artifact of [recipe.model, recipe.projector]) {
@@ -200,22 +199,8 @@ export async function runLlamaCppMediaSetup(
   let verified = false;
   try {
     ctx.assertCurrent?.();
-    const installed = await ensureLlamaServerInstalled({ asset, signal: ctx.signal });
-    const device =
-      asset.backend === "cuda"
-        ? resolveLlamaCppMediaDevice(
-            hardware,
-            await listLlamaServerDevices({
-              command: installed.command,
-              env: existing?.localService?.env,
-              cwd: existing?.localService?.cwd,
-              signal: ctx.signal,
-            }),
-            Math.max(...recipes.map((recipe) => recipe.memoryBytes)),
-          )
-        : asset.backend === "metal"
-          ? "Metal"
-          : "none";
+    await ensureLlamaServerInstalled({ asset, signal: ctx.signal });
+    const device = "none";
     for (const artifact of artifacts) {
       ctx.assertCurrent?.();
       const file = await ensureLlamaCppModel({
