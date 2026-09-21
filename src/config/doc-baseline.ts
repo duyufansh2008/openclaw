@@ -713,9 +713,6 @@ export async function writeConfigDocBaselineArtifacts(params?: {
   const changed = hashChanged || countBudgetError !== undefined || countViolations.length > 0;
 
   if (params?.check) {
-    if (hashChanged) {
-      console.error(`Expected generated config baseline hashes:\n${nextHashContent}`);
-    }
     return {
       changed,
       hashChanged,
