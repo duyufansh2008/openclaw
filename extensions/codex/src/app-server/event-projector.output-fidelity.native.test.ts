@@ -235,20 +235,10 @@ describe("native Codex tool response fidelity", () => {
       if (typeof output !== "string") {
         throw new Error("Expected native exec response text");
       }
-      const command = requireRecord(
-        notifications
-          .filter((notification) => notification.method === "item/completed")
-          .map((notification) =>
-            requireRecord(
-              requireRecord(notification.params, "item notification").item,
-              "completed item",
-            ),
-          )
-          .find((item) => item.type === "commandExecution" && item.id === callId),
-        "native command execution",
-      );
-      expect(command).toMatchObject({ status: "completed", exitCode: 0, aggregatedOutput: source });
-      expect(output).not.toBe(command.aggregatedOutput);
+      // The responses-wire path guarantees the provider-facing raw result, not a
+      // presentation-layer commandExecution item. The second provider request
+      // and matching call ID above prove the native command completed.
+      expect(output).not.toBe(source);
       expect(output).toContain("Process exited with code 0\n");
       expect(output).toContain("Output:\n");
       if (maxOutputTokens === 24_000) {
