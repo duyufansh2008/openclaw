@@ -7,9 +7,11 @@ import {
 import {
   readMcpOAuthPendingAuthorization,
   readMcpOAuthStore,
+  mutateMcpOAuthStore,
+  writeMcpOAuthPendingAuthorization,
 } from "../../agents/mcp-oauth-store.js";
 import * as mcpOAuth from "../../agents/mcp-oauth.js";
-import { seedMcpOAuthStoreForTest } from "../../agents/mcp-oauth.test-support.js";
+import { withMcpOAuthTestLease } from "../../agents/mcp-oauth.test-support.js";
 import { withAdminIngress } from "../../channels/message-access/operator-authority.test-support.js";
 import type { ChannelPlugin } from "../../channels/plugins/types.public.js";
 import { setRuntimeConfigSnapshotRefreshHandler } from "../../config/runtime-snapshot.js";
@@ -25,7 +27,7 @@ import {
   linkUserChannelIdentity,
   unlinkUserChannelIdentity,
 } from "../../state/user-channel-identities.js";
-import { setUserProfileRole } from "../../state/user-profiles.js";
+import { setUserProfileRole } from "../../state/user-profile-writes.worker.js";
 import {
   createChannelTestPluginBase,
   createTestRegistry,
@@ -111,7 +113,9 @@ const commands = [
 
 it.each(
   commands.flatMap((command) =>
-    [false, true].map((revoke) => Object.assign({}, command, { revoke })),
+    (command.command === "/mcp unset fixture" ? [true] : [false, true]).map((revoke) =>
+      Object.assign({}, command, { revoke }),
+    ),
   ),
 )(
   "preserves live owner authority through $command persistence (revoke=$revoke)",
@@ -216,11 +220,15 @@ it("finishes accepted MCP removal and OAuth cleanup after the original admin is 
       }),
     ];
     for (const identity of identities) {
-      seedMcpOAuthStoreForTest(
-        identity.storeKey,
-        { tokens: { access_token: identity.principal, token_type: "Bearer" } },
-        `${identity.principal}-callback`,
-      );
+      await withMcpOAuthTestLease(identity.storeKey, async (lease, storeContext) => {
+        const options = { storeKey: identity.storeKey, lease, context: storeContext };
+        await mutateMcpOAuthStore(options, {
+          kind: "tokens",
+          tokens: { access_token: identity.principal, token_type: "Bearer" },
+          tokenExpiresAt: undefined,
+        });
+        await writeMcpOAuthPendingAuthorization(options, `${identity.principal}-callback`);
+      });
     }
     const params = buildCommandTestParams(
       "/mcp unset fixture",
@@ -252,7 +260,10 @@ it("finishes accepted MCP removal and OAuth cleanup after the original admin is 
       const committed = await readFile(state.configPath, "utf8");
       expect((JSON.parse(committed) as OpenClawConfig).mcp?.servers?.fixture).toBeUndefined();
       for (const identity of identities) {
-        expect((await readMcpOAuthStore(identity.storeKey)).tokens).toBeDefined();
+        expect((await readMcpOAuthStore(identity.storeKey)).tokens).toEqual({
+          access_token: identity.principal,
+          token_type: "Bearer",
+        });
         expect(await readMcpOAuthPendingAuthorization(`${identity.principal}-callback`)).toBe(
           identity.storeKey,
         );

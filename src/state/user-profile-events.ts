@@ -1,5 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
+import { executeSqliteQuerySync, getNodeSqliteKysely } from "../infra/kysely-sync.js";
 import { stageSqliteTransactionState } from "../infra/sqlite-post-commit.js";
+import { getAdmittedSqliteSchemaFacts } from "../infra/sqlite-schema-facts.js";
 import type { DatabasePathIdentity } from "../infra/sqlite-worker-identity.js";
 import { sessionChanges } from "../sessions/session-row-changes.js";
 import { createDeferredCore } from "../shared/deferred.js";
@@ -7,12 +9,31 @@ import { notifyListeners, registerListener } from "../shared/listeners.js";
 import type { OpenClawStateDatabaseReadAdmission } from "./openclaw-state-db-async-lifecycle.js";
 import { registerOpenClawStateDatabaseLifecycleListener } from "./openclaw-state-db-cache.js";
 import type { UserProfileMutationChanges } from "./user-profile-mutation.js";
+import type { UserProfileEmailBinding, UserProfilesDatabase } from "./user-profiles.types.js";
+
+type EmailBindingChange = {
+  db: DatabaseSync;
+  email: string;
+  binding: UserProfileEmailBinding | null;
+};
+
+export class UserProfileMutationUnsettledError extends Error {
+  constructor(kind: "pending" | "uncertain") {
+    super(
+      kind === "pending"
+        ? "Profile authority mutation has not settled"
+        : "Profile authority mutation requires canonical recovery",
+    );
+    this.name = "UserProfileMutationUnsettledError";
+  }
+}
 
 type ProfileAuthorityStore = {
   revision: object;
   identityRevision: object;
   profiles: Map<string, object>;
   profileIdentities: Map<string, object>;
+  modelAccountLinks: Map<string, object>;
   channelIdentities: Map<string, object>;
   pending: Map<string, Set<Promise<void>>>;
   uncertain: Set<string>;
@@ -22,6 +43,8 @@ type ProfileAuthorityStore = {
 const changes = {
   version: 0,
   aliasRevision: 0,
+  bindingRevision: 0,
+  bindingListeners: new Set<(change: EmailBindingChange) => void>(),
   listeners: new Set<() => void>(),
   authorityStores: new Map<string, ProfileAuthorityStore>(),
   authorityHandles: new WeakMap<DatabaseSync, ProfileAuthorityStore>(),
@@ -36,6 +59,7 @@ function authorityStore(identity: DatabasePathIdentity): ProfileAuthorityStore {
       identityRevision: {},
       profiles: new Map(),
       profileIdentities: new Map(),
+      modelAccountLinks: new Map(),
       channelIdentities: new Map(),
       pending: new Map(),
       uncertain: new Set(),
@@ -61,49 +85,86 @@ function observeAuthorityLifecycle(): void {
 
 /** Authority revisions belong to the profile writer, independently of display notifications. */
 export function publishUserProfileAuthorityChange(db: DatabaseSync, ...profileIds: string[]): void {
-  observeAuthorityLifecycle();
-  const store = changes.authorityHandles.get(db);
-  if (!store || profileIds.length === 0) {
-    return;
+  // Native and worker mutations retire recovery custody in their original transaction.
+  const schema = profileIds.length ? getAdmittedSqliteSchemaFacts(db) : undefined;
+  if (profileIds.length && !schema) {
+    throw new Error("Profile authority mutation requires admitted schema facts");
   }
-  const commit = () => {
-    store.revision = {};
-    for (const profileId of profileIds) {
-      store.profiles.set(profileId, {});
-    }
-  };
-  if (!stageSqliteTransactionState(db, { stage: () => {}, rollback: () => {}, commit })) {
-    commit();
+  if (schema && schema.userVersion >= 19 && schema.tables.has("user_profile_identities")) {
+    executeSqliteQuerySync(
+      db,
+      getNodeSqliteKysely<UserProfilesDatabase>(db)
+        .updateTable("user_profile_identities")
+        .set({ authorization_id: null, authorization_basis_json: null })
+        .where("profile_id", "in", profileIds),
+    );
   }
+  publishAuthorityStoreChange(db, "profiles", profileIds);
 }
 
 /** Only changed merge pointers invalidate account selection; roles and login grants do not. */
 export function publishUserProfileIdentityChange(db: DatabaseSync, ...profileIds: string[]): void {
+  publishAuthorityStoreChange(db, "profileIdentities", profileIds);
+}
+
+/** Default-link changes do not revoke explicit selections or saved session account pins. */
+export function publishUserProfileModelAccountLinksChange(
+  db: DatabaseSync,
+  ...profileIds: string[]
+): void {
+  publishAuthorityStoreChange(db, "modelAccountLinks", profileIds);
+}
+
+/** A retained catalog assertion consumes only the canonical writer’s committed facts. */
+export function captureUserProfileModelAccountLinksAuthority(
+  admission: OpenClawStateDatabaseReadAdmission,
+  profileId: string,
+): () => boolean {
   observeAuthorityLifecycle();
-  const store = changes.authorityHandles.get(db);
-  if (!store || profileIds.length === 0) {
-    return;
-  }
-  const commit = () => {
-    store.identityRevision = {};
-    for (const profileId of profileIds) {
-      store.profileIdentities.set(profileId, {});
+  admission.assertCurrent();
+  const store = authorityStore(admission.identity);
+  const links = store.modelAccountLinks.get(profileId);
+  const identity = store.profileIdentities.get(profileId);
+  const key = mutationKey("identity", profileId);
+  return () => {
+    try {
+      admission.assertCurrent();
+      return (
+        changes.authorityStores.get(admission.identity.key) === store &&
+        store.modelAccountLinks.get(profileId) === links &&
+        store.profileIdentities.get(profileId) === identity &&
+        !store.pending.get(key)?.size &&
+        !store.uncertain.has(key)
+      );
+    } catch {
+      return false;
     }
   };
-  if (!stageSqliteTransactionState(db, { stage: () => {}, rollback: () => {}, commit })) {
-    commit();
-  }
 }
 
 export function publishUserChannelIdentityAuthorityChange(db: DatabaseSync, subject: string): void {
+  publishAuthorityStoreChange(db, "channelIdentities", [subject]);
+}
+
+function publishAuthorityStoreChange(
+  db: DatabaseSync,
+  kind: "profiles" | "profileIdentities" | "channelIdentities" | "modelAccountLinks",
+  ids: string[],
+): void {
   observeAuthorityLifecycle();
   const store = changes.authorityHandles.get(db);
-  if (!store) {
+  if (!store || ids.length === 0) {
     return;
   }
   const commit = () => {
-    store.revision = {};
-    store.channelIdentities.set(subject, {});
+    if (kind === "profileIdentities") {
+      store.identityRevision = {};
+    } else if (kind !== "modelAccountLinks") {
+      store.revision = {};
+    }
+    for (const id of ids) {
+      store[kind].set(id, {});
+    }
   };
   if (!stageSqliteTransactionState(db, { stage: () => {}, rollback: () => {}, commit })) {
     commit();
@@ -185,18 +246,39 @@ export async function captureUserProfileAuthorityRead(
     await Promise.all(pending);
   }
   admission.assertCurrent();
-  const subjectIsSettled = () =>
-    subjectKey === undefined ||
-    (!store.uncertain.has(subjectKey) && !store.pending.get(subjectKey)?.size);
+  const subjectIsSettled = (key = subjectKey) =>
+    key === undefined || (!store.uncertain.has(key) && !store.pending.get(key)?.size);
   if (!subjectIsSettled()) {
-    throw new Error("Profile authority mutation has not settled");
+    throw new UserProfileMutationUnsettledError("pending");
   }
   const currentRevision = () =>
     dependency === "identity" ? store.identityRevision : store.revision;
   const profileRevisions = dependency === "identity" ? store.profileIdentities : store.profiles;
   const revision = currentRevision();
   return {
-    bind(profileIds: string | readonly string[]): (() => boolean) | undefined {
+    /** Current-fact readers tolerate settled changes, but never borrow an unknown mutation. */
+    assertSettled(this: void, profileIds: string | readonly string[]): void {
+      admission.assertCurrent();
+      if (changes.authorityStores.get(admission.identity.key) !== store) {
+        throw new Error("Profile authority store changed");
+      }
+      for (const id of typeof profileIds === "string" ? [profileIds] : profileIds) {
+        const key = mutationKey(profileKind, id);
+        if (store.uncertain.has(key)) {
+          throw new UserProfileMutationUnsettledError("uncertain");
+        }
+        if (store.pending.get(key)?.size) {
+          throw new UserProfileMutationUnsettledError("pending");
+        }
+      }
+      if (!subjectIsSettled()) {
+        throw new UserProfileMutationUnsettledError("pending");
+      }
+    },
+    bind(
+      profileIds: string | readonly string[],
+      boundSubject = subject,
+    ): (() => boolean) | undefined {
       admission.assertCurrent();
       if (
         changes.authorityStores.get(admission.identity.key) !== store ||
@@ -211,12 +293,18 @@ export async function captureUserProfileAuthorityRead(
         revision: profileRevisions.get(id),
       }));
       if (profiles.some(({ key }) => store.uncertain.has(key))) {
-        throw new Error("Profile authority mutation requires canonical recovery");
+        throw new UserProfileMutationUnsettledError("uncertain");
       }
       if (profiles.some(({ key }) => store.pending.get(key)?.size)) {
         return undefined;
       }
-      const identity = subject === undefined ? undefined : store.channelIdentities.get(subject);
+      const identity =
+        boundSubject === undefined ? undefined : store.channelIdentities.get(boundSubject);
+      const boundKey =
+        boundSubject === undefined ? undefined : mutationKey("channel", boundSubject);
+      if (!subjectIsSettled(boundKey)) {
+        return undefined;
+      }
       return () => {
         try {
           admission.assertCurrent();
@@ -228,8 +316,9 @@ export async function captureUserProfileAuthorityRead(
                 !store.uncertain.has(profile.key) &&
                 !store.pending.get(profile.key)?.size,
             ) &&
-            (subject === undefined || store.channelIdentities.get(subject) === identity) &&
-            subjectIsSettled()
+            (boundSubject === undefined ||
+              store.channelIdentities.get(boundSubject) === identity) &&
+            subjectIsSettled(boundKey)
           );
         } catch {
           return false;
@@ -237,6 +326,34 @@ export async function captureUserProfileAuthorityRead(
       };
     },
   };
+}
+
+export function onUserProfileEmailBindingChanged(
+  listener: (change: EmailBindingChange) => void,
+): () => void {
+  return registerListener(changes.bindingListeners, listener);
+}
+
+/** Native writer facts become visible with the commit, before profile observers. */
+export function stageUserProfileEmailBindingChange(
+  db: DatabaseSync,
+  email: string,
+  binding: UserProfileEmailBinding | null,
+): void {
+  stageSqliteTransactionState(db, {
+    stage: () => {},
+    rollback: () => {},
+    commit: () => {
+      changes.bindingRevision += 1;
+      for (const listener of changes.bindingListeners) {
+        listener({ db, email, binding });
+      }
+    },
+  });
+}
+
+export function readUserProfileEmailBindingRevision(): number {
+  return changes.bindingRevision;
 }
 
 export function readUserProfileVersion(): number {

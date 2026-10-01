@@ -6,7 +6,6 @@ import type { GatewayOperatorRoleDefinition } from "../config/types.gateway.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { resolveHostAccountName } from "../infra/host-account-name.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
-import type { PluginGatewayAccessAuthority } from "../plugins/gateway-access-policy.types.js";
 import { intersectOperatorScopes } from "../shared/operator-scope-compat.js";
 import { prepareUserProfileRoleAuthority } from "../state/user-channel-identity-operations.js";
 import {
@@ -23,6 +22,7 @@ import {
   hasGatewayOperatorAccessPolicies,
   resolveGatewayOperatorAccessAuthority,
 } from "./operator-access-policy.js";
+import type { GatewayOperatorAccessAuthority } from "./operator-access-policy.types.js";
 import {
   resolveOperatorRolePolicyForAssignment,
   resolveOperatorRolePolicyForProfile,
@@ -36,7 +36,7 @@ const profileLog = createSubsystemLogger("gateway/user-profiles");
 export type AuthenticatedHttpUserProfile = {
   authenticatedUserProfile?: GatewayClient["authenticatedUserProfile"];
   operatorRolePolicy?: GatewayOperatorRoleDefinition;
-  operatorAccessAuthority?: PluginGatewayAccessAuthority;
+  operatorAccessAuthority?: GatewayOperatorAccessAuthority | null;
 };
 
 type HttpUserProfileAuthResult =
@@ -105,7 +105,8 @@ export async function resolveAuthenticatedHttpUserProfile(params: {
 }): Promise<AuthenticatedHttpUserProfile> {
   const readAdmissionPolicy = (cfg: OpenClawConfig) => {
     return {
-      auth: cfg.gateway?.auth,
+      // HTTP admission never consumes WebSocket identity grants.
+      auth: { ...cfg.gateway?.auth, identityScopes: undefined },
       roles: cfg.gateway?.roles,
       trustedProxies: cfg.gateway?.trustedProxies,
       allowRealIpFallback: cfg.gateway?.allowRealIpFallback,
@@ -228,7 +229,7 @@ function projectHttpProfile(
   display: ReturnType<typeof getUserProfileDisplay>,
   updatedAt: number,
   operatorRolePolicy: GatewayOperatorRoleDefinition | undefined,
-  operatorAccessAuthority: PluginGatewayAccessAuthority | undefined,
+  operatorAccessAuthority: GatewayOperatorAccessAuthority | null | undefined,
 ) {
   return {
     authenticatedUserProfile: {
@@ -239,7 +240,7 @@ function projectHttpProfile(
       updatedAt,
     },
     ...(operatorRolePolicy ? { operatorRolePolicy } : {}),
-    ...(operatorAccessAuthority ? { operatorAccessAuthority } : {}),
+    ...(operatorAccessAuthority !== undefined ? { operatorAccessAuthority } : {}),
   };
 }
 

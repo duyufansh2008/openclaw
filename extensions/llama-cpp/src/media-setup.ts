@@ -14,11 +14,11 @@ import {
   resolveLlamaCppModelCacheDir,
 } from "./defaults.js";
 import { detectLlamaCppHardware, formatLlamaCppMemory } from "./hardware.js";
+import { ensureLlamaServerInstalled } from "./llama-server-install.js";
 import {
-  ensureLlamaServerInstalled,
   resolveManagedLlamaServerPaths,
   selectLlamaServerAsset,
-} from "./llama-server-install.js";
+} from "./llama-server-assets.js";
 import type { ManagedLlamaModel } from "./llama-server-preset.js";
 import {
   ensureLlamaCppModel,

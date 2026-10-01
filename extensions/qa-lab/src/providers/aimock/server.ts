@@ -1,5 +1,5 @@
-// Qa Lab plugin module implements server behavior.
 import type { IncomingMessage, ServerResponse } from "node:http";
+import * as AIMock from "@copilotkit/aimock";
 import {
   type Journal,
   LLMock,
@@ -9,28 +9,17 @@ import {
   type JournalEntry,
   type Mountable,
 } from "@copilotkit/aimock";
+import { asOptionalObjectRecord } from "openclaw/plugin-sdk/string-coerce-runtime";
 import { resolveQaDebugRequestCursor } from "../shared/debug-request-cursor.js";
 import { writeJson } from "../shared/http-json.js";
-
-type AimockRequestSnapshot = {
-  raw: string;
-  body: Record<string, unknown>;
-  prompt: string;
-  allInputText: string;
-  toolOutput: string;
-  model: string;
-  providerVariant: "openai" | "anthropic" | "unknown";
-  imageInputCount: number;
-  plannedToolCallId?: string;
-  plannedToolName?: string;
-  toolOutputCallId?: string;
-  toolOutputStructuredError?: true;
-};
+import { resolveMockProviderVariant } from "../shared/mock-provider-variant.js";
+import { isInternalRuntimeContextCarrierText } from "../shared/runtime-context.js";
+import type { QaMockRequestSnapshot } from "../shared/types.js";
 
 const AIMOCK_DEBUG_REQUEST_LIMIT = 1_000;
 const AIMOCK_DEBUG_FACTS_MAX_BYTES = 64 * 1024;
 
-type AimockRequestFacts = Omit<AimockRequestSnapshot, "raw" | "body">;
+type AimockRequestFacts = Omit<QaMockRequestSnapshot, "raw" | "body">;
 type AimockRequestProjection =
   | { complete: true; facts: AimockRequestFacts }
   | {
@@ -42,14 +31,27 @@ type AimockToolFacts = Pick<
   AimockRequestFacts,
   "plannedToolName" | "plannedToolCallId" | "toolOutputCallId"
 >;
+type AimockJournalAdd = (
+  entry: Omit<JournalEntry, "id" | "timestamp">,
+  matchedFixture?: Fixture,
+) => JournalEntry;
+type AimockNamespaceWithChatCompletionBodyGuard = typeof AIMock & {
+  isChatCompletionBody?: (body: JournalEntry["body"]) => boolean;
+};
 type AimockRequestObservation =
   | { kind: "retained-body"; tools: AimockToolFacts }
   | { kind: "projected"; projection: AimockRequestProjection };
 
-// Runtime-context delimiters are owned by src/agents/internal-runtime-context.ts.
-// This mock mirrors the wire shape so delimiter drift fails through QA timeouts.
-const INTERNAL_RUNTIME_CONTEXT_BEGIN = "<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>";
-const INTERNAL_RUNTIME_CONTEXT_END = "<<<END_OPENCLAW_INTERNAL_CONTEXT>>>";
+// SAFETY: AIMock 1.42 declarations omit this 1.43 export; runtime probing keeps the bridge compatible.
+const upstreamIsChatCompletionBody = (AIMock as AimockNamespaceWithChatCompletionBodyGuard)
+  .isChatCompletionBody;
+
+function isChatCompletionBody(body: JournalEntry["body"]): body is ChatCompletionRequest {
+  return (
+    upstreamIsChatCompletionBody?.(body) ??
+    (Array.isArray(body?.messages) && typeof body.model === "string")
+  );
+}
 
 function requestMessages(body: ChatCompletionRequest | null | undefined) {
   return Array.isArray(body?.messages) ? body.messages : [];
@@ -69,14 +71,6 @@ function extractLastUserText(body: ChatCompletionRequest | null | undefined) {
   return "";
 }
 
-function isInternalRuntimeContextCarrierText(text: string) {
-  const trimmed = text.trim();
-  return (
-    trimmed.includes(INTERNAL_RUNTIME_CONTEXT_BEGIN) &&
-    trimmed.endsWith(INTERNAL_RUNTIME_CONTEXT_END)
-  );
-}
-
 function extractAllInputText(body: ChatCompletionRequest | null | undefined) {
   return requestMessages(body)
     .map((message) => getTextContent(message.content) ?? "")
@@ -85,40 +79,22 @@ function extractAllInputText(body: ChatCompletionRequest | null | undefined) {
 }
 
 function extractToolOutput(body: ChatCompletionRequest | null | undefined) {
-  const messages = requestMessages(body);
-  for (let index = messages.length - 1; index >= 0; index -= 1) {
-    const message = messages[index];
-    if (message?.role === "tool") {
-      return getTextContent(message.content) ?? "";
-    }
-  }
-  return "";
+  const message = requestMessages(body).findLast((entry) => entry?.role === "tool");
+  return message ? (getTextContent(message.content) ?? "") : "";
 }
 
 function extractToolOutputCallId(body: ChatCompletionRequest | null | undefined) {
-  const messages = requestMessages(body);
-  for (let index = messages.length - 1; index >= 0; index -= 1) {
-    const message = messages[index] as { role?: unknown; tool_call_id?: unknown };
-    if (message?.role === "tool" && typeof message.tool_call_id === "string") {
-      return message.tool_call_id;
-    }
-  }
-  return "";
+  const message = requestMessages(body).findLast(
+    (entry) => entry?.role === "tool" && typeof entry.tool_call_id === "string",
+  );
+  return message?.tool_call_id ?? "";
 }
 
 function extractToolOutputStructuredError(body: ChatCompletionRequest | null | undefined) {
-  const messages = requestMessages(body);
-  for (let index = messages.length - 1; index >= 0; index -= 1) {
-    const message = messages[index] as {
-      role?: unknown;
-      isError?: unknown;
-      is_error?: unknown;
-    };
-    if (message?.role === "tool") {
-      return message.isError === true || message.is_error === true;
-    }
-  }
-  return false;
+  const message = asOptionalObjectRecord(
+    requestMessages(body).findLast((entry) => entry?.role === "tool"),
+  );
+  return message?.isError === true || message?.is_error === true;
 }
 
 function countImageInputs(value: unknown): number {
@@ -139,41 +115,19 @@ function countImageInputs(value: unknown): number {
   return (imageLikeType ? 1 : 0) + nested;
 }
 
-function resolveProviderVariant(model: string): AimockRequestSnapshot["providerVariant"] {
-  const normalized = model.trim().toLowerCase();
-  const provider = /^([^/:]+)[/:]/.exec(normalized)?.[1] ?? normalized;
-  if (provider === "openai" || provider === "aimock") {
-    return "openai";
-  }
-  if (provider === "anthropic" || provider === "claude-cli") {
-    return "anthropic";
-  }
-  if (/^(?:gpt-|o1-|openai-)/.test(normalized)) {
-    return "openai";
-  }
-  if (/^(?:claude-|anthropic-)/.test(normalized)) {
-    return "anthropic";
-  }
-  return "unknown";
-}
-
-function extractPlannedToolName(entry: Pick<JournalEntry, "response">) {
+function extractToolFacts(entry: Pick<JournalEntry, "response" | "body">): AimockToolFacts {
   const response = entry.response.fixture?.response as
-    | { toolCalls?: Array<{ name?: unknown }> }
+    | {
+        toolCalls?: Array<{ name?: unknown; id?: unknown; callId?: unknown; toolCallId?: unknown }>;
+      }
     | undefined;
-  const name = response?.toolCalls?.[0]?.name;
-  return typeof name === "string" && name.length > 0 ? name : undefined;
-}
-
-function extractPlannedToolCallId(entry: Pick<JournalEntry, "response">) {
-  const response = entry.response.fixture?.response as
-    | { toolCalls?: Array<{ id?: unknown; callId?: unknown; toolCallId?: unknown }> }
-    | undefined;
-  const candidate =
-    response?.toolCalls?.[0]?.id ??
-    response?.toolCalls?.[0]?.callId ??
-    response?.toolCalls?.[0]?.toolCallId;
-  return typeof candidate === "string" && candidate.length > 0 ? candidate : undefined;
+  const call = response?.toolCalls?.[0];
+  const callId = call?.id ?? call?.callId ?? call?.toolCallId;
+  return {
+    plannedToolName: typeof call?.name === "string" && call.name.length > 0 ? call.name : undefined,
+    plannedToolCallId: typeof callId === "string" && callId.length > 0 ? callId : undefined,
+    toolOutputCallId: extractToolOutputCallId(entry.body) || undefined,
+  };
 }
 
 function extractRequestFacts(
@@ -185,7 +139,7 @@ function extractRequestFacts(
     ...tools,
     model,
     prompt: extractLastUserText(body),
-    providerVariant: resolveProviderVariant(model),
+    providerVariant: resolveMockProviderVariant(model, "aimock"),
     imageInputCount: countImageInputs(requestMessages(body)),
     ...(extractToolOutputStructuredError(body) ? { toolOutputStructuredError: true } : {}),
     toolOutput: extractToolOutput(body),
@@ -253,16 +207,15 @@ function createDebugMount(): Mountable {
         throw new Error("AIMock debug request cursor journal changed unexpectedly");
       }
       journal = nextJournal;
-      const addJournalEntry = journal.add.bind(journal);
+      const addJournalEntry: AimockJournalAdd = journal.add.bind(journal);
       // AIMock evicts its request journal FIFO. Assign cursors at insertion time
       // so the debug boundary remains monotonic after retained entries rotate.
-      journal.add = (entry) => {
-        const tools: AimockToolFacts = {
-          plannedToolName: extractPlannedToolName(entry),
-          plannedToolCallId: extractPlannedToolCallId(entry),
-          toolOutputCallId: extractToolOutputCallId(entry.body) || undefined,
-        };
-        const recorded = addJournalEntry(entry);
+      journal.add = (entry, matchedFixture?: Fixture) => {
+        const recorded = addJournalEntry(entry, matchedFixture);
+        if (!isChatCompletionBody(entry.body)) {
+          return recorded;
+        }
+        const tools = extractToolFacts(entry);
         // Upstream keeps <=64 KiB bodies intact; only discarded bodies need an
         // extra bounded projection. Weak entry ownership follows eviction/reset.
         observations.set(
@@ -306,14 +259,16 @@ function createDebugMount(): Mountable {
       if (pathname !== "/last-request" && pathname !== "/requests") {
         return false;
       }
-      let selected = entries.map((entry, index) => {
-        const cursor = requestCursors.get(entry.id);
-        const observation = observations.get(entry);
-        if (cursor === undefined || observation === undefined) {
-          throw new Error(`AIMock debug request observation missing for ${entry.id}`);
-        }
-        return { cursor, entry, observation, index };
-      });
+      let selected = entries
+        .filter((entry) => observations.has(entry))
+        .map((entry, index) => {
+          const cursor = requestCursors.get(entry.id);
+          const observation = observations.get(entry);
+          if (cursor === undefined || observation === undefined) {
+            throw new Error(`AIMock debug request observation missing for ${entry.id}`);
+          }
+          return { cursor, entry, observation, index };
+        });
       // Pair against retained tool facts before selecting a window: a result
       // inside the window may belong to a plan before its cursor.
       const plannedToolCallIds = resolvePlannedToolCallIds(
@@ -339,7 +294,7 @@ function createDebugMount(): Mountable {
       } else {
         selected = selected.slice(-1);
       }
-      const snapshots: AimockRequestSnapshot[] = [];
+      const snapshots: QaMockRequestSnapshot[] = [];
       const incomplete: Array<
         { cursor: number } & Extract<AimockRequestProjection, { complete: false }>
       > = [];

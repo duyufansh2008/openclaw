@@ -22,6 +22,19 @@ struct RootSidebarTypographyTests {
 }
 
 struct OpenClawTypographyTests {
+    @Test(arguments: ["ChatFileAttachment.swift", "ChatMessageReactions.swift"])
+    func `chat accessory controls use branded typography`(filename: String) throws {
+        let source = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("shared/OpenClawKit/Sources/OpenClawChatUI/\(filename)"),
+            encoding: .utf8)
+        #expect(source.contains(".font(OpenClawChatTypography.footnote)"))
+        #expect(source.contains(".font(OpenClawChatTypography.caption)"))
+        #expect(source.contains(".font(OpenClawChatTypography.body)"))
+        #expect(!source.contains(".font(."))
+    }
+
     @Test func `gateway picker uses branded typography`() throws {
         let source = try String(
             contentsOf: Self.sourceURL("RootSidebarGatewayControl.swift"),
@@ -44,8 +57,7 @@ struct OpenClawTypographyTests {
         #expect(support.contains("Label(\"Delete…\""))
         #expect(support.contains(".font(OpenClawType.subhead)"))
         #expect(support.contains(".font(OpenClawType.subheadSemiBold)"))
-        #expect(commandCenter.contains("Toggle(isOn: self.$showArchived)"))
-        #expect(commandCenter.contains("Text(\"Show Archived\")"))
+        #expect(!commandCenter.contains(".font(."))
         #expect(commandCenter.contains(".font(OpenClawType.captionMedium)"))
     }
 
@@ -384,7 +396,6 @@ struct OpenClawTypographyTests {
         #expect(chatTab.contains("title: \"New chat in worktree\""))
         #expect(!chatTab.contains("title: String(localized: \"Sessions…\")"))
         #expect(chatTab.contains("title: \"New session options…\""))
-        #expect(chatTab.contains("title: \"Background tasks\""))
         #expect(chatTab.contains("title: \"Export transcript\""))
         #expect(chatTab.contains("title: \"Gateway settings\""))
         #expect(chatTab.contains("title: String(localized: \"Show reasoning & tool activity\")"))

@@ -5,6 +5,7 @@ import {
   callPersonalPublicationRpc,
   createForeignPublicationSession,
   createPersonalPublicationFixture,
+  readPersonalPublicationFixtureStatus,
   personalPublicationAccount as account,
 } from "./github-personal-publication.test-support.js";
 import { readGitHubPublicationRequest } from "./github-publication-store.js";
@@ -17,6 +18,7 @@ import {
   githubPublicationTestMocks,
   installGitHubPublicationTestHarness,
 } from "./github-publication.test-support.js";
+import { resolveGatewayOperatorAccessAuthority } from "./operator-access-policy.js";
 
 const mocks = githubPublicationTestMocks();
 vi.mock("../agents/worktrees/git-lock.js", async (importOriginal) => ({
@@ -46,12 +48,7 @@ describe("personal publication definitive outcomes", () => {
     idempotencyKey: "personal-publish",
     selection: { source: "personal" as const, generation: fixture.generation, account },
   });
-  const status = (requestId: string) =>
-    fixture.coordinator.personalStatus(
-      fixture.action,
-      { sessionKey: SESSION_KEY, sessionId: SESSION_ID, agentId: "main" },
-      requestId,
-    );
+  const status = (requestId: string) => readPersonalPublicationFixtureStatus(fixture, requestId);
   it.each([
     { boundary: "connection closes", readback: false },
     { boundary: "permission ends", readback: false },
@@ -117,6 +114,10 @@ describe("personal publication definitive outcomes", () => {
   );
 
   it("does not resume shared GitHub writes after the RPC request loses write permission", async () => {
+    fixture.client.internal = {
+      ...fixture.client.internal,
+      operatorAccessAuthority: resolveGatewayOperatorAccessAuthority(fixture.owner, fixture.config),
+    };
     const workspace = await createRealPublicationWorkspace();
     const transport = mocks.runCommand.getMockImplementation()!;
     mocks.runCommand.mockImplementation(async (argv: string[], options?: { input?: string }) => {

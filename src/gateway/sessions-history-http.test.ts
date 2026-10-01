@@ -27,20 +27,26 @@ import { persistUserTurnTranscript } from "../sessions/user-turn-transcript.test
 import { OPENCLAW_TRANSCRIPT_ARTIFACT_API } from "../shared/transcript-only-openclaw-assistant.js";
 import type { DB as OpenClawAgentKyselyDatabase } from "../state/openclaw-agent-db.generated.js";
 import { runOpenClawAgentWriteTransaction } from "../state/openclaw-agent-db.js";
-import { ensureProfileForEmail, setAvatar, setDisplayName } from "../state/user-profiles.js";
+import { setAvatar, setDisplayName } from "../state/user-profile-writes.worker.js";
+import { ensureProfileForEmail } from "../state/user-profiles.js";
 import { resolveCurrentUserProfileDisplay } from "./current-user-profile-display.js";
 import { readSseEvent } from "./session-history-fixtures.test-support.js";
 import * as sessionHistoryState from "./session-history-state.js";
 import { SessionHistorySseState } from "./session-history-state.js";
+import {
+  closeHistoryHarness,
+  withGatewayHarness,
+  writeResetArchiveTranscript,
+} from "./sessions-history-http.test-support.js";
 import { testState } from "./test-helpers.runtime-state.js";
 import {
   connectReq,
-  createGatewaySuiteHarness,
   installGatewayTestHooks,
   rpcReq,
   startServerWithClient,
   writeSessionStore,
 } from "./test-helpers.server.js";
+import { releaseGatewaySessionStoreFixture } from "./test/server-sessions-resources.test-helpers.js";
 
 const AUTH_HEADER = { Authorization: "Bearer test-gateway-token-1234567890" };
 const READ_SCOPE_HEADER = { "x-openclaw-scopes": "operator.read" };
@@ -85,26 +91,6 @@ async function seedSession(params?: { text?: string }) {
     expect(appended.ok).toBe(true);
   }
   return { storePath };
-}
-
-async function writeResetArchiveTranscript(params: {
-  dir: string;
-  sessionId: string;
-  timestamp: string;
-  texts: string[];
-}) {
-  await fs.writeFile(
-    path.join(params.dir, `${params.sessionId}.jsonl.reset.${params.timestamp}`),
-    [
-      JSON.stringify({ type: "session", version: 1, id: params.sessionId }),
-      ...params.texts.map((text) =>
-        JSON.stringify({
-          message: { role: "assistant", content: [{ type: "text", text }] },
-        }),
-      ),
-    ].join("\n"),
-    "utf-8",
-  );
 }
 
 function seedRawSessionRows(params: {
@@ -245,21 +231,6 @@ async function fetchSessionHistory(
       headers,
     },
   );
-}
-
-async function withGatewayHarness<T>(
-  run: (harness: Awaited<ReturnType<typeof createGatewaySuiteHarness>>) => Promise<T>,
-) {
-  const harness = await createGatewaySuiteHarness({
-    serverOptions: {
-      auth: { mode: "none" },
-    },
-  });
-  try {
-    return await run(harness);
-  } finally {
-    await harness.close();
-  }
 }
 
 type SessionHistoryMessage = {
@@ -443,14 +414,15 @@ async function openBoundedHistoryStreamWithSecondMessage(
 }
 
 describe("session history HTTP endpoints", () => {
-  installGatewayTestHooks();
+  installGatewayTestHooks({ scope: "suite", cleanup: closeHistoryHarness });
 
   afterEach(async () => {
+    for (const dir of cleanupDirs.splice(0)) {
+      await releaseGatewaySessionStoreFixture(dir);
+      await fs.rm(dir, { recursive: true, force: true });
+    }
     testState.sessionConfig = undefined;
     testState.agentsConfig = undefined;
-    await Promise.all(
-      cleanupDirs.splice(0).map((dir) => fs.rm(dir, { recursive: true, force: true })),
-    );
   });
 
   test("uses SSE only for an explicit acceptable event-stream media range", async () => {
@@ -923,6 +895,7 @@ describe("session history HTTP endpoints", () => {
   test.each([false, true])(
     "returns 404 for unknown sessions (missing store: %s)",
     async (missing) => {
+      await closeHistoryHarness();
       const storePath = await createSessionStoreFile();
       let sessionKey = "agent:main:missing";
       let missingDatabasePath: string | undefined;
@@ -944,24 +917,28 @@ describe("session history HTTP endpoints", () => {
           { agentId },
         ).path;
       }
-      await withGatewayHarness(async (harness) => {
-        if (missingDatabasePath) {
-          await expect(fs.stat(missingDatabasePath)).rejects.toMatchObject({ code: "ENOENT" });
-        }
-        const res = await fetchSessionHistory(harness.port, sessionKey);
-        expect(res.status).toBe(404);
-        expectErrorResponse(await res.json(), {
-          type: "not_found",
-          message: `Session not found: ${sessionKey}`,
-        });
-        if (missingDatabasePath) {
-          expect((await fs.stat(missingDatabasePath)).isFile()).toBe(true);
-        }
-      });
+      await withGatewayHarness(
+        async (harness) => {
+          if (missingDatabasePath) {
+            await expect(fs.stat(missingDatabasePath)).rejects.toMatchObject({ code: "ENOENT" });
+          }
+          const res = await fetchSessionHistory(harness.port, sessionKey);
+          expect(res.status).toBe(404);
+          expectErrorResponse(await res.json(), {
+            type: "not_found",
+            message: `Session not found: ${sessionKey}`,
+          });
+          if (missingDatabasePath) {
+            expect((await fs.stat(missingDatabasePath)).isFile()).toBe(true);
+          }
+        },
+        { fresh: true },
+      );
     },
   );
 
   test("rejects duplicate canonical rows with an actionable migration error", async () => {
+    await closeHistoryHarness();
     testState.sessionConfig = { mainKey: "work" };
     const storePath = await createSessionStoreFile();
     await replaceTranscriptEvents(
@@ -993,31 +970,34 @@ describe("session history HTTP endpoints", () => {
       ],
     );
 
-    await withGatewayHarness(async (harness) => {
-      // Exercise the HTTP reader against a malformed hot write after admission.
-      seedRawSessionRows({
-        storePath,
-        rows: [
-          {
-            sessionId: "sess-stale-main",
-            sessionKey: "agent:main:work",
-            updatedAt: 1,
-          },
-          {
-            sessionId: "sess-fresh-main",
-            sessionKey: "agent:main:main",
-            updatedAt: 2,
-          },
-        ],
-      });
-      const res = await fetchSessionHistory(harness.port, "agent:main:work");
-      expect(res.status).toBe(409);
-      expectErrorResponse(await res.json(), {
-        type: "migration_required",
-        message:
-          "duplicate rows resolve to canonical session key agent:main:work; stop the Gateway and run openclaw doctor --fix",
-      });
-    });
+    await withGatewayHarness(
+      async (harness) => {
+        // Exercise the HTTP reader against a malformed hot write after admission.
+        seedRawSessionRows({
+          storePath,
+          rows: [
+            {
+              sessionId: "sess-stale-main",
+              sessionKey: "agent:main:work",
+              updatedAt: 1,
+            },
+            {
+              sessionId: "sess-fresh-main",
+              sessionKey: "agent:main:main",
+              updatedAt: 2,
+            },
+          ],
+        });
+        const res = await fetchSessionHistory(harness.port, "agent:main:work");
+        expect(res.status).toBe(409);
+        expectErrorResponse(await res.json(), {
+          type: "migration_required",
+          message:
+            "duplicate rows resolve to canonical session key agent:main:work; stop the Gateway and run openclaw doctor --fix",
+        });
+      },
+      { fresh: true },
+    );
   });
 
   test("supports cursor pagination over direct REST while preserving the messages field", async () => {
@@ -2038,6 +2018,7 @@ describe("session history HTTP endpoints", () => {
   });
 
   test("rejects session history when operator.read is not requested", async () => {
+    await closeHistoryHarness();
     await seedSession({ text: "scope-guarded history" });
 
     const started = await startServerWithClient("test-gateway-token-1234567890");
@@ -2063,6 +2044,7 @@ describe("session history HTTP endpoints", () => {
   });
 
   test("allows HTTP session history reads with shared-secret bearer auth and default scopes", async () => {
+    await closeHistoryHarness();
     await seedSession({ text: "bearer allowed history" });
 
     const started = await startServerWithClient("test-gateway-token-1234567890");
@@ -2086,6 +2068,7 @@ describe("session history HTTP endpoints", () => {
   });
 
   test("maintains HTTP SSE streams with shared-secret bearer auth across transcript updates", async () => {
+    await closeHistoryHarness();
     const { storePath } = await seedSession({ text: "bearer allowed history" });
 
     const started = await startServerWithClient("test-gateway-token-1234567890");
