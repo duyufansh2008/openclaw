@@ -168,6 +168,11 @@ describe("Git network recovery", () => {
       stderr: "fatal: Could not resolve host: example.invalid",
     },
     {
+      args: ["ls-remote", "origin", "refs/heads/main"],
+      stderr:
+        "fatal: unable to access 'https://example.invalid/repo.git/': transfer closed with 210 bytes remaining to read",
+    },
+    {
       args: ["fetch", "origin"],
       stderr:
         "error: cannot lock ref 'refs/remotes/origin/main': Unable to create '/repo/.git/refs/remotes/origin/main.lock': File exists.",

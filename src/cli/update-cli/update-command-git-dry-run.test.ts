@@ -103,7 +103,8 @@ it("retries a transient remote probe during a Git dry-run without changing local
         firstProbeFailed();
         return Promise.resolve({
           stdout: "",
-          stderr: "fatal: RPC failed; curl 18 transfer closed with outstanding read data remaining",
+          stderr:
+            "fatal: unable to access 'https://example.invalid/repo.git/': transfer closed with 210 bytes remaining to read",
           termination: "exit",
           code: 128,
           signal: null,
