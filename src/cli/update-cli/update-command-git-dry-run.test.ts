@@ -8,7 +8,10 @@ import * as processExec from "../../process/exec.js";
 import { inspectGitDryRunTargetSchemaVersions } from "./update-command-git.js";
 
 const tempDirs = useAutoCleanupTempDirTracker(afterEach);
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
 
 function git(root: string, ...args: string[]): string {
   return execFileSync("git", ["-C", root, ...args], { encoding: "utf8" }).trim();
@@ -84,6 +87,10 @@ it("retries a transient remote probe during a Git dry-run without changing local
   const cachedBefore = git(checkout, "rev-parse", "origin/main");
   const actualRun = processExec.runCommandWithTimeout;
   let probeAttempts = 0;
+  let firstProbeFailed: () => void = () => {};
+  const firstProbeFailure = new Promise<void>((resolve) => {
+    firstProbeFailed = resolve;
+  });
   vi.spyOn(processExec, "runCommandWithTimeout").mockImplementation((argv, options) => {
     if (argv.includes("ls-remote")) {
       probeAttempts += 1;
@@ -92,6 +99,8 @@ it("retries a transient remote probe during a Git dry-run without changing local
       }
       expect(options.env).toMatchObject({ GIT_OPTIONAL_LOCKS: "0", GIT_NO_LAZY_FETCH: "1" });
       if (probeAttempts === 1) {
+        vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+        firstProbeFailed();
         return Promise.resolve({
           stdout: "",
           stderr: "fatal: RPC failed; curl 18 transfer closed with outstanding read data remaining",
@@ -101,15 +110,19 @@ it("retries a transient remote probe during a Git dry-run without changing local
           killed: false,
         });
       }
+      vi.useRealTimers();
     }
     return actualRun(argv, options);
   });
 
-  const result = await inspectGitDryRunTargetSchemaVersions({
+  const pending = inspectGitDryRunTargetSchemaVersions({
     root: checkout,
     timeoutMs: 5_000,
     channel: "dev",
   });
+  await firstProbeFailure;
+  await vi.advanceTimersByTimeAsync(1_000);
+  const result = await pending;
 
   expect(result.metadataUnreadable).toBeUndefined();
   expect(probeAttempts).toBe(2);
