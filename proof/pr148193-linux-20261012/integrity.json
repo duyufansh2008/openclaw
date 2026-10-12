@@ -1,0 +1,222 @@
+{
+  "candidateCommit": "8c68e283f3145d6455956867c81902ca7f908b43",
+  "artifacts": [
+    {
+      "file": "hf_ggml-org_GLM-OCR-GGUF_65a42de1148dbed2297e922b5dbc7d9b70c36578_GLM-OCR-Q8_0.gguf",
+      "bytes": 950433408,
+      "sha256": "45bc244a6446aff850521dc41f18bc8d7105ad5f0c2c8c28af04e7cc4f4d50b1"
+    },
+    {
+      "file": "hf_ggml-org_GLM-OCR-GGUF_65a42de1148dbed2297e922b5dbc7d9b70c36578_mmproj-GLM-OCR-Q8_0.gguf",
+      "bytes": 484403648,
+      "sha256": "9c4b58e33e316ed142eb5dcb41abec3844d3e6e5dc361ffb782c3fa9d175141f"
+    },
+    {
+      "file": "hf_ggml-org_SmolVLM2-2.2B-Instruct-GGUF_1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91_SmolVLM2-2.2B-Instruct-Q4_K_M.gguf",
+      "bytes": 1112602656,
+      "sha256": "0cf76814555b8665149075b74ab6b5c1d428ea1d3d01c1918c12012e8d7c9f58"
+    },
+    {
+      "file": "hf_ggml-org_SmolVLM2-2.2B-Instruct-GGUF_1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91_mmproj-SmolVLM2-2.2B-Instruct-Q8_0.gguf",
+      "bytes": 592523200,
+      "sha256": "ae07ea1facd07dd3230c4483b63e8cda96c6944ad2481f33d531f79e892dd024"
+    },
+    {
+      "file": "openclaw-pr148193.tgz",
+      "bytes": 107222845,
+      "sha256": "dc3fb564df873dea5c22bac63de09d142cc4dee75e35e28c0ec0fde0bf01a47f"
+    }
+  ],
+  "terminalTransforms": [
+    {
+      "source": "baseline-embedding-setup-cached.terminal.log",
+      "rawSha256": "b2e227bbc51ba8f665bcf66b830e4f9f23adad4b83e6b522a682024d0ac85c3f",
+      "cleanedPath": "logs/baseline-embedding-setup-cached.terminal.log.txt",
+      "cleanedSha256": "e1e5c65f92f0bed42275f4f4faf54539da26642a3fb481304170281d204e2b3e",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "baseline-memory-index-fixed.log",
+      "rawSha256": "1f6a0c3e70c25c9e1a3bfbec4ec0d1a8f2a6b640ab7f2f3d9722dfa8f42fd933",
+      "cleanedPath": "logs/baseline-memory-index-fixed.log.txt",
+      "cleanedSha256": "1f6a0c3e70c25c9e1a3bfbec4ec0d1a8f2a6b640ab7f2f3d9722dfa8f42fd933",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "published-updater-to-candidate.log",
+      "rawSha256": "467abe4f482697e934893d59b4ce44b445b16c5a8dcda8ed7e758ab0e95e196b",
+      "cleanedPath": "logs/published-updater-to-candidate.log.txt",
+      "cleanedSha256": "467abe4f482697e934893d59b4ce44b445b16c5a8dcda8ed7e758ab0e95e196b",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "fresh-media-decline.terminal.log",
+      "rawSha256": "36235b6ca3bce25e811f09a2f21caaa2fd6679a3dba959af5f01ae7e0262d9e1",
+      "cleanedPath": "logs/fresh-media-decline.terminal.log.txt",
+      "cleanedSha256": "8f3a0aaa75780ade446855210ba0e5992f9a7bf6c740b454170834914f5d05ce",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "fresh-media-setup.terminal.log",
+      "rawSha256": "1adb788edbe7ceabc5310571b792257cebd489b47fa438cb4845bd8cc3a0666c",
+      "cleanedPath": "logs/fresh-media-setup.terminal.log.txt",
+      "cleanedSha256": "175049c058ee09d3494503f89313ff3365881b66c54560f9fbf53aabcfd79aba",
+      "omittedProgressLines": 34261
+    },
+    {
+      "source": "fresh-ocr-cli.json",
+      "rawSha256": "aecc622916ede67293fce04d005c16e5d0afcf6bbb40b6e7e4851d7c74fc7c5f",
+      "cleanedPath": "logs/fresh-ocr-cli.json.txt",
+      "cleanedSha256": "aecc622916ede67293fce04d005c16e5d0afcf6bbb40b6e7e4851d7c74fc7c5f",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "fresh-vision-cli.json",
+      "rawSha256": "b3253c3f10254369400d21ca45c7d63bcbb9d043650847170bde6f766f4b9621",
+      "cleanedPath": "logs/fresh-vision-cli.json.txt",
+      "cleanedSha256": "b3253c3f10254369400d21ca45c7d63bcbb9d043650847170bde6f766f4b9621",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "existing-media-setup.terminal.log",
+      "rawSha256": "5a8528619ff854787d8c74f4b3c901cf906174dcd3ab251383c0ef4d3a1f9017",
+      "cleanedPath": "logs/existing-media-setup.terminal.log.txt",
+      "cleanedSha256": "8f7f20bfb3b7f1c3cb035b478e0be52f2ea68a80c1c425a6177dcb754c9193d7",
+      "omittedProgressLines": 564
+    },
+    {
+      "source": "ordinary-setup-after-media.terminal.log",
+      "rawSha256": "943312e674db222bc30bff772f8339cbcec194583081cef81656a7dc1dc8d387",
+      "cleanedPath": "logs/ordinary-setup-after-media.terminal.log.txt",
+      "cleanedSha256": "a73e23f10f5e21ec41d9352d5bea723a66aa7ec8fc081a5b3e23faf6d8662db6",
+      "omittedProgressLines": 21
+    },
+    {
+      "source": "oversized-router-isolated.terminal.log",
+      "rawSha256": "e625a4c24b0e56950b8a99b6c2c239b81e6b09327b19a7e7f9b193b8f47a5455",
+      "cleanedPath": "logs/oversized-router-isolated.terminal.log.txt",
+      "cleanedSha256": "a9b56b6b136ae65670e36333f12bbc307e9dc19e070c605930f47de54e03dd27",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "verification-failure.terminal.log",
+      "rawSha256": "e136f12e898874bf4eec0238238028f217d1cc48f7b7f4ceeed4a030a0052bb0",
+      "cleanedPath": "logs/verification-failure.terminal.log.txt",
+      "cleanedSha256": "1a65b9e98055bd6e6c445370ef854c4f9c98540664e4adc3461afb0a1ae19949",
+      "omittedProgressLines": 13
+    },
+    {
+      "source": "structured-sdk-proof.jsonl",
+      "rawSha256": "ed175ebc4d621debac5e0df588a8071f17ffad20a1915388d4f69a5d60d81724",
+      "cleanedPath": "logs/structured-sdk-proof.jsonl.txt",
+      "cleanedSha256": "e55b7a8f6fbefd93532c70e138e2d3f200e5c26261394958a684dde1e5fe2d01",
+      "omittedProgressLines": 0
+    },
+    {
+      "source": "fresh-media-decline-repeat.terminal.log",
+      "rawSha256": "0cd3f12649b0ad5d1374d6f433a345a526828cd5749fe92c4b6a443ccaa5fdc7",
+      "cleanedPath": "logs/fresh-media-decline-repeat.terminal.log.txt",
+      "cleanedSha256": "7a20f967be7bd047e8ea8c025e4a00fbcdbf9c119a51986703bcccbcc85797cf",
+      "omittedProgressLines": 0
+    }
+  ],
+  "fixtures": {
+    "ocr.png": "1c24816bf45b14d98b68b09d388b93b001200e773511f3a8fdf6b0e315ae98b7",
+    "vision.png": "a0c83d3b5a6a58a9d1bfde33a5393a63816ef42a7a6acc69340b2665d97fb4f8"
+  },
+  "rawJsonSha256": {
+    "published-update-summary.json": "c76702d4749b8073a2fd88409a873a993bb31e31cdd1586901f18387e48085a0",
+    "baseline-memory-snapshot.json": "cef625323b9da6b15e0df1dd23f128a4fbc0519157f46f06caba12bd5a74c79d",
+    "post-update-memory-snapshot.json": "cef625323b9da6b15e0df1dd23f128a4fbc0519157f46f06caba12bd5a74c79d",
+    "post-update-after-search-memory-snapshot.json": "9716ccf9e53f77835ce52b041357f90b93ddce47a904beac0fc455a51120001c",
+    "baseline-memory-search.json": "4fc84727cfb6a80076b3e4ee4cfd8f7f0ad5418f6e9d629499cd436f92ce58c1",
+    "baseline-memory-status.json": "fac8981562b02189f300905797b94010f82156c23c7208fa8672f61eb0f644ca",
+    "post-update-memory-search.json": "dc2e35965b1ae72e125561d1f017714abb587b3d20abbf0f695fee176518f375",
+    "post-update-memory-search-repeat.json": "b0997896e5340f7d1a258413818b61503919d619fceef2dd66b90002ba1b9885",
+    "post-update-memory-status.json": "264b019244ce01e9d1d133033c9fdb82ff376af7d505a382042b11eb13cef11e",
+    "post-media-ordinary-memory-search.json": "6512fea303bec5ab0cbee49e9ddad52e03e6042c3bd567d578f4f42b092a6cb8",
+    "post-media-ordinary-memory-status.json": "a40272d5ed0ffd7c1092b22c04b59fa18dbecde17a61a999a43ac9ce1b8c6585",
+    "baseline-config.json": "28fcd13282d7d137a04884aec3cde06198b5d366543ee66cb4380404c36fe274",
+    "before-media-config.json": "88a8dc81e3fd724212b5aae1019f96fba69cdab914f1329b15f4a121897e1ac6",
+    "after-ordinary-config.json": "8dde5b213f1101e8d7f97dd0c9a8e3970b19643b78dd8aba39b8e9847bd5fe42",
+    "fresh-config-before.json": "d78cec6c7a29cadb32988fe592352058399617ec869a14e8db27a86b0de9b53d",
+    "code-mode-identities.json": "8749e4db9b072e86174baa6df305790de9abcc7f7eac465728fac9297aeaa7f6",
+    "code-mode-results.json": "726311e2a1e9312474cd9f24204dcd5eef71c6593f619f73f24219ae8084d52d",
+    "code-mode-run.json": "f5f3c824e15af319574607881e493f3c3bcdb02962ebac58ab3b158dd3a6916c",
+    "code-mode-run-history.json": "3e871e47131729200f0b6a9820063001cdb43130d492863f27761cd521eca2ca",
+    "native-models-after-code-mode.json": "fea6c2f90f8a70ae7438c8ca59a96e2676c9ae84ecdf85797f2d0610d0bebc93",
+    "failure-preservation.json": "130f9160163f95f20e53e5596a2e8ebab92eadcbe998b275b56f83c974bcfec8",
+    "chat-fixture-integrity-metadata.json": "969470062481d2265915632bede9afafe1efed82f0990eb07207946f0aad95b0",
+    "structured-agent-run.json": "9eba6ea477133b9970f061c5426f9b7a157137391e91bd2a234b364027e0e898",
+    "structured-agent-history.json": "fdc5d967ba6dc9295202622925c298e0444d261dd29f286c479474b79c97cbaf",
+    "decline-preservation.json": "c8bdc1167a298ebe675acd40b23aed5057dea8cf0b34228a8052fa838763fc62"
+  },
+  "installedBuildInfo": {
+    "candidate-prefix": {
+      "version": "2026.9.9",
+      "commit": "8c68e283f3145d6455956867c81902ca7f908b43",
+      "builtAt": "2026-10-12T02:20:32.687Z",
+      "buildId": "2026.9.9-8c68e283f314-2026-10-12T02-20-32.687Z"
+    },
+    "stable-prefix": {
+      "version": "2026.9.9",
+      "commit": "8c68e283f3145d6455956867c81902ca7f908b43",
+      "builtAt": "2026-10-12T02:20:32.687Z",
+      "buildId": "2026.9.9-8c68e283f314-2026-10-12T02-20-32.687Z"
+    }
+  },
+  "publishedNpmMetadata": {
+    "stable-package-metadata.json": {
+      "version": "2026.10.1",
+      "dist": {
+        "shasum": "89d03efddf2087962e42d05d457daf04e7a1d25f",
+        "tarball": "https://registry.npmjs.org/openclaw/-/openclaw-2026.10.1.tgz",
+        "fileCount": 13834,
+        "integrity": "sha512-C072/lxy83KP1nMCnJbipr4O+EtIR9XXbjzQFM+ol7VE5ci2MkKk5XTxfSG70jxpEVaGFeXcEmObHxR/ZHLdHw==",
+        "signatures": [
+          {
+            "sig": "MEUCIAVaAQntQhZYwBoCCYqof2H+N9eCxYYzkmJVXRy6drqOAiEA50keJKxoycEjWXNk9S7ILn8FkKsK8ODCrCMdxr13KiU=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCICZ/WPZrHjGgTLYmwfY4mx3T2Q1apvKf+9q69a8L+cEfAiEAgyZgKkhn+JrdDuN8CE0nQ7hKPucS5ynU9rUCFQoe8bk=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/openclaw@2026.10.1",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 257250031
+      }
+    },
+    "stable-plugin-metadata.json": {
+      "version": "2026.10.1",
+      "dist": {
+        "shasum": "db01c7f06071729b8da3e412dae053c81fd2058e",
+        "tarball": "https://registry.npmjs.org/@openclaw/llama-cpp-provider/-/llama-cpp-provider-2026.10.1.tgz",
+        "fileCount": 8,
+        "integrity": "sha512-Nr4pQCG/6pVdLEXoUc6xwvZsQfmwnYrrmowjOul0IgoEGEWqBHRPYaZBjuJeImDgSpBHanxl/3bvVQzFi2DqSg==",
+        "signatures": [
+          {
+            "sig": "MEUCICSSoVDj8KULMKD48lMsaDEIBT2KWy1TjVRTciv9/vFXAiEAqwnags18+zYk3lGoVQKegIdXv9wSm9CERNZxfr2Vdvc=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQCludZk90sg2Zk3sEkXj3iqyRjUB+21oq4mTE/YPqvRZAIgPUNHHGxaTXp7EC9+JrZD8RjOfTyel+kJrkFyVePMVJ4=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@openclaw%2fllama-cpp-provider@2026.10.1",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 156961
+      }
+    }
+  }
+}

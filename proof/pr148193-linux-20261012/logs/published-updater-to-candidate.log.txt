@@ -1,0 +1,1153 @@
+Warning: canvas migration declares no data resources; its private state is not in the recovery set
+Warning: crabbox migration declares no data resources; its private state is not in the recovery set
+Warning: memory-core migration declares no data resources; its private state is not in the recovery set
+Warning: workboard migration declares no data resources; its private state is not in the recovery set
+Warning: plugins.load.paths: plugin requires plugin API >=2026.10.1, but this host is 2026.9.9; skipping discovery (check "openclaw --version", OPENCLAW_COMPATIBILITY_HOST_VERSION, or run "openclaw doctor")
+candidate-state-snapshot: Preparing update checks
+candidate-state-snapshot: shared database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: copying, attempt 1, 0/0 pages, 0.000 seconds.
+candidate-state-snapshot: shared database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: copying, attempt 1, 399/399 pages, 0.029 seconds.
+candidate-state-snapshot: shared database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: completed, attempt 1, 399/399 pages, 1,634,304 bytes, 0.052 seconds.
+[sqlite/transaction] slow SQLite transaction hold async=false database=/home/proof/.openclaw/state/openclaw.sqlite operation=update.run elapsedMs=1932 isMainThread=false mode=immediate pid=376 threadId=4 thresholdMs=1000
+candidate-state-snapshot: database snapshot $OPENCLAW_STATE_DIR/agents/main/agent/openclaw-agent.sqlite: copying, attempt 1, 0/0 pages, 0.000 seconds.
+candidate-state-snapshot: database snapshot $OPENCLAW_STATE_DIR/agents/main/agent/openclaw-agent.sqlite: copying, attempt 1, 957/957 pages, 0.043 seconds.
+candidate-state-snapshot: database snapshot $OPENCLAW_STATE_DIR/agents/main/agent/openclaw-agent.sqlite: completed, attempt 1, 957/957 pages, 3,919,872 bytes, 0.208 seconds.
+candidate-state-snapshot: database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: copying, attempt 1, 0/0 pages, 0.000 seconds.
+candidate-state-snapshot: database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: copying, attempt 1, 399/399 pages, 0.023 seconds.
+candidate-state-snapshot: database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: completed, attempt 1, 399/399 pages, 1,634,304 bytes, 0.204 seconds.
+candidate-state-cleanup: Temporary-copy cleanup /home/proof/.openclaw.update-captures/openclaw-update-canary-7jK1NE; waiting for filesystem removal; budget=300000ms (5 minutes for large copies on slow disks); deadline=2026-10-12T02:56:11.337Z.
+candidate-state-cleanup: Temporary-copy cleanup /home/proof/.openclaw.update-captures/openclaw-update-canary-7jK1NE; removed disposable temporary copy; budget=300000ms (5 minutes for large copies on slow disks); deadline=2026-10-12T02:56:11.337Z.
+Package publication recovery: /usr/bin/node /home/proof/stable-prefix/lib/node_modules/.openclaw.package-activation-d581ff96610d781f2834a1a2.control/recovery.mjs --anchor /home/proof/stable-prefix/lib/node_modules/.openclaw.package-activation-d581ff96610d781f2834a1a2 --operation 81925321-3563-4d85-8438-0e1c39be2a90 status
+Keep other package managers stopped; repair may republish a missing installation. Recovery does not restart or verify the Gateway.
+[state/db] Shared-state WAL maintenance failed error="OpenClaw state at /home/proof/.openclaw/state/openclaw.sqlite is undergoing offline maintenance; retry when it finishes." path=/home/proof/.openclaw/state/openclaw.sqlite checkpoint={"state":"error","observedAtMs":1791773577432,"walBytes":null,"databaseBytes":null,"logFrames":null,"checkpointedFrames":null,"lastCompletedAtMs":null,"consecutiveBlocked":0,"warning":true,"error":"OpenClaw state at /home/proof/.openclaw/state/openclaw.sqlite is undergoing offline maintenance; retry when it finishes.","activeReaders":[],"readerDiagnostics":[{"scope":"current-thread","blockingOwner":"unknown","nativeStatements":"unobserved","threadId":1,"observedAtMs":1791773577433,"connectionCount":2,"readerCount":0,"connections":[{"operation":"updateRuns.recordStep","ownerKind":"worker","actorId":1,"connectionId":2,"threadId":1,"ageMs":13288,"transactionOpen":false,"trackedReaders":0},{"operation":"stateLease.acquire","ownerKind":"worker","actorId":1,"connectionId":4,"threadId":1,"ageMs":10020,"transactionOpen":false,"trackedReaders":0}]}]}
+[state/db] Shared-state WAL maintenance failed error="OpenClaw state at /home/proof/.openclaw/state/openclaw.sqlite is undergoing offline maintenance; retry when it finishes." path=/home/proof/.openclaw/state/openclaw.sqlite checkpoint={"state":"error","observedAtMs":1791773587464,"walBytes":null,"databaseBytes":null,"logFrames":null,"checkpointedFrames":null,"lastCompletedAtMs":null,"consecutiveBlocked":0,"warning":true,"error":"OpenClaw state at /home/proof/.openclaw/state/openclaw.sqlite is undergoing offline maintenance; retry when it finishes.","activeReaders":[],"readerDiagnostics":[{"scope":"current-thread","blockingOwner":"unknown","nativeStatements":"unobserved","threadId":1,"observedAtMs":1791773587464,"connectionCount":2,"readerCount":0,"connections":[{"operation":"updateRuns.recordStep","ownerKind":"worker","actorId":1,"connectionId":2,"threadId":1,"ageMs":23319,"transactionOpen":false,"trackedReaders":0},{"operation":"stateLease.acquire","ownerKind":"worker","actorId":1,"connectionId":4,"threadId":1,"ageMs":20051,"transactionOpen":false,"trackedReaders":0}]}]}
+[state/db] Shared-state WAL maintenance failed error="OpenClaw state at /home/proof/.openclaw/state/openclaw.sqlite is undergoing offline maintenance; retry when it finishes." path=/home/proof/.openclaw/state/openclaw.sqlite checkpoint={"state":"error","observedAtMs":1791773597468,"walBytes":null,"databaseBytes":null,"logFrames":null,"checkpointedFrames":null,"lastCompletedAtMs":null,"consecutiveBlocked":0,"warning":true,"error":"OpenClaw state at /home/proof/.openclaw/state/openclaw.sqlite is undergoing offline maintenance; retry when it finishes.","activeReaders":[],"readerDiagnostics":[{"scope":"current-thread","blockingOwner":"unknown","nativeStatements":"unobserved","threadId":1,"observedAtMs":1791773597468,"connectionCount":2,"readerCount":0,"connections":[{"operation":"updateRuns.recordStep","ownerKind":"worker","actorId":1,"connectionId":2,"threadId":1,"ageMs":33323,"transactionOpen":false,"trackedReaders":0},{"operation":"stateLease.acquire","ownerKind":"worker","actorId":1,"connectionId":4,"threadId":1,"ageMs":30055,"transactionOpen":false,"trackedReaders":0}]}]}
+┌  OpenClaw doctor
+Original update capture retained at /home/proof/.openclaw.update-captures/1ae8dbe1-e15d-40b0-8c62-0a2ae6eebe2f/manifest.json.
+│
+◇  Update history ─────────────────────────────────────────────────────────────────────────╮
+│                                                                                          │
+│  Recorded warnings from update 1ae8dbe1-e15d-40b0-8c62-0a2ae6eebe2f (a                   │
+│  later repair may have resolved them):                                                   │
+│  Doctor lint warning [core/doctor/bootstrap-size]:                                       │
+│  update-validation-scope: Advisory inspection deferred until after                       │
+│  update activation; required migration, config, plugin, and Gateway                      │
+│  readiness checks remain enabled.: Run `openclaw doctor --lint --only                    │
+│  core/doctor/bootstrap-size` after activation to complete this                           │
+│  inspection.                                                                             │
+│  Model retirement repair deferred until plugin convergence.                              │
+│  Automatic database restoration unavailable: databases changed after                     │
+│  snapshot capture; the writer is unknown. Snapshots retained at                          │
+│  ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases.  │
+│                                                                                          │
+├──────────────────────────────────────────────────────────────────────────────────────────╯
+│
+◇  Doctor warnings ────────────────────────────────────────────────────────╮
+│                                                                          │
+│  - GitHub link previews and the reader are now provided by the bundled   │
+│    "github" plugin. Your plugins.allow list excludes "github", so these  │
+│    features remain unavailable. To restore them, append "github" to the  │
+│    existing allowlist and enable it in Plugins. To keep them disabled    │
+│    without this notice, set plugins.entries.github.enabled=false.        │
+│    Doctor does not change either choice.                                 │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+│
+◇  Update Doctor scope ──────────────────────────────────────────────────╮
+│                                                                        │
+│  Omitted during update: Retained update database snapshots, Project    │
+│  clones, SQLite database size, Codex bwrap sandbox, GitHub projects,   │
+│  Bootstrap size, Workspace suggestions.                                │
+│  Run `openclaw doctor` after the update to inspect these diagnostics.  │
+│                                                                        │
+├────────────────────────────────────────────────────────────────────────╯
+[state/agent-db] agent database integrity gate
+[state/agent-db] agent database clean-close receipt: written
+│
+◇  Plugin registry ──────────────────────────────────────────╮
+│                                                            │
+│  Plugin registry refreshed: 3/67 enabled plugins indexed.  │
+│                                                            │
+├────────────────────────────────────────────────────────────╯
+│
+◇  State integrity ────────────────────────────────────────────────────╮
+│                                                                      │
+│  - OAuth dir not present (~/.openclaw/credentials). Skipping create  │
+│    because no WhatsApp/pairing channel config is active.             │
+│                                                                      │
+├──────────────────────────────────────────────────────────────────────╯
+│
+◇  Backups ─────────────────────────────────────────────────────────────╮
+│                                                                       │
+│  No successful backup is recorded.                                    │
+│  Create one now with openclaw backup create.                          │
+│  Schedule versioned backups with openclaw backup enable --repository  │
+│  <dir>.                                                               │
+│                                                                       │
+├───────────────────────────────────────────────────────────────────────╯
+│
+◇  Host desktop ────────────────────────────────────────────────────╮
+│                                                                   │
+│  disabled; enable the Desktop lab with desktop.host.enabled=true  │
+│                                                                   │
+├───────────────────────────────────────────────────────────────────╯
+│
+◇  Browser relay authentication ──────────────────────────────────────────╮
+│                                                                         │
+│  - Legacy Browser Relay Authentication is enabled                       │
+│    (browser.extensionRelay.allowLegacyAuth=true).                       │
+│  - Update paired Chrome extensions and external CDP clients to Browser  │
+│    Relay Authentication v2, then set                                    │
+│    browser.extensionRelay.allowLegacyAuth=false.                        │
+│  - V2 clients never downgrade to legacy authentication.                 │
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────╯
+│
+◇  Gateway ─────────────────────────────────────────────╮
+│                                                       │
+│  Gateway health will be checked after Doctor repair.  │
+│                                                       │
+├───────────────────────────────────────────────────────╯
+│
+◇  Command owner ──────────────────────────────────────────────────────────╮
+│                                                                          │
+│  No command owner is configured.                                         │
+│  A command owner is your trusted human operator account, allowed to      │
+│  update OpenClaw with /update, restart the Gateway, change               │
+│  configuration, and approve commands. Chat allowlists do not grant this  │
+│  authority.                                                              │
+│  Run openclaw channels add and complete a channel's setup to choose      │
+│  your operator account, including servers and groups without DM          │
+│  pairing.                                                                │
+│  CLI pairing approval records the first command owner. Control UI        │
+│  pairing approval has a separate owner checkbox.                         │
+│  Fix: set commands.ownerAllowFrom to your channel user id, for example   │
+│  openclaw config set commands.ownerAllowFrom '["telegram:123456789"]'    │
+│  Restart the gateway after changing this if it is already running.       │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+│
+◇  Skills ─────────────────────────────────────────────────────────────────╮
+│                                                                          │
+│  25 allowed skills are not usable in this environment (missing           │
+│  binaries, env vars, or config).                                         │
+│  - 1password, blogwatcher, blucli, camsnap, coding-agent, eightctl,      │
+│    gemini, gifgrep, goplaces, himalaya, model-usage, nano-pdf,           │
+│    obsidian, openai-whisper, openai-whisper-api, openhue, ordercli,      │
+│    sag, sherpa-onnx-tts, songsee, sonoscli, spotify-player, summarize,   │
+│    trello, xurl                                                          │
+│  Disable unused skills: openclaw doctor --fix                            │
+│  Inspect details: openclaw skills check --agent <id> or openclaw skills  │
+│  info <name> --agent <id>                                                │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+│
+◇  Memory search ──────────────────────────────────────────────────────────╮
+│                                                                          │
+│  Remember across conversations is effectively enabled for agent "main",  │
+│  but the Active Memory plugin is disabled. Enable the plugin or set      │
+│  memory.search.rememberAcrossConversations to false.                     │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+[state/agent-db] agent database clean-close receipt: written
+│
+└  Doctor complete.
+Gateway restart skipped: no Gateway service or listener is running.
+{
+  "status": "ok",
+  "mode": "npm",
+  "root": "/home/proof/stable-prefix/lib/node_modules/openclaw",
+  "before": {
+    "version": "2026.10.1",
+    "buildId": "2026.10.1-release-e178c39e9aae-2026-10-10T17-54-10.792Z"
+  },
+  "after": {
+    "version": "2026.9.9",
+    "buildId": "2026.9.9-8c68e283f314-2026-10-12T02-20-32.687Z"
+  },
+  "steps": [
+    {
+      "name": "database snapshot",
+      "command": "snapshot databases before migrations",
+      "cwd": "/home/proof/.openclaw",
+      "durationMs": 5264,
+      "exitCode": 0,
+      "diagnostics": [
+        "Databases snapshotted at /home/proof/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases. Verified successful activation removes these snapshots; otherwise retain them with the update's recovery artifacts.",
+        "/home/proof/.openclaw/agents/main/agent/openclaw-agent.sqlite -> /home/proof/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases/payload/posix/home/proof/.openclaw/agents/main/agent/openclaw-agent.sqlite; schema 24; 3919872 bytes; SHA-256 6f48ead714fd330775d9486e979ce191fee606f30b4f8af78cb7e773111fd6fa",
+        "/home/proof/.openclaw/state/openclaw.sqlite -> /home/proof/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases/payload/posix/home/proof/.openclaw/state/openclaw.sqlite; schema 20; 1634304 bytes; SHA-256 2528de4e7ad80ca6ec85ad5cc1c52c9286154e6fd4fb625a0a9ef1c8824d169d"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "package-install",
+      "command": "npm i -g --allow-scripts=file:/artifacts/openclaw-pr148193.tgz --prefix /home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv file:/artifacts/openclaw-pr148193.tgz --no-fund --no-audit --loglevel=error --min-release-age=0",
+      "durationMs": 31361,
+      "exitCode": 0,
+      "stdoutTail": "\nadded 343 packages in 31s",
+      "stderrTail": null,
+      "signal": null,
+      "killed": false,
+      "termination": "exit",
+      "cwd": "/source"
+    },
+    {
+      "name": "candidate-state-snapshot",
+      "command": "Preparing update checks",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw",
+      "durationMs": 12576,
+      "exitCode": 0,
+      "snapshotCapacity": {
+        "reason": "state-volume",
+        "sqliteBytes": 5817504,
+        "pluginBytes": 12722176,
+        "requiredBytes": 103323968,
+        "candidates": [
+          {
+            "kind": "state-volume",
+            "directory": "/home/proof/.openclaw.update-captures",
+            "availableBytes": 297301544960
+          },
+          {
+            "kind": "system-tmpdir",
+            "directory": "/tmp",
+            "availableBytes": 297301544960
+          }
+        ],
+        "selection": {
+          "kind": "state-volume",
+          "directory": "/home/proof/.openclaw.update-captures/openclaw-update-canary-7jK1NE"
+        }
+      },
+      "diagnostics": [
+        "shared database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: completed, attempt 1, 399/399 pages, 1,634,304 bytes, 0.052 seconds.",
+        "database snapshot $OPENCLAW_STATE_DIR/agents/main/agent/openclaw-agent.sqlite: completed, attempt 1, 957/957 pages, 3,919,872 bytes, 0.208 seconds.",
+        "database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: completed, attempt 1, 399/399 pages, 1,634,304 bytes, 0.204 seconds."
+      ],
+      "warnings": []
+    },
+    {
+      "name": "candidate-doctor",
+      "command": "doctor --fix --non-interactive --no-workspace-suggestions",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw",
+      "durationMs": 26005,
+      "exitCode": 0,
+      "stdoutTail": "Doctor complete."
+    },
+    {
+      "name": "candidate-doctor-lint",
+      "command": "doctor --lint --json --severity-min error",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw",
+      "durationMs": 13474,
+      "exitCode": 0,
+      "signal": null,
+      "killed": false,
+      "termination": "exit",
+      "outputLimitExceeded": false,
+      "doctorLintFindings": [
+        {
+          "checkId": "core/doctor/claude-cli",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/claude-cli` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/command-owner",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/command-owner` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/update-snapshots",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/update-snapshots` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/security",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/security` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/oauth-tls",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/oauth-tls` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/hooks-model",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/hooks-model` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/model-references",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/model-references` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/acp-agent-model",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/acp-agent-model` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/provider-catalog-projection",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/provider-catalog-projection` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/local-audio-acceleration",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/local-audio-acceleration` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/runtime-tool-schemas",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/runtime-tool-schemas` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/skill-workshop-tool-policy",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/skill-workshop-tool-policy` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        },
+        {
+          "checkId": "core/doctor/bootstrap-size",
+          "message": "Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.",
+          "source": "doctor",
+          "errorCode": "update-inspection-deferred",
+          "fixHint": "Run `openclaw doctor --lint --only core/doctor/bootstrap-size` after activation to complete this inspection.",
+          "severity": "warning",
+          "requirement": "update-validation-scope"
+        }
+      ],
+      "warnings": [
+        "Doctor lint warning [core/doctor/claude-cli]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/claude-cli` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/command-owner]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/command-owner` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/update-snapshots]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/update-snapshots` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/security]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/security` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/oauth-tls]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/oauth-tls` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/hooks-model]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/hooks-model` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/model-references]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/model-references` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/acp-agent-model]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/acp-agent-model` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/provider-catalog-projection]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/provider-catalog-projection` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/local-audio-acceleration]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/local-audio-acceleration` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/runtime-tool-schemas]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/runtime-tool-schemas` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/skill-workshop-tool-policy]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/skill-workshop-tool-policy` after activation to complete this inspection.",
+        "Doctor lint warning [core/doctor/bootstrap-size]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/bootstrap-size` after activation to complete this inspection."
+      ]
+    },
+    {
+      "name": "candidate-config",
+      "command": "config validate --json",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw",
+      "durationMs": 3156,
+      "exitCode": 0
+    },
+    {
+      "name": "candidate-plugins",
+      "command": "plugins list --json",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw",
+      "durationMs": 2315,
+      "exitCode": 0
+    },
+    {
+      "name": "candidate-recovery",
+      "command": "--check",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw",
+      "durationMs": 2234,
+      "exitCode": 0
+    },
+    {
+      "name": "candidate-gateway-startup",
+      "command": "gateway run",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw",
+      "durationMs": 13733,
+      "exitCode": 0
+    },
+    {
+      "name": "package-swap",
+      "command": "swap /home/proof/stable-prefix/lib/node_modules/.openclaw.update-stage-t5KUpv/lib/node_modules/openclaw -> /home/proof/stable-prefix/lib/node_modules/openclaw",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules",
+      "durationMs": 85950,
+      "exitCode": 0,
+      "stdoutTail": "replaced openclaw",
+      "stderrTail": null
+    },
+    {
+      "name": "openclaw doctor",
+      "command": "/usr/bin/node /home/proof/stable-prefix/lib/node_modules/openclaw/dist/infra/update-migrated-finalize.worker.js --doctor",
+      "durationMs": 33610,
+      "exitCode": 0,
+      "stdoutTail": "…◇  Update Doctor scope ──────────────────────────────────────────────────╮\n│                                                                        │\n│  Omitted during update: Retained update database snapshots, Project    │\n│  clones, SQLite database size, Codex bwrap sandbox, GitHub projects,   │\n│  Bootstrap size, Workspace suggestions.                                │\n│  Run `openclaw doctor` after the update to inspect these diagnostics.  │\n│                                                                        │\n├────────────────────────────────────────────────────────────────────────╯\n│\n◇  Doctor changes ─────────────────────────────╮\n│                                              │\n│  Prepared the agent roster for persistence.  │\n│                                              │\n├──────────────────────────────────────────────╯\n│\n◇  Doctor changes ────────────────────────────────────────────────╮\n│                                                                 │\n│  Recorded webhook listener decisions; removed pins will not be  │\n│  recreated.                                                     │\n│  Recorded webhook listener decisions; removed pins will not be  │\n│  recreated.                                                     │\n│  Recorded webhook listener decisions; removed pins will not be  │\n│  recreated.                                                     │\n│  Recorded webhook listener decisions; removed pins will not be  │\n│  recreated.                                                     │\n│                                                                 │\n├─────────────────────────────────────────────────────────────────╯\nUpdated config: ~/.openclaw/openclaw.json\n  Backup: ~/.openclaw/openclaw.json.bak\nUpdate changed config; pre-update backup: ~/.openclaw/openclaw.json.pre-update\n[state/agent-db] agent database clean-close receipt: verification-missing\n│\n◇  Plugin registry ──────────────────────────────────────────╮\n│                                                            │\n│  Plugin registry refreshed: 3/67 enabled plugins indexed.  │\n│                                                            │\n├────────────────────────────────────────────────────────────╯\n│\n◇  State integrity ────────────────────────────────────────────────────╮\n│                                                                      │\n│  - OAuth dir not present (~/.openclaw/credentials). Skipping create  │\n│    because no WhatsApp/pairing channel config is active.             │\n│                                                                      │\n├──────────────────────────────────────────────────────────────────────╯\n│\n◇  Backups ─────────────────────────────────────────────────────────────╮\n│                                                                       │\n│  No successful backup is recorded.                                    │\n│  Create one now with openclaw backup create.                          │\n│  Schedule versioned backups with openclaw backup enable --repository  │\n│  <dir>.                                                               │\n│                                                                       │\n├───────────────────────────────────────────────────────────────────────╯\n[state/agent-db] agent database integrity gate\n│\n◇  Host desktop ────────────────────────────────────────────────────╮\n│                                                                   │\n│  disabled; enable the Desktop lab with desktop.host.enabled=true  │\n│                                                                   │\n├───────────────────────────────────────────────────────────────────╯\n│\n◇  Browser relay authentication ──────────────────────────────────────────╮\n│                                                                         │\n│  - Legacy Browser Relay Authentication is enabled                       │\n│    (browser.extensionRelay.allowLegacyAuth=true).                       │\n│  - Update paired Chrome extensions and external CDP clients to Browser  │\n│    Relay Authentication v2, then set                                    │\n│    browser.extensionRelay.allowLegacyAuth=false.                        │\n│  - V2 clients never downgrade to legacy authentication.                 │\n│                                                                         │\n├─────────────────────────────────────────────────────────────────────────╯\n│\n◇  Doctor changes ────────────────────────────────────╮\n│                                                     │\n│  Create heartbeat monitor for agent \"main\" at 30m.  │\n│                                                     │\n├─────────────────────────────────────────────────────╯\n│\n◇  Gateway ─────────────────────────────────────────────╮\n│                                                       │\n│  Gateway health will be checked after Doctor repair.  │\n│                                                       │\n├───────────────────────────────────────────────────────╯\n│\n◇  Command owner ──────────────────────────────────────────────────────────╮\n│                                                                          │\n│  No command owner is configured.                                         │\n│  A command owner is your trusted human operator account, allowed to      │\n│  update OpenClaw with /update, restart the Gateway, change               │\n│  configuration, and approve commands. Chat allowlists do not grant this  │\n│  authority.                                                              │\n│  Run openclaw channels add and complete a channel's setup to choose      │\n│  your operator account, including servers and groups without DM          │\n│  pairing.                                                                │\n│  CLI pairing approval records the first command owner. Control UI        │\n│  pairing approval has a separate owner checkbox.                         │\n│  Fix: set commands.ownerAllowFrom to your channel user id, for example   │\n│  openclaw config set commands.ownerAllowFrom '[\"telegram:123456789\"]'    │\n│  Restart the gateway after changing this if it is already running.       │\n│                                                                          │\n├──────────────────────────────────────────────────────────────────────────╯\n│\n◇  Skills ─────────────────────────────────────────────────────────────────╮\n│                                                                          │\n│  25 allowed skills are not usable in this environment (missing           │\n│  binaries, env vars, or config).                                         │\n│  - 1password, blogwatcher, blucli, camsnap, coding-agent, eightctl,      │\n│    gemini, gifgrep, goplaces, himalaya, model-usage, nano-pdf,           │\n│    obsidian, openai-whisper, openai-whisper-api, openhue, ordercli,      │\n│    sag, sherpa-onnx-tts, songsee, sonoscli, spotify-player, summarize,   │\n│    trello, xurl                                                          │\n│  Disable unused skills: openclaw doctor --fix                            │\n│  Inspect details: openclaw skills check --agent <id> or openclaw skills  │\n│  info <name> --agent <id>                                                │\n│                                                                          │\n├──────────────────────────────────────────────────────────────────────────╯\n│\n◇  Memory search ──────────────────────────────────────────────────────────╮\n│                                                                          │\n│  Remember across conversations is effectively enabled for agent \"main\",  │\n│  but the Active Memory plugin is disabled. Enable the plugin or set      │\n│  memory.search.rememberAcrossConversations to false.                     │\n│                                                                          │\n├──────────────────────────────────────────────────────────────────────────╯\n[state/agent-db] agent database clean-close receipt: written\n│\n└  Doctor complete.",
+      "stderrTail": "[update] Doctor changed config key: agents.\n[update] Doctor changed config key: meta.\n[update] Doctor changed config key: wizard.\n[update] Doctor migration: Prepared the agent roster for persistence.\n[update] Doctor migration: Recorded webhook listener decisions; removed pins will not be recreated.",
+      "signal": null,
+      "killed": false,
+      "termination": "exit",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/openclaw",
+      "diagnostics": [
+        "Doctor interval openclaw doctor; backup /home/proof/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases; from SHA-256 af6fa7fd1bb584428c7ff33cc5650ab5c3a34c40cf7b842ceb39335978d24e7a to SHA-256 273935c8a5d4b7eabd0ac8d4a6ea7cb7daeb2fa3c537c3c93e970180018814e7.",
+        "Post-migration write inventory: 2 databases; SHA-256 273935c8a5d4b7eabd0ac8d4a6ea7cb7daeb2fa3c537c3c93e970180018814e7. Snapshots: /home/proof/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases.",
+        "Database write fingerprint: /home/proof/.openclaw/agents/main/agent/openclaw-agent.sqlite; 2d6a6558152053cd4ca12220543ce5fca16be9f460629fc0a7d2bd27868c3288",
+        "Database write fingerprint: /home/proof/.openclaw/state/openclaw.sqlite; 2d4a601c7944694fbbbbd687132974d30c0bdd623482368768add40be96d8094"
+      ],
+      "warnings": [
+        "Automatic database restoration unavailable: databases changed after snapshot capture; the writer is unknown. Snapshots retained at /home/proof/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases."
+      ],
+      "configChanges": [
+        {
+          "kind": "key",
+          "key": "agents"
+        },
+        {
+          "kind": "key",
+          "key": "meta"
+        },
+        {
+          "kind": "key",
+          "key": "wizard"
+        },
+        {
+          "kind": "migration",
+          "message": "Prepared the agent roster for persistence."
+        },
+        {
+          "kind": "migration",
+          "message": "Recorded webhook listener decisions; removed pins will not be recreated."
+        }
+      ]
+    },
+    {
+      "name": "update-driver-handoff",
+      "command": "openclaw update",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/openclaw",
+      "durationMs": 5233,
+      "exitCode": 0,
+      "diagnostics": [
+        "Handoff began after \"openclaw doctor\"; the fresh driver adopted the run after 3968ms."
+      ]
+    },
+    {
+      "name": "post-plugin doctor",
+      "command": "/usr/bin/node /home/proof/stable-prefix/lib/node_modules/openclaw/dist/infra/update-migrated-finalize.worker.js --doctor",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/openclaw",
+      "durationMs": 32473,
+      "exitCode": 0,
+      "diagnostics": [
+        "Doctor sections: maintenance.preserve-original-state 6.1 s, maintenance.begin 8.3 s, config-flow 9.0 s, contributions 10.0 s, maintenance-ready 0.6 s, maintenance.finish 0.0 s, maintenance.release 0.0 s; slowest contributions: session-transcripts 3.3 s, runtime-tool-schemas 1.4 s, memory-search 1.4 s, plugin-registry 0.5 s, state-integrity 0.4 s"
+      ]
+    },
+    {
+      "name": "managed-service-reconciliation",
+      "command": "openclaw gateway install --force",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/openclaw",
+      "durationMs": 0,
+      "exitCode": 0,
+      "advisory": {
+        "kind": "recoverable-maintenance",
+        "message": "Gateway restart skipped: no Gateway service or listener is running."
+      }
+    },
+    {
+      "name": "post-plugin-doctor-lint",
+      "command": "doctor --lint --json --severity-min error",
+      "cwd": "/home/proof/stable-prefix/lib/node_modules/openclaw",
+      "durationMs": 8213,
+      "exitCode": 0,
+      "doctorLintFindings": [],
+      "termination": "exit",
+      "signal": null,
+      "killed": false,
+      "stderrTail": ""
+    }
+  ],
+  "recovery": {
+    "serviceRestartSafe": true,
+    "version": "2026.9.9"
+  },
+  "localOverrides": {
+    "status": "none",
+    "added": 0,
+    "modified": 0,
+    "deleted": 0,
+    "applied": 0,
+    "conflicts": [],
+    "warnings": []
+  },
+  "durationMs": 314910,
+  "runId": "1ae8dbe1-e15d-40b0-8c62-0a2ae6eebe2f",
+  "postUpdate": {
+    "plugins": {
+      "status": "ok",
+      "assessment": {
+        "kind": "no-payload-repair"
+      },
+      "changed": false,
+      "warnings": [],
+      "sync": {
+        "changed": false,
+        "switchedToBundled": [],
+        "switchedToNpm": [],
+        "warnings": [],
+        "errors": []
+      },
+      "npm": {
+        "changed": false,
+        "outcomes": []
+      },
+      "integrityDrifts": [],
+      "doctorLint": {
+        "name": "post-plugin-doctor-lint",
+        "command": "doctor --lint --json --severity-min error",
+        "cwd": "/home/proof/stable-prefix/lib/node_modules/openclaw",
+        "durationMs": 8213,
+        "exitCode": 0,
+        "doctorLintFindings": [],
+        "termination": "exit",
+        "signal": null,
+        "killed": false,
+        "stderrTail": ""
+      }
+    }
+  },
+  "run": {
+    "runId": "1ae8dbe1-e15d-40b0-8c62-0a2ae6eebe2f",
+    "createdAtMs": 1791773312005,
+    "updatedAtMs": 1791773617996,
+    "trigger": "cli",
+    "phase": "finished",
+    "status": "succeeded",
+    "reason": null,
+    "origin": {
+      "admission": {
+        "owner": "candidate",
+        "protocol": 1,
+        "candidateVersion": "2026.9.9",
+        "checks": [
+          {
+            "name": "config",
+            "status": "warn"
+          },
+          {
+            "name": "database-schema",
+            "status": "ok"
+          },
+          {
+            "name": "node-runtime",
+            "status": "ok"
+          },
+          {
+            "name": "plugin-availability",
+            "status": "ok"
+          }
+        ]
+      },
+      "candidateAdmission": {
+        "protocol": 1,
+        "verdict": "admit",
+        "reasons": [],
+        "warnings": [
+          {
+            "code": "config-warning",
+            "message": "plugins.load.paths: plugin requires plugin API >=2026.10.1, but this host is 2026.9.9; skipping discovery (check \"openclaw --version\", OPENCLAW_COMPATIBILITY_HOST_VERSION, or run \"openclaw doctor\")"
+          }
+        ],
+        "facts": {
+          "candidateVersion": "2026.9.9",
+          "installedVersion": "2026.10.1",
+          "nodeEngines": ">=24.16.0 <25 || >=26.1.0",
+          "checks": [
+            {
+              "name": "config",
+              "status": "warn"
+            },
+            {
+              "name": "database-schema",
+              "status": "ok"
+            },
+            {
+              "name": "node-runtime",
+              "status": "ok"
+            },
+            {
+              "name": "plugin-availability",
+              "status": "ok"
+            }
+          ]
+        }
+      },
+      "driver": {
+        "host": "pr148193-linux-proof",
+        "pid": 3805,
+        "startIdentity": "17237573"
+      },
+      "previousDrivers": [
+        {
+          "host": "pr148193-linux-proof",
+          "pid": 376,
+          "startIdentity": "17211557"
+        }
+      ],
+      "nextAction": "After confirming the update and your conversations are healthy, preview retained migration originals eligible for permanent cleanup with `openclaw update cleanup --dry-run` for state `~/.openclaw`. Use the same profile, state, and config settings."
+    },
+    "target": {
+      "channel": "stable",
+      "tag": "file:/artifacts/openclaw-pr148193.tgz",
+      "kind": "package",
+      "version": "2026.9.9"
+    },
+    "before": {
+      "version": "2026.10.1",
+      "buildId": "2026.10.1-release-e178c39e9aae-2026-10-10T17-54-10.792Z"
+    },
+    "after": {
+      "version": "2026.9.9",
+      "buildId": "2026.9.9-8c68e283f314-2026-10-12T02-20-32.687Z"
+    },
+    "steps": [
+      {
+        "step": "requested",
+        "status": "completed",
+        "startedAtMs": 1791773312005,
+        "endedAtMs": 1791773349570
+      },
+      {
+        "step": "driver:adopted",
+        "status": "completed",
+        "endedAtMs": 1791773563370
+      },
+      {
+        "step": "staging",
+        "status": "completed",
+        "startedAtMs": 1791773349570,
+        "endedAtMs": 1791773349675
+      },
+      {
+        "step": "candidate-admission",
+        "status": "completed",
+        "endedAtMs": 1791773349538,
+        "detail": "[{\"name\":\"config\",\"status\":\"warn\"},{\"name\":\"database-schema\",\"status\":\"ok\"},{\"name\":\"node-runtime\",\"status\":\"ok\"},{\"name\":\"plugin-availability\",\"status\":\"ok\"}]"
+      },
+      {
+        "step": "validating",
+        "status": "completed",
+        "startedAtMs": 1791773349675,
+        "endedAtMs": 1791773494891
+      },
+      {
+        "step": "updater-runtime-retention",
+        "status": "completed",
+        "startedAtMs": 1791773358447,
+        "endedAtMs": 1791773393399,
+        "exitCode": 0
+      },
+      {
+        "step": "diagnostic:updater-runtime-retention",
+        "status": "completed",
+        "startedAtMs": 1791773358447,
+        "endedAtMs": 1791773393399,
+        "detail": "{\"inventoryMs\":14423,\"materializationMs\":20501,\"entries\":43101,\"estimatedBytes\":629727232,\"linked\":38936,\"copied\":1496}"
+      },
+      {
+        "step": "candidate-state-snapshot",
+        "status": "completed",
+        "startedAtMs": 1791773397274,
+        "endedAtMs": 1791773409850,
+        "exitCode": 0,
+        "snapshotCapacity": {
+          "reason": "state-volume",
+          "sqliteBytes": 5817504,
+          "pluginBytes": 12722176,
+          "requiredBytes": 103323968,
+          "candidates": [
+            {
+              "kind": "state-volume",
+              "directory": "~/.openclaw.update-captures",
+              "availableBytes": 297301544960
+            },
+            {
+              "kind": "system-tmpdir",
+              "directory": "/tmp",
+              "availableBytes": 297301544960
+            }
+          ],
+          "selection": {
+            "kind": "state-volume",
+            "directory": "~/.openclaw.update-captures/openclaw-update-canary-7jK1NE"
+          }
+        }
+      },
+      {
+        "step": "candidate-doctor",
+        "status": "completed",
+        "startedAtMs": 1791773409913,
+        "endedAtMs": 1791773435918,
+        "exitCode": 0
+      },
+      {
+        "step": "candidate-doctor-lint",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "exitCode": 0,
+        "termination": "exit",
+        "signal": null
+      },
+      {
+        "step": "finalize:doctor-lint:candidate-doctor-lint",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "{\"exitCode\":0,\"termination\":\"exit\",\"signal\":null,\"killed\":false,\"outputLimitExceeded\":false,\"counts\":{\"error\":0,\"warning\":13,\"info\":0},\"errors\":[],\"omitted\":0}"
+      },
+      {
+        "step": "warning:candidate-doctor-lint:3",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/update-snapshots]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/update-snapshots` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:4",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/security]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/security` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:5",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/oauth-tls]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/oauth-tls` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:6",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/hooks-model]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/hooks-model` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:7",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/model-references]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/model-references` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:8",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/acp-agent-model]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/acp-agent-model` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:9",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/provider-catalog-projection]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/provider-catalog-projection` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:10",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/local-audio-acceleration]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/local-audio-acceleration` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:11",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/runtime-tool-schemas]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/runtime-tool-schemas` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:12",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/skill-workshop-tool-policy]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/skill-workshop-tool-policy` after activation to complete this inspection."
+      },
+      {
+        "step": "warning:candidate-doctor-lint:13",
+        "status": "completed",
+        "startedAtMs": 1791773435950,
+        "endedAtMs": 1791773449424,
+        "detail": "Doctor lint warning [core/doctor/bootstrap-size]: update-validation-scope: Advisory inspection deferred until after update activation; required migration, config, plugin, and Gateway readiness checks remain enabled.: Run `openclaw doctor --lint --only core/doctor/bootstrap-size` after activation to complete this inspection."
+      },
+      {
+        "step": "candidate-config",
+        "status": "completed",
+        "startedAtMs": 1791773449651,
+        "endedAtMs": 1791773452807,
+        "exitCode": 0
+      },
+      {
+        "step": "candidate-plugins",
+        "status": "completed",
+        "startedAtMs": 1791773452820,
+        "endedAtMs": 1791773455135,
+        "exitCode": 0
+      },
+      {
+        "step": "candidate-recovery",
+        "status": "completed",
+        "startedAtMs": 1791773455150,
+        "endedAtMs": 1791773457384,
+        "exitCode": 0
+      },
+      {
+        "step": "candidate-gateway-startup",
+        "status": "completed",
+        "startedAtMs": 1791773457398,
+        "endedAtMs": 1791773471131,
+        "exitCode": 0
+      },
+      {
+        "step": "candidate-state-cleanup",
+        "status": "completed",
+        "startedAtMs": 1791773471337,
+        "endedAtMs": 1791773472031,
+        "exitCode": 0,
+        "detail": "Temporary-copy cleanup ~/.openclaw.update-captures/openclaw-update-canary-7jK1NE; removed disposable temporary copy; budget=300000ms (5 minutes for large copies on slow disks); deadline=2026-10-12T02:56:11.337Z."
+      },
+      {
+        "step": "activating",
+        "status": "completed",
+        "startedAtMs": 1791773494891,
+        "endedAtMs": 1791773617995
+      },
+      {
+        "step": "finalize:doctor:model-retirement",
+        "status": "completed",
+        "endedAtMs": 1791773589484,
+        "detail": "Deferred model retirement repair completed after plugin convergence."
+      },
+      {
+        "step": "warning:finalize:doctor:model-retirement:deferred",
+        "status": "completed",
+        "detail": "Model retirement repair deferred until plugin convergence."
+      },
+      {
+        "step": "database snapshot",
+        "status": "completed",
+        "startedAtMs": 1791773501861,
+        "endedAtMs": 1791773507125,
+        "exitCode": 0
+      },
+      {
+        "step": "diagnostic:database snapshot",
+        "status": "completed",
+        "startedAtMs": 1791773501861,
+        "endedAtMs": 1791773507125,
+        "detail": "Databases snapshotted at ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases. Verified successful activation removes these snapshots; otherwise retain them with the update's recovery artifacts."
+      },
+      {
+        "step": "diagnostic:database snapshot:2",
+        "status": "completed",
+        "startedAtMs": 1791773501861,
+        "endedAtMs": 1791773507125,
+        "detail": "~/.openclaw/agents/main/agent/openclaw-agent.sqlite -> ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases/payload/posix/home/proof/.openclaw/agents/main/agent/openclaw-agent.sqlite; schema 24; 3919872 bytes; SHA-256 6f48ead714fd330775d9486e979ce191fee606f30b4f8af78cb7e773111fd6fa"
+      },
+      {
+        "step": "diagnostic:database snapshot:3",
+        "status": "completed",
+        "startedAtMs": 1791773501861,
+        "endedAtMs": 1791773507125,
+        "detail": "~/.openclaw/state/openclaw.sqlite -> ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases/payload/posix/home/proof/.openclaw/state/openclaw.sqlite; schema 20; 1634304 bytes; SHA-256 2528de4e7ad80ca6ec85ad5cc1c52c9286154e6fd4fb625a0a9ef1c8824d169d"
+      },
+      {
+        "step": "openclaw doctor",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "exitCode": 0,
+        "termination": "exit",
+        "signal": null
+      },
+      {
+        "step": "database migration writes",
+        "status": "completed",
+        "startedAtMs": 1791773559401,
+        "endedAtMs": 1791773559401,
+        "exitCode": 0
+      },
+      {
+        "step": "diagnostic:database migration writes",
+        "status": "completed",
+        "startedAtMs": 1791773559401,
+        "endedAtMs": 1791773559401,
+        "detail": "Doctor interval openclaw doctor; backup ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases; from SHA-256 af6fa7fd1bb584428c7ff33cc5650ab5c3a34c40cf7b842ceb39335978d24e7a to SHA-256 273935c8a5d4b7eabd0ac8d4a6ea7cb7daeb2fa3c537c3c93e970180018814e7."
+      },
+      {
+        "step": "diagnostic:database migration writes:2",
+        "status": "completed",
+        "startedAtMs": 1791773559401,
+        "endedAtMs": 1791773559401,
+        "detail": "Post-migration write inventory: 2 databases; SHA-256 273935c8a5d4b7eabd0ac8d4a6ea7cb7daeb2fa3c537c3c93e970180018814e7. Snapshots: ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases."
+      },
+      {
+        "step": "diagnostic:database migration writes:3",
+        "status": "completed",
+        "startedAtMs": 1791773559401,
+        "endedAtMs": 1791773559401,
+        "detail": "Database write fingerprint: ~/.openclaw/agents/main/agent/openclaw-agent.sqlite; 2d6a6558152053cd4ca12220543ce5fca16be9f460629fc0a7d2bd27868c3288"
+      },
+      {
+        "step": "diagnostic:database migration writes:4",
+        "status": "completed",
+        "startedAtMs": 1791773559401,
+        "endedAtMs": 1791773559401,
+        "detail": "Database write fingerprint: ~/.openclaw/state/openclaw.sqlite; 2d4a601c7944694fbbbbd687132974d30c0bdd623482368768add40be96d8094"
+      },
+      {
+        "step": "warning:openclaw doctor",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Automatic database restoration unavailable: databases changed after snapshot capture; the writer is unknown. Snapshots retained at ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases."
+      },
+      {
+        "step": "diagnostic:openclaw doctor",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Doctor interval openclaw doctor; backup ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases; from SHA-256 af6fa7fd1bb584428c7ff33cc5650ab5c3a34c40cf7b842ceb39335978d24e7a to SHA-256 273935c8a5d4b7eabd0ac8d4a6ea7cb7daeb2fa3c537c3c93e970180018814e7."
+      },
+      {
+        "step": "diagnostic:openclaw doctor:2",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Post-migration write inventory: 2 databases; SHA-256 273935c8a5d4b7eabd0ac8d4a6ea7cb7daeb2fa3c537c3c93e970180018814e7. Snapshots: ~/stable-prefix/lib/node_modules/.openclaw.package-backup-376-1791773474175.databases."
+      },
+      {
+        "step": "diagnostic:openclaw doctor:3",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Database write fingerprint: ~/.openclaw/agents/main/agent/openclaw-agent.sqlite; 2d6a6558152053cd4ca12220543ce5fca16be9f460629fc0a7d2bd27868c3288"
+      },
+      {
+        "step": "diagnostic:openclaw doctor:4",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Database write fingerprint: ~/.openclaw/state/openclaw.sqlite; 2d4a601c7944694fbbbbd687132974d30c0bdd623482368768add40be96d8094"
+      },
+      {
+        "step": "doctor-config:openclaw doctor:0",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Doctor changed config key: agents.",
+        "configChange": {
+          "kind": "key",
+          "key": "agents"
+        }
+      },
+      {
+        "step": "doctor-config:openclaw doctor:1",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Doctor changed config key: meta.",
+        "configChange": {
+          "kind": "key",
+          "key": "meta"
+        }
+      },
+      {
+        "step": "doctor-config:openclaw doctor:2",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Doctor changed config key: wizard.",
+        "configChange": {
+          "kind": "key",
+          "key": "wizard"
+        }
+      },
+      {
+        "step": "doctor-config:openclaw doctor:3",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Doctor migration: Prepared the agent roster for persistence.",
+        "configChange": {
+          "kind": "migration",
+          "message": "Prepared the agent roster for persistence."
+        }
+      },
+      {
+        "step": "doctor-config:openclaw doctor:4",
+        "status": "completed",
+        "startedAtMs": 1791773525792,
+        "endedAtMs": 1791773559402,
+        "detail": "Doctor migration: Recorded webhook listener decisions; removed pins will not be recreated.",
+        "configChange": {
+          "kind": "migration",
+          "message": "Recorded webhook listener decisions; removed pins will not be recreated."
+        }
+      },
+      {
+        "step": "update-driver-handoff",
+        "status": "completed",
+        "startedAtMs": 1791773559402,
+        "endedAtMs": 1791773564635,
+        "exitCode": 0
+      },
+      {
+        "step": "diagnostic:update-driver-handoff",
+        "status": "completed",
+        "startedAtMs": 1791773559402,
+        "endedAtMs": 1791773564635,
+        "detail": "Handoff began after \"openclaw doctor\"; the fresh driver adopted the run after 3968ms."
+      },
+      {
+        "step": "restart",
+        "status": "skipped",
+        "endedAtMs": 1791773567250,
+        "detail": "skipped by operator"
+      },
+      {
+        "step": "post-update verification",
+        "status": "completed",
+        "startedAtMs": 1791773567282,
+        "endedAtMs": 1791773614623
+      },
+      {
+        "step": "warning:finalize:doctor:model-retirement",
+        "status": "completed",
+        "detail": "Deferred model retirement repair completed after plugin convergence."
+      },
+      {
+        "step": "global update",
+        "status": "completed",
+        "exitCode": 0,
+        "termination": "exit",
+        "signal": null
+      },
+      {
+        "step": "diagnostic:candidate-state-snapshot",
+        "status": "completed",
+        "detail": "shared database snapshot $OPENCLAW_STATE_DIR/state/openclaw.sqlite: completed, attempt 1, 399/399 pages, 1,634,304 bytes, 0.052 seconds."
+      },
+      {
+        "step": "package-swap",
+        "status": "completed",
+        "exitCode": 0
+      },
+      {
+        "step": "post-plugin doctor",
+        "status": "completed",
+        "exitCode": 0
+      },
+      {
+        "step": "diagnostic:post-plugin doctor",
+        "status": "completed",
+        "detail": "Doctor sections: maintenance.preserve-original-state 6.1 s, maintenance.begin 8.3 s, config-flow 9.0 s, contributions 10.0 s, maintenance-ready 0.6 s, maintenance.finish 0.0 s, maintenance.release 0.0 s; slowest contributions: session-transcripts 3.3 s, runtime-tool-schemas 1.4 s, memory-search 1.4 s, plugin-registry 0.5 s, state-integrity 0.4 s"
+      },
+      {
+        "step": "managed-service-reconciliation",
+        "status": "completed",
+        "exitCode": 0
+      },
+      {
+        "step": "warning:managed-service-reconciliation",
+        "status": "completed",
+        "detail": "Gateway restart skipped: no Gateway service or listener is running."
+      },
+      {
+        "step": "post-plugin-doctor-lint",
+        "status": "completed",
+        "exitCode": 0,
+        "termination": "exit",
+        "signal": null
+      },
+      {
+        "step": "finalize:doctor-lint:post-plugin-doctor-lint",
+        "status": "completed",
+        "detail": "{\"exitCode\":0,\"termination\":\"exit\",\"signal\":null,\"killed\":false,\"counts\":{\"error\":0,\"warning\":0,\"info\":0},\"errors\":[],\"omitted\":0}"
+      }
+    ],
+    "verification": {
+      "recovery": {
+        "serviceRestartSafe": true,
+        "version": "2026.9.9"
+      }
+    },
+    "repair": [],
+    "confirmedAtMs": null,
+    "finishedAtMs": 1791773617995,
+    "downtimeMs": null,
+    "admission": {
+      "owner": "candidate",
+      "protocol": 1,
+      "candidateVersion": "2026.9.9",
+      "checks": [
+        {
+          "name": "config",
+          "status": "warn"
+        },
+        {
+          "name": "database-schema",
+          "status": "ok"
+        },
+        {
+          "name": "node-runtime",
+          "status": "ok"
+        },
+        {
+          "name": "plugin-availability",
+          "status": "ok"
+        }
+      ]
+    }
+  },
+  "reportPath": "/home/proof/.openclaw/update-reports/1ae8dbe1-e15d-40b0-8c62-0a2ae6eebe2f.md"
+}
+[infra:temp-artifacts] Runtime retained at /home/proof/stable-prefix/lib/openclaw-update-runtime-nOeJmi: worker generation settled; cleanup deferred to the next eligible update or openclaw doctor --fix

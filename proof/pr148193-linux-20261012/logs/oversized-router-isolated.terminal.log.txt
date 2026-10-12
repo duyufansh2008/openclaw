@@ -1,0 +1,23 @@
+Script started on 2026-10-12 10:43:29+08:00 [COMMAND="/root/pr148193-proof/run-isolated env OPENCLAW_DEBUG=1 OPENCLAW_STATE_DIR=/home/proof/oversized-state OPENCLAW_CONFIG_PATH=/home/proof/oversized-state/openclaw.json /home/proof/candidate-prefix/bin/openclaw models auth login --provider llama-cpp --method local-media" TERM="xterm" TTY="/dev/pts/4" COLUMNS="80" LINES="24"]
+Your OpenClaw config was written by version 2026.10.1, but this command is running 2026.9.9.
+Check: `openclaw --version`, `which openclaw`, and `openclaw gateway status --deep`.
+If unexpected, update PATH so `openclaw` points to the version you want, or reinstall the Gateway service from that same OpenClaw install.
+│
+◇
+OpenClaw 2026.9.9 (8c68e28)
+I've read more man pages than any human should—so you don't have to.
+Installed Gateway service state and config paths could not be verified. Inspect the service environment with `openclaw gateway status --deep` before repairing plugin state.
+│
+◇  Provider sign-in ───────────────────────────────────────────────────────╮
+│                                                                          │
+│  Scope: System / agent                                                   │
+│  Agent: main                                                             │
+│  Location: the machine running OpenClaw                                  │
+│  For personal model accounts on a Gateway, run openclaw models accounts  │
+│  login --help.                                                           │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+(node:18) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin SDK: loadAuthProfileStoreWithoutExternalProfiles is deprecated; use loadAuthProfileStoreWithoutExternalProfilesAsync instead. The legacy contract remains supported in the current Plugin SDK major. It will be removed in the next Plugin SDK major.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Router option --image-max-tokens exceeds the local media limit (1024). Lower it or move it into the existing model's preset section, then retry local media setup. Existing configuration is unchanged.
+Script done on 2026-10-12 10:43:34+08:00 [COMMAND_EXIT_CODE="1"]

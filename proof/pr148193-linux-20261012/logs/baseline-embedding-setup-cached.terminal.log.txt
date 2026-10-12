@@ -1,0 +1,53 @@
+Script started on 2026-10-12 10:40:04+08:00 [COMMAND="/root/pr148193-proof/run-isolated /home/proof/stable-prefix/bin/openclaw models auth login --provider llama-cpp --method local" TERM="xterm" TTY="/dev/pts/4" COLUMNS="80" LINES="24"]
+│
+◇
+OpenClaw 2026.10.1 (e178c39)
+I hold 200k tokens of context and exactly one grudge.
+Installed Gateway service state and config paths could not be verified. Inspect the service environment with `openclaw gateway status --deep` before repairing plugin state.
+│
+◇  Provider sign-in ───────────────────────────────────────────────────────╮
+│                                                                          │
+│  Scope: System / agent                                                   │
+│  Agent: main                                                             │
+│  Location: the machine running OpenClaw                                  │
+│  For personal model accounts on a Gateway, run openclaw models accounts  │
+│  login --help.                                                           │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+│
+◆  Runs on Gateway host pr148193-linux-proof (linux/x64), using the CPU.
+│  15.3 GiB RAM; 278.2 GiB free disk.
+│  Qwen3.5 4B (Q4_K_M) fits the 11.5 GiB CPU memory budget with a 64K context.
+│  Runtime verification checks the actual model before activation.
+│  OpenClaw will check a real tool call before making this your default model.
+│
+│  Download Qwen3.5 4B (Q4_K_M) (2.7 GB), the local embedding model (about 0.3
+│  GB), and the verified CPU runtime, then use this model?
+│  ○ Yes / ● No
+└
+◇  Runs on Gateway host pr148193-linux-proof (linux/x64), using the CPU.
+│  15.3 GiB RAM; 278.2 GiB free disk.
+│  Qwen3.5 4B (Q4_K_M) fits the 11.5 GiB CPU memory budget with a 64K context.
+│  Runtime verification checks the actual model before activation.
+│  OpenClaw will check a real tool call before making this your default model.
+│
+│  Download Qwen3.5 4B (Q4_K_M) (2.7 GB), the local embedding model (about 0.3
+│  GB), and the verified CPU runtime, then use this model?
+│  No
+│
+◆  Install a verified CPU llama.cpp server on Gateway host pr148193-linux-proof
+│  and download only the local embedding model (about 0.3 GB)? Your chat model
+│  will stay unchanged.
+│  ○ Yes / ● No
+└
+◇  Install a verified CPU llama.cpp server on Gateway host pr148193-linux-proof
+│  and download only the local embedding model (about 0.3 GB)? Your chat model
+│  will stay unchanged.
+│  Yes
+│
+◇  Managed llama.cpp server prepared
+Updated config: ~/.openclaw/openclaw.json
+  Backup: ~/.openclaw/openclaw.json.bak
+(node:15) Warning: Plugin source capture cleanup: retained-by-loaded-module: /home/proof/.openclaw/tmp/plugin-captures/aa1b1ae6-f3cb-4c7a-a9fc-030d04568d0b; cleanup deferred until the next startup
+(Use `node --trace-warnings ...` to show where the warning was created)
+Script done on 2026-10-12 10:42:55+08:00 [COMMAND_EXIT_CODE="0"]

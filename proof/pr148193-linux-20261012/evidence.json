@@ -1,0 +1,3129 @@
+{
+  "published-update-summary.json": {
+    "reviewedHead": "8c68e283f3145d6455956867c81902ca7f908b43",
+    "publishedBaseline": "2026.10.1",
+    "updaterExit": 0,
+    "updaterStatus": "ok",
+    "schemaBefore": 24,
+    "schemaAfter": 26,
+    "memorySnapshotAtActivationExact": true,
+    "memorySnapshotSha256": "cef625323b9da6b15e0df1dd23f128a4fbc0519157f46f06caba12bd5a74c79d",
+    "nativePresetAtActivationExact": true,
+    "existingModelsToolsMemorySettingsAtActivationExact": true,
+    "doctorBookkeepingChanges": [
+      "meta.lastTouchedVersion",
+      "meta.migrations.webhookListeners",
+      "wizard",
+      "agents.entries.main (empty)"
+    ],
+    "automaticDerivedIndexUpgrade": {
+      "chunkingVersion": [
+        5,
+        6
+      ],
+      "embeddingInputFormatVersion": [
+        0,
+        1
+      ]
+    },
+    "manualReindexAfterUpdate": false,
+    "postUpgradeVectorDimensions": 768,
+    "postUpgradeEmbeddingProbe": true,
+    "postUpgradeIndexIdentity": "valid",
+    "syntheticFact": "ORCHID-4827"
+  },
+  "baseline-memory-snapshot.json": {
+    "memory_embedding_cache": [
+      {
+        "dims": 768,
+        "embedding": {
+          "blob_sha256": "3664eac73502c28e7f17f820af0b8c2d83a74ab2de973c10af0c66bd747e6b17",
+          "bytes": 6144
+        },
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "provider": "local",
+        "provider_key": "a65bf29e73a7aa6d94f94c77377b9d4e17a2298505ddb598523262bdc77ac89b",
+        "updated_at": 1791773024657
+      }
+    ],
+    "memory_entry_origins": [],
+    "memory_index_chunk_provenance": [
+      {
+        "chunk_id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "observed_at": 1791771811647,
+        "origin_class": "agent",
+        "session_kind": "unknown",
+        "supersedes_key": null
+      }
+    ],
+    "memory_index_chunk_recall_metadata": [
+      {
+        "chunk_id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "importance": null,
+        "project_key": null,
+        "triggers": null
+      }
+    ],
+    "memory_index_chunks": [
+      {
+        "chunk_rowid": 1,
+        "embedding": {
+          "blob_sha256": "3664eac73502c28e7f17f820af0b8c2d83a74ab2de973c10af0c66bd747e6b17",
+          "bytes": 6144
+        },
+        "end_line": 4,
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "path": "MEMORY.md",
+        "source": "memory",
+        "start_line": 1,
+        "text": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "updated_at": 1791773024711
+      }
+    ],
+    "memory_index_chunks_fts": [
+      {
+        "end_line": 4,
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "path": "MEMORY.md",
+        "source": "memory",
+        "start_line": 1,
+        "text": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n"
+      }
+    ],
+    "memory_index_chunks_fts_config": [
+      {
+        "k": "version",
+        "v": 4
+      }
+    ],
+    "memory_index_chunks_fts_content": [
+      {
+        "c0": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "c1": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "c2": "MEMORY.md",
+        "c3": "memory",
+        "c4": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "c5": 1,
+        "c6": 4,
+        "id": 1
+      }
+    ],
+    "memory_index_chunks_fts_data": [
+      {
+        "block": {
+          "blob_sha256": "6a7fdc3681aac9030dde1a55df6faa20620d955746b610d5d37bf4dddd4d4ed8",
+          "bytes": 12
+        },
+        "id": 10
+      },
+      {
+        "block": {
+          "blob_sha256": "74a84169a9bbc9a968d20a610a77e7dd36ecd571c42b9bd7363b5ce20547ba66",
+          "bytes": 8
+        },
+        "id": 1
+      },
+      {
+        "block": {
+          "blob_sha256": "a74bda9a76a4dd7184e18d0476d4d7dada9f6ecb41c9ece44147d3c6cc886168",
+          "bytes": 184
+        },
+        "id": 137438953473
+      }
+    ],
+    "memory_index_chunks_fts_docsize": [
+      {
+        "id": 1,
+        "sz": {
+          "blob_sha256": "9b5ac3b51fa1cab89b11c119415d7bd8285aaaed09cc6e26da173578d14dc094",
+          "bytes": 7
+        }
+      }
+    ],
+    "memory_index_chunks_fts_idx": [
+      {
+        "pgno": 2,
+        "segid": 1,
+        "term": {
+          "blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    ],
+    "memory_index_chunks_vec": [
+      {
+        "embedding": {
+          "blob_sha256": "709d29f68bf31403fa1225c955f29786c2aaca7ebc9d258533ba4138fd88d746",
+          "bytes": 3072
+        },
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95"
+      }
+    ],
+    "memory_index_chunks_vec_chunks": [
+      {
+        "chunk_id": 1,
+        "rowids": {
+          "blob_sha256": "2b8e753c2efa059010b3aecd6c00bff0a1a09c0f08d5d4522ffef4d207c1fb0c",
+          "bytes": 8192
+        },
+        "size": 1024,
+        "validity": {
+          "blob_sha256": "ed4fc1d85afa5175e4973c9780b78fa000f070c00230ec18d6190133cb915db5",
+          "bytes": 128
+        }
+      }
+    ],
+    "memory_index_chunks_vec_info": [
+      {
+        "key": "CREATE_VERSION",
+        "value": "v0.1.9"
+      },
+      {
+        "key": "CREATE_VERSION_MAJOR",
+        "value": 0
+      },
+      {
+        "key": "CREATE_VERSION_MINOR",
+        "value": 1
+      },
+      {
+        "key": "CREATE_VERSION_PATCH",
+        "value": 9
+      }
+    ],
+    "memory_index_chunks_vec_rowids": [
+      {
+        "chunk_id": 1,
+        "chunk_offset": 0,
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "rowid": 1
+      }
+    ],
+    "memory_index_chunks_vec_vector_chunks00": [
+      {
+        "rowid": 1,
+        "vectors": {
+          "blob_sha256": "b5015895d325f9fe175fb5fbe30309557011ef8e251be5daf8e5ff1c18b18f8c",
+          "bytes": 3145728
+        }
+      }
+    ],
+    "memory_index_meta": [
+      {
+        "key": "memory_index_meta_v1",
+        "value": "{\"model\":\"hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf\",\"provider\":\"local\",\"providerKey\":\"a65bf29e73a7aa6d94f94c77377b9d4e17a2298505ddb598523262bdc77ac89b\",\"sources\":[\"memory\",\"sessions\"],\"scopeHash\":\"e861c1d291b583b9f4bf96233b72b9e6984cc92320671a0805e1063946e4b1a1\",\"chunkTokens\":400,\"chunkOverlap\":80,\"chunkingVersion\":5,\"ftsTokenizer\":\"unicode61\",\"provenanceVersion\":1,\"vectorDims\":768}"
+      },
+      {
+        "key": "memory_vector_rebuild_v1",
+        "value": "clean"
+      }
+    ],
+    "memory_index_paths_fts": [
+      {
+        "path": "MEMORY.md",
+        "source": "memory"
+      }
+    ],
+    "memory_index_paths_fts_config": [
+      {
+        "k": "version",
+        "v": 4
+      }
+    ],
+    "memory_index_paths_fts_content": [
+      {
+        "c0": "MEMORY.md",
+        "c1": "memory",
+        "id": 1
+      }
+    ],
+    "memory_index_paths_fts_data": [
+      {
+        "block": {
+          "blob_sha256": "12e32e851005a6264755ba4344589586d262b484f11194d4c4a94d7aa8109528",
+          "bytes": 23
+        },
+        "id": 137438953473
+      },
+      {
+        "block": {
+          "blob_sha256": "6a7fdc3681aac9030dde1a55df6faa20620d955746b610d5d37bf4dddd4d4ed8",
+          "bytes": 12
+        },
+        "id": 10
+      },
+      {
+        "block": {
+          "blob_sha256": "d7b3d4012540102c40a23acdeee417e06a42a74a5d66c7efe59f4e4aa0537c5c",
+          "bytes": 3
+        },
+        "id": 1
+      }
+    ],
+    "memory_index_paths_fts_docsize": [
+      {
+        "id": 1,
+        "sz": {
+          "blob_sha256": "99be5efb88ca2013bd8e4eb035fd42d5245468fe9afa70d8ba9c1c419a48c4e8",
+          "bytes": 2
+        }
+      }
+    ],
+    "memory_index_paths_fts_idx": [
+      {
+        "pgno": 2,
+        "segid": 1,
+        "term": {
+          "blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    ],
+    "memory_index_sources": [
+      {
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "id": 1,
+        "mtime": 1791771811647.9854,
+        "path": "MEMORY.md",
+        "size": 121,
+        "source": "memory"
+      }
+    ],
+    "memory_index_state": [
+      {
+        "id": 1,
+        "revision": 2
+      }
+    ],
+    "memory_session_tombstones": []
+  },
+  "post-update-memory-snapshot.json": {
+    "memory_embedding_cache": [
+      {
+        "dims": 768,
+        "embedding": {
+          "blob_sha256": "3664eac73502c28e7f17f820af0b8c2d83a74ab2de973c10af0c66bd747e6b17",
+          "bytes": 6144
+        },
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "provider": "local",
+        "provider_key": "a65bf29e73a7aa6d94f94c77377b9d4e17a2298505ddb598523262bdc77ac89b",
+        "updated_at": 1791773024657
+      }
+    ],
+    "memory_entry_origins": [],
+    "memory_index_chunk_provenance": [
+      {
+        "chunk_id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "observed_at": 1791771811647,
+        "origin_class": "agent",
+        "session_kind": "unknown",
+        "supersedes_key": null
+      }
+    ],
+    "memory_index_chunk_recall_metadata": [
+      {
+        "chunk_id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "importance": null,
+        "project_key": null,
+        "triggers": null
+      }
+    ],
+    "memory_index_chunks": [
+      {
+        "chunk_rowid": 1,
+        "embedding": {
+          "blob_sha256": "3664eac73502c28e7f17f820af0b8c2d83a74ab2de973c10af0c66bd747e6b17",
+          "bytes": 6144
+        },
+        "end_line": 4,
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "path": "MEMORY.md",
+        "source": "memory",
+        "start_line": 1,
+        "text": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "updated_at": 1791773024711
+      }
+    ],
+    "memory_index_chunks_fts": [
+      {
+        "end_line": 4,
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "path": "MEMORY.md",
+        "source": "memory",
+        "start_line": 1,
+        "text": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n"
+      }
+    ],
+    "memory_index_chunks_fts_config": [
+      {
+        "k": "version",
+        "v": 4
+      }
+    ],
+    "memory_index_chunks_fts_content": [
+      {
+        "c0": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "c1": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "c2": "MEMORY.md",
+        "c3": "memory",
+        "c4": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "c5": 1,
+        "c6": 4,
+        "id": 1
+      }
+    ],
+    "memory_index_chunks_fts_data": [
+      {
+        "block": {
+          "blob_sha256": "6a7fdc3681aac9030dde1a55df6faa20620d955746b610d5d37bf4dddd4d4ed8",
+          "bytes": 12
+        },
+        "id": 10
+      },
+      {
+        "block": {
+          "blob_sha256": "74a84169a9bbc9a968d20a610a77e7dd36ecd571c42b9bd7363b5ce20547ba66",
+          "bytes": 8
+        },
+        "id": 1
+      },
+      {
+        "block": {
+          "blob_sha256": "a74bda9a76a4dd7184e18d0476d4d7dada9f6ecb41c9ece44147d3c6cc886168",
+          "bytes": 184
+        },
+        "id": 137438953473
+      }
+    ],
+    "memory_index_chunks_fts_docsize": [
+      {
+        "id": 1,
+        "sz": {
+          "blob_sha256": "9b5ac3b51fa1cab89b11c119415d7bd8285aaaed09cc6e26da173578d14dc094",
+          "bytes": 7
+        }
+      }
+    ],
+    "memory_index_chunks_fts_idx": [
+      {
+        "pgno": 2,
+        "segid": 1,
+        "term": {
+          "blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    ],
+    "memory_index_chunks_vec": [
+      {
+        "embedding": {
+          "blob_sha256": "709d29f68bf31403fa1225c955f29786c2aaca7ebc9d258533ba4138fd88d746",
+          "bytes": 3072
+        },
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95"
+      }
+    ],
+    "memory_index_chunks_vec_chunks": [
+      {
+        "chunk_id": 1,
+        "rowids": {
+          "blob_sha256": "2b8e753c2efa059010b3aecd6c00bff0a1a09c0f08d5d4522ffef4d207c1fb0c",
+          "bytes": 8192
+        },
+        "size": 1024,
+        "validity": {
+          "blob_sha256": "ed4fc1d85afa5175e4973c9780b78fa000f070c00230ec18d6190133cb915db5",
+          "bytes": 128
+        }
+      }
+    ],
+    "memory_index_chunks_vec_info": [
+      {
+        "key": "CREATE_VERSION",
+        "value": "v0.1.9"
+      },
+      {
+        "key": "CREATE_VERSION_MAJOR",
+        "value": 0
+      },
+      {
+        "key": "CREATE_VERSION_MINOR",
+        "value": 1
+      },
+      {
+        "key": "CREATE_VERSION_PATCH",
+        "value": 9
+      }
+    ],
+    "memory_index_chunks_vec_rowids": [
+      {
+        "chunk_id": 1,
+        "chunk_offset": 0,
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "rowid": 1
+      }
+    ],
+    "memory_index_chunks_vec_vector_chunks00": [
+      {
+        "rowid": 1,
+        "vectors": {
+          "blob_sha256": "b5015895d325f9fe175fb5fbe30309557011ef8e251be5daf8e5ff1c18b18f8c",
+          "bytes": 3145728
+        }
+      }
+    ],
+    "memory_index_meta": [
+      {
+        "key": "memory_index_meta_v1",
+        "value": "{\"model\":\"hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf\",\"provider\":\"local\",\"providerKey\":\"a65bf29e73a7aa6d94f94c77377b9d4e17a2298505ddb598523262bdc77ac89b\",\"sources\":[\"memory\",\"sessions\"],\"scopeHash\":\"e861c1d291b583b9f4bf96233b72b9e6984cc92320671a0805e1063946e4b1a1\",\"chunkTokens\":400,\"chunkOverlap\":80,\"chunkingVersion\":5,\"ftsTokenizer\":\"unicode61\",\"provenanceVersion\":1,\"vectorDims\":768}"
+      },
+      {
+        "key": "memory_vector_rebuild_v1",
+        "value": "clean"
+      }
+    ],
+    "memory_index_paths_fts": [
+      {
+        "path": "MEMORY.md",
+        "source": "memory"
+      }
+    ],
+    "memory_index_paths_fts_config": [
+      {
+        "k": "version",
+        "v": 4
+      }
+    ],
+    "memory_index_paths_fts_content": [
+      {
+        "c0": "MEMORY.md",
+        "c1": "memory",
+        "id": 1
+      }
+    ],
+    "memory_index_paths_fts_data": [
+      {
+        "block": {
+          "blob_sha256": "12e32e851005a6264755ba4344589586d262b484f11194d4c4a94d7aa8109528",
+          "bytes": 23
+        },
+        "id": 137438953473
+      },
+      {
+        "block": {
+          "blob_sha256": "6a7fdc3681aac9030dde1a55df6faa20620d955746b610d5d37bf4dddd4d4ed8",
+          "bytes": 12
+        },
+        "id": 10
+      },
+      {
+        "block": {
+          "blob_sha256": "d7b3d4012540102c40a23acdeee417e06a42a74a5d66c7efe59f4e4aa0537c5c",
+          "bytes": 3
+        },
+        "id": 1
+      }
+    ],
+    "memory_index_paths_fts_docsize": [
+      {
+        "id": 1,
+        "sz": {
+          "blob_sha256": "99be5efb88ca2013bd8e4eb035fd42d5245468fe9afa70d8ba9c1c419a48c4e8",
+          "bytes": 2
+        }
+      }
+    ],
+    "memory_index_paths_fts_idx": [
+      {
+        "pgno": 2,
+        "segid": 1,
+        "term": {
+          "blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    ],
+    "memory_index_sources": [
+      {
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "id": 1,
+        "mtime": 1791771811647.9854,
+        "path": "MEMORY.md",
+        "size": 121,
+        "source": "memory"
+      }
+    ],
+    "memory_index_state": [
+      {
+        "id": 1,
+        "revision": 2
+      }
+    ],
+    "memory_session_tombstones": []
+  },
+  "post-update-after-search-memory-snapshot.json": {
+    "memory_embedding_cache": [
+      {
+        "dims": 768,
+        "embedding": {
+          "blob_sha256": "3664eac73502c28e7f17f820af0b8c2d83a74ab2de973c10af0c66bd747e6b17",
+          "bytes": 6144
+        },
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "provider": "local",
+        "provider_key": "a65bf29e73a7aa6d94f94c77377b9d4e17a2298505ddb598523262bdc77ac89b",
+        "updated_at": 1791773024657
+      },
+      {
+        "dims": 768,
+        "embedding": {
+          "blob_sha256": "483e21977c6bc68288f254f66eaeb9c605b6af5eacc6b6a187bba815799c0ef8",
+          "bytes": 6144
+        },
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "provider": "local",
+        "provider_key": "1aa2ac866bc583512646fc8f39c1c4f51bdf56d0e4157fb939708da57821f17f",
+        "updated_at": 1791773796193
+      }
+    ],
+    "memory_entry_origins": [],
+    "memory_index_chunk_provenance": [
+      {
+        "chunk_id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "observed_at": 1791771811647,
+        "origin_class": "agent",
+        "session_kind": "unknown",
+        "supersedes_key": null
+      }
+    ],
+    "memory_index_chunk_recall_metadata": [
+      {
+        "chunk_id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "importance": null,
+        "project_key": null,
+        "triggers": null
+      }
+    ],
+    "memory_index_chunks": [
+      {
+        "chunk_rowid": 1,
+        "embedding": {
+          "blob_sha256": "483e21977c6bc68288f254f66eaeb9c605b6af5eacc6b6a187bba815799c0ef8",
+          "bytes": 6144
+        },
+        "end_line": 4,
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "path": "MEMORY.md",
+        "source": "memory",
+        "start_line": 1,
+        "text": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "updated_at": 1791773796207
+      }
+    ],
+    "memory_index_chunks_fts": [
+      {
+        "end_line": 4,
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "path": "MEMORY.md",
+        "source": "memory",
+        "start_line": 1,
+        "text": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n"
+      }
+    ],
+    "memory_index_chunks_fts_config": [
+      {
+        "k": "version",
+        "v": 4
+      }
+    ],
+    "memory_index_chunks_fts_content": [
+      {
+        "c0": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "c1": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "c2": "MEMORY.md",
+        "c3": "memory",
+        "c4": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "c5": 1,
+        "c6": 4,
+        "id": 1
+      }
+    ],
+    "memory_index_chunks_fts_data": [
+      {
+        "block": {
+          "blob_sha256": "6a7fdc3681aac9030dde1a55df6faa20620d955746b610d5d37bf4dddd4d4ed8",
+          "bytes": 12
+        },
+        "id": 10
+      },
+      {
+        "block": {
+          "blob_sha256": "74a84169a9bbc9a968d20a610a77e7dd36ecd571c42b9bd7363b5ce20547ba66",
+          "bytes": 8
+        },
+        "id": 1
+      },
+      {
+        "block": {
+          "blob_sha256": "a74bda9a76a4dd7184e18d0476d4d7dada9f6ecb41c9ece44147d3c6cc886168",
+          "bytes": 184
+        },
+        "id": 137438953473
+      }
+    ],
+    "memory_index_chunks_fts_docsize": [
+      {
+        "id": 1,
+        "sz": {
+          "blob_sha256": "9b5ac3b51fa1cab89b11c119415d7bd8285aaaed09cc6e26da173578d14dc094",
+          "bytes": 7
+        }
+      }
+    ],
+    "memory_index_chunks_fts_idx": [
+      {
+        "pgno": 2,
+        "segid": 1,
+        "term": {
+          "blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    ],
+    "memory_index_chunks_vec": [
+      {
+        "embedding": {
+          "blob_sha256": "289a22f3d0c65ce76bf2473a85da8d2054d02da2e12e7e426eddde9e03ecbb9e",
+          "bytes": 3072
+        },
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95"
+      }
+    ],
+    "memory_index_chunks_vec_chunks": [
+      {
+        "chunk_id": 1,
+        "rowids": {
+          "blob_sha256": "2b8e753c2efa059010b3aecd6c00bff0a1a09c0f08d5d4522ffef4d207c1fb0c",
+          "bytes": 8192
+        },
+        "size": 1024,
+        "validity": {
+          "blob_sha256": "ed4fc1d85afa5175e4973c9780b78fa000f070c00230ec18d6190133cb915db5",
+          "bytes": 128
+        }
+      }
+    ],
+    "memory_index_chunks_vec_info": [
+      {
+        "key": "CREATE_VERSION",
+        "value": "v0.1.9"
+      },
+      {
+        "key": "CREATE_VERSION_MAJOR",
+        "value": 0
+      },
+      {
+        "key": "CREATE_VERSION_MINOR",
+        "value": 1
+      },
+      {
+        "key": "CREATE_VERSION_PATCH",
+        "value": 9
+      }
+    ],
+    "memory_index_chunks_vec_rowids": [
+      {
+        "chunk_id": 1,
+        "chunk_offset": 0,
+        "id": "e3ca1f9e6be146c353b7d68ec388e8559c0aa754a30a31f1a8151abfc35e5c95",
+        "rowid": 1
+      }
+    ],
+    "memory_index_chunks_vec_vector_chunks00": [
+      {
+        "rowid": 1,
+        "vectors": {
+          "blob_sha256": "570819ed88dede77550a8329d888e0af70d69bfac8cdc9c7837bd31af94c8695",
+          "bytes": 3145728
+        }
+      }
+    ],
+    "memory_index_meta": [
+      {
+        "key": "memory_index_meta_v1",
+        "value": "{\"model\":\"hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf\",\"provider\":\"local\",\"providerKey\":\"1aa2ac866bc583512646fc8f39c1c4f51bdf56d0e4157fb939708da57821f17f\",\"sources\":[\"memory\",\"sessions\"],\"scopeHash\":\"e861c1d291b583b9f4bf96233b72b9e6984cc92320671a0805e1063946e4b1a1\",\"chunkTokens\":400,\"chunkOverlap\":80,\"chunkingVersion\":6,\"embeddingInputFormatVersion\":1,\"ftsTokenizer\":\"unicode61\",\"provenanceVersion\":1,\"vectorDims\":768}"
+      },
+      {
+        "key": "memory_vector_rebuild_v1",
+        "value": "clean"
+      }
+    ],
+    "memory_index_paths_fts": [
+      {
+        "path": "MEMORY.md",
+        "source": "memory"
+      }
+    ],
+    "memory_index_paths_fts_config": [
+      {
+        "k": "version",
+        "v": 4
+      }
+    ],
+    "memory_index_paths_fts_content": [
+      {
+        "c0": "MEMORY.md",
+        "c1": "memory",
+        "id": 1
+      }
+    ],
+    "memory_index_paths_fts_data": [
+      {
+        "block": {
+          "blob_sha256": "12e32e851005a6264755ba4344589586d262b484f11194d4c4a94d7aa8109528",
+          "bytes": 23
+        },
+        "id": 137438953473
+      },
+      {
+        "block": {
+          "blob_sha256": "6a7fdc3681aac9030dde1a55df6faa20620d955746b610d5d37bf4dddd4d4ed8",
+          "bytes": 12
+        },
+        "id": 10
+      },
+      {
+        "block": {
+          "blob_sha256": "d7b3d4012540102c40a23acdeee417e06a42a74a5d66c7efe59f4e4aa0537c5c",
+          "bytes": 3
+        },
+        "id": 1
+      }
+    ],
+    "memory_index_paths_fts_docsize": [
+      {
+        "id": 1,
+        "sz": {
+          "blob_sha256": "99be5efb88ca2013bd8e4eb035fd42d5245468fe9afa70d8ba9c1c419a48c4e8",
+          "bytes": 2
+        }
+      }
+    ],
+    "memory_index_paths_fts_idx": [
+      {
+        "pgno": 2,
+        "segid": 1,
+        "term": {
+          "blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    ],
+    "memory_index_sources": [
+      {
+        "hash": "36bc6cd1da478fc0bd05eaa18598f12380f99431e8a4359db9b623b6a748f5b2",
+        "id": 1,
+        "mtime": 1791771811647.9854,
+        "path": "MEMORY.md",
+        "size": 121,
+        "source": "memory"
+      }
+    ],
+    "memory_index_state": [
+      {
+        "id": 1,
+        "revision": 6
+      }
+    ],
+    "memory_session_tombstones": []
+  },
+  "baseline-memory-search.json": {
+    "results": [
+      {
+        "path": "MEMORY.md",
+        "startLine": 1,
+        "endLine": 4,
+        "score": 0.6886108187781971,
+        "vectorScore": 0.6922994554042816,
+        "textScore": 3.999984000064e-06,
+        "snippet": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "source": "memory",
+        "provenance": {
+          "originClass": "agent",
+          "sessionKind": "unknown",
+          "observedAt": 1791771811647
+        }
+      }
+    ]
+  },
+  "baseline-memory-status.json": [
+    {
+      "agentId": "main",
+      "status": {
+        "backend": "builtin",
+        "files": 1,
+        "chunks": 1,
+        "dirty": false,
+        "workspaceDir": "/home/proof/workspace",
+        "dbPath": "/home/proof/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+        "storage": {
+          "databaseBytes": 3919872,
+          "walBytes": 0,
+          "reusableBytes": 0,
+          "embeddingCacheBytes": 6144,
+          "embeddingCacheEntries": 1
+        },
+        "provider": "local",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "requestedProvider": "local",
+        "sources": [
+          "memory",
+          "sessions"
+        ],
+        "extraPaths": [],
+        "sourceCounts": [
+          {
+            "source": "memory",
+            "files": 1,
+            "chunks": 1,
+            "chunkBytes": 6265,
+            "dirty": false,
+            "eligible": 1,
+            "issues": []
+          },
+          {
+            "source": "sessions",
+            "files": 0,
+            "chunks": 0,
+            "chunkBytes": 0,
+            "eligible": 0,
+            "issues": [
+              "no eligible session transcripts found"
+            ]
+          }
+        ],
+        "cache": {
+          "enabled": true,
+          "entries": 1,
+          "maxEntries": 50000
+        },
+        "fts": {
+          "enabled": true,
+          "available": true
+        },
+        "vector": {
+          "enabled": true,
+          "index": {
+            "state": "complete"
+          },
+          "storeAvailable": true,
+          "semanticAvailable": true,
+          "available": true,
+          "extensionPath": "/home/proof/stable-prefix/lib/node_modules/openclaw/node_modules/sqlite-vec-linux-x64/vec0.so",
+          "dims": 768
+        },
+        "batch": {
+          "enabled": false,
+          "failures": 0,
+          "limit": 2,
+          "wait": true,
+          "concurrency": 2,
+          "pollIntervalMs": 2000,
+          "timeoutMs": 3600000
+        },
+        "custom": {
+          "llamaCppRuntime": {
+            "engine": "llama.cpp",
+            "state": "ready",
+            "buildInfo": "b10809-5266f24da",
+            "model": {
+              "id": "embeddinggemma-300m-qat-q8_0",
+              "path": "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_embeddinggemma-300m-qat-Q8_0.gguf"
+            },
+            "capabilities": {
+              "vision": false,
+              "draft": false
+            },
+            "endpoints": {
+              "health": "ready",
+              "models": "ready",
+              "props": "ready",
+              "metrics": "ready"
+            }
+          },
+          "searchMode": "hybrid",
+          "providerState": {
+            "mode": "active",
+            "providerId": "local"
+          },
+          "indexIdentity": {
+            "status": "valid"
+          },
+          "automaticRebuildNotice": {
+            "sequence": 0,
+            "warning": ""
+          }
+        }
+      },
+      "embeddingProbe": {
+        "ok": true
+      },
+      "scan": {
+        "sources": [
+          {
+            "source": "memory",
+            "totalFiles": 1,
+            "issues": []
+          },
+          {
+            "source": "sessions",
+            "totalFiles": 0,
+            "issues": [
+              "no eligible session transcripts found"
+            ]
+          }
+        ],
+        "totalFiles": 1,
+        "issues": [
+          "no eligible session transcripts found"
+        ]
+      },
+      "audit": {
+        "storePath": "plugin-state:memory-core/short-term-recall/8cc1c71615b1758180e6fdbbc7541b1074b068235358e45113ae5eb4e47a0352",
+        "lockPath": "plugin-state:memory-core/short-term-locks/8cc1c71615b1758180e6fdbbc7541b1074b068235358e45113ae5eb4e47a0352",
+        "exists": false,
+        "entryCount": 0,
+        "promotedCount": 0,
+        "spacedEntryCount": 0,
+        "conceptTaggedEntryCount": 0,
+        "invalidEntryCount": 0,
+        "danglingEntryCount": 0,
+        "issues": []
+      },
+      "dreamingAudit": {
+        "sessionCorpusDir": "/home/proof/workspace/memory/.dreams/session-corpus",
+        "sessionCorpusFileCount": 0,
+        "suspiciousSessionCorpusFileCount": 0,
+        "suspiciousSessionCorpusLineCount": 0,
+        "sessionIngestionPath": "/home/proof/workspace/memory/.dreams/session-ingestion.json",
+        "sessionIngestionExists": false,
+        "issues": []
+      }
+    }
+  ],
+  "post-update-memory-search.json": {
+    "results": [
+      {
+        "path": "MEMORY.md",
+        "startLine": 1,
+        "endLine": 4,
+        "score": 0.6164130362931699,
+        "vectorScore": 0.7071196436882019,
+        "textScore": 3.999984000064e-06,
+        "snippet": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "source": "memory",
+        "provenance": {
+          "originClass": "agent",
+          "sessionKind": "unknown",
+          "observedAt": 1791771811647
+        }
+      }
+    ],
+    "warning": "Automatic memory index repair was requested. To rebuild manually, run: openclaw memory status --index --agent main. Rebuilding may call the configured embedding provider and can incur provider cost."
+  },
+  "post-update-memory-search-repeat.json": {
+    "results": [
+      {
+        "path": "MEMORY.md",
+        "startLine": 1,
+        "endLine": 4,
+        "score": 0.6164130362931699,
+        "vectorScore": 0.7071196436882019,
+        "textScore": 3.999984000064e-06,
+        "snippet": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "source": "memory",
+        "provenance": {
+          "originClass": "agent",
+          "sessionKind": "unknown",
+          "observedAt": 1791771811647
+        }
+      }
+    ]
+  },
+  "post-update-memory-status.json": [
+    {
+      "agentId": "main",
+      "status": {
+        "backend": "builtin",
+        "files": 1,
+        "chunks": 1,
+        "dirty": false,
+        "workspaceDir": "/home/proof/workspace",
+        "dbPath": "/home/proof/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+        "storage": {
+          "databaseBytes": 3940352,
+          "walBytes": 0,
+          "reusableBytes": 0,
+          "embeddingCacheBytes": 12288,
+          "embeddingCacheEntries": 2
+        },
+        "provider": "local",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "requestedProvider": "local",
+        "sources": [
+          "memory",
+          "sessions"
+        ],
+        "extraPaths": [],
+        "sourceCounts": [
+          {
+            "source": "memory",
+            "files": 1,
+            "chunks": 1,
+            "chunkBytes": 6265,
+            "dirty": false,
+            "eligible": 1,
+            "issues": []
+          },
+          {
+            "source": "sessions",
+            "files": 0,
+            "chunks": 0,
+            "chunkBytes": 0,
+            "eligible": 0,
+            "issues": [
+              "no eligible session transcripts found"
+            ]
+          }
+        ],
+        "cache": {
+          "enabled": true,
+          "entries": 2,
+          "maxEntries": 50000
+        },
+        "fts": {
+          "enabled": true,
+          "available": true
+        },
+        "vector": {
+          "enabled": true,
+          "index": {
+            "state": "complete"
+          },
+          "storeAvailable": true,
+          "semanticAvailable": true,
+          "available": true,
+          "extensionPath": "/home/proof/stable-prefix/lib/node_modules/openclaw/node_modules/sqlite-vec-linux-x64/vec0.so",
+          "dims": 768
+        },
+        "batch": {
+          "enabled": false,
+          "failures": 0,
+          "limit": 2,
+          "wait": true,
+          "concurrency": 2,
+          "pollIntervalMs": 2000,
+          "timeoutMs": 3600000
+        },
+        "custom": {
+          "llamaCppRuntime": {
+            "engine": "llama.cpp",
+            "state": "ready",
+            "buildInfo": "b10809-5266f24da",
+            "model": {
+              "id": "embeddinggemma-300m-qat-q8_0",
+              "path": "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_embeddinggemma-300m-qat-Q8_0.gguf"
+            },
+            "capabilities": {
+              "vision": false,
+              "draft": false
+            },
+            "endpoints": {
+              "health": "ready",
+              "models": "ready",
+              "props": "ready",
+              "metrics": "ready"
+            }
+          },
+          "searchMode": "hybrid",
+          "providerState": {
+            "mode": "active",
+            "providerId": "local"
+          },
+          "indexIdentity": {
+            "status": "valid"
+          },
+          "automaticRebuildNotice": {
+            "sequence": 0,
+            "warning": ""
+          }
+        }
+      },
+      "embeddingProbe": {
+        "ok": true
+      },
+      "scan": {
+        "sources": [
+          {
+            "source": "memory",
+            "totalFiles": 1,
+            "issues": []
+          },
+          {
+            "source": "sessions",
+            "totalFiles": 0,
+            "issues": [
+              "no eligible session transcripts found"
+            ]
+          }
+        ],
+        "totalFiles": 1,
+        "issues": [
+          "no eligible session transcripts found"
+        ]
+      },
+      "audit": {
+        "storePath": "plugin-state:memory-core/short-term-recall/8cc1c71615b1758180e6fdbbc7541b1074b068235358e45113ae5eb4e47a0352",
+        "lockPath": "plugin-state:memory-core/short-term-locks/8cc1c71615b1758180e6fdbbc7541b1074b068235358e45113ae5eb4e47a0352",
+        "exists": false,
+        "entryCount": 0,
+        "promotedCount": 0,
+        "spacedEntryCount": 0,
+        "conceptTaggedEntryCount": 0,
+        "invalidEntryCount": 0,
+        "danglingEntryCount": 0,
+        "issues": []
+      },
+      "dreamingAudit": {
+        "sessionCorpusDir": "/home/proof/workspace/memory/.dreams/session-corpus",
+        "sessionCorpusFileCount": 0,
+        "suspiciousSessionCorpusFileCount": 0,
+        "suspiciousSessionCorpusLineCount": 0,
+        "sessionIngestionPath": "/home/proof/workspace/memory/.dreams/session-ingestion.json",
+        "sessionIngestionExists": false,
+        "issues": []
+      }
+    }
+  ],
+  "post-media-ordinary-memory-search.json": {
+    "results": [
+      {
+        "path": "MEMORY.md",
+        "startLine": 1,
+        "endLine": 4,
+        "score": 0.6164130362931699,
+        "vectorScore": 0.7071196436882019,
+        "textScore": 3.999984000064e-06,
+        "snippet": "# Synthetic PR 148193 compatibility fact\n\nThe blue lantern maintenance code is ORCHID-4827. This is synthetic test data.\n",
+        "source": "memory",
+        "provenance": {
+          "originClass": "agent",
+          "sessionKind": "unknown",
+          "observedAt": 1791771811647
+        }
+      }
+    ]
+  },
+  "post-media-ordinary-memory-status.json": [
+    {
+      "agentId": "main",
+      "status": {
+        "backend": "builtin",
+        "files": 1,
+        "chunks": 1,
+        "dirty": false,
+        "workspaceDir": "/home/proof/workspace",
+        "dbPath": "/home/proof/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+        "storage": {
+          "databaseBytes": 3940352,
+          "walBytes": 0,
+          "reusableBytes": 0,
+          "embeddingCacheBytes": 12288,
+          "embeddingCacheEntries": 2
+        },
+        "provider": "local",
+        "model": "hf:ggml-org/embeddinggemma-300m-qat-q8_0-GGUF/embeddinggemma-300m-qat-Q8_0.gguf",
+        "requestedProvider": "local",
+        "sources": [
+          "memory",
+          "sessions"
+        ],
+        "extraPaths": [],
+        "sourceCounts": [
+          {
+            "source": "memory",
+            "files": 1,
+            "chunks": 1,
+            "chunkBytes": 6265,
+            "dirty": false,
+            "eligible": 1,
+            "issues": []
+          },
+          {
+            "source": "sessions",
+            "files": 0,
+            "chunks": 0,
+            "chunkBytes": 0,
+            "eligible": 0,
+            "issues": [
+              "no eligible session transcripts found"
+            ]
+          }
+        ],
+        "cache": {
+          "enabled": true,
+          "entries": 2,
+          "maxEntries": 50000
+        },
+        "fts": {
+          "enabled": true,
+          "available": true
+        },
+        "vector": {
+          "enabled": true,
+          "index": {
+            "state": "complete"
+          },
+          "storeAvailable": true,
+          "semanticAvailable": true,
+          "available": true,
+          "extensionPath": "/home/proof/stable-prefix/lib/node_modules/openclaw/node_modules/sqlite-vec-linux-x64/vec0.so",
+          "dims": 768
+        },
+        "batch": {
+          "enabled": false,
+          "failures": 0,
+          "limit": 2,
+          "wait": true,
+          "concurrency": 2,
+          "pollIntervalMs": 2000,
+          "timeoutMs": 3600000
+        },
+        "custom": {
+          "llamaCppRuntime": {
+            "engine": "llama.cpp",
+            "state": "ready",
+            "buildInfo": "b10809-5266f24da",
+            "model": {
+              "id": "embeddinggemma-300m-qat-q8_0",
+              "path": "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_embeddinggemma-300m-qat-Q8_0.gguf"
+            },
+            "capabilities": {
+              "vision": false,
+              "draft": false
+            },
+            "endpoints": {
+              "health": "ready",
+              "models": "ready",
+              "props": "ready",
+              "metrics": "ready"
+            }
+          },
+          "searchMode": "hybrid",
+          "providerState": {
+            "mode": "active",
+            "providerId": "local"
+          },
+          "indexIdentity": {
+            "status": "valid"
+          },
+          "automaticRebuildNotice": {
+            "sequence": 0,
+            "warning": ""
+          }
+        }
+      },
+      "embeddingProbe": {
+        "ok": true
+      },
+      "scan": {
+        "sources": [
+          {
+            "source": "memory",
+            "totalFiles": 1,
+            "issues": []
+          },
+          {
+            "source": "sessions",
+            "totalFiles": 0,
+            "issues": [
+              "no eligible session transcripts found"
+            ]
+          }
+        ],
+        "totalFiles": 1,
+        "issues": [
+          "no eligible session transcripts found"
+        ]
+      },
+      "audit": {
+        "storePath": "plugin-state:memory-core/short-term-recall/8cc1c71615b1758180e6fdbbc7541b1074b068235358e45113ae5eb4e47a0352",
+        "lockPath": "plugin-state:memory-core/short-term-locks/8cc1c71615b1758180e6fdbbc7541b1074b068235358e45113ae5eb4e47a0352",
+        "exists": false,
+        "entryCount": 0,
+        "promotedCount": 0,
+        "spacedEntryCount": 0,
+        "conceptTaggedEntryCount": 0,
+        "invalidEntryCount": 0,
+        "danglingEntryCount": 0,
+        "issues": []
+      },
+      "dreamingAudit": {
+        "sessionCorpusDir": "/home/proof/workspace/memory/.dreams/session-corpus",
+        "sessionCorpusFileCount": 0,
+        "suspiciousSessionCorpusFileCount": 0,
+        "suspiciousSessionCorpusLineCount": 0,
+        "sessionIngestionPath": "/home/proof/workspace/memory/.dreams/session-ingestion.json",
+        "sessionIngestionExists": false,
+        "issues": []
+      }
+    }
+  ],
+  "baseline-config.json": {
+    "plugins": {
+      "entries": {
+        "llama-cpp": {
+          "enabled": true
+        },
+        "anthropic": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        },
+        "codex": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        }
+      },
+      "allow": [
+        "llama-cpp",
+        "memory-core",
+        "openai"
+      ]
+    },
+    "meta": {
+      "migrations": {
+        "modelPolicyAllowlist": true,
+        "utilityModelSeparation": true
+      },
+      "lastTouchedVersion": "2026.10.1"
+    },
+    "gateway": {
+      "mode": "local",
+      "bind": "loopback",
+      "port": 19793,
+      "auth": {
+        "mode": "none"
+      }
+    },
+    "agents": {
+      "defaults": {
+        "workspace": "/home/proof/workspace",
+        "model": {
+          "primary": "llama-cpp/proof-qwen2.5-0.5b"
+        },
+        "imageModel": {
+          "primary": "proof-old/image",
+          "fallbacks": [
+            "proof-old/fallback"
+          ]
+        }
+      }
+    },
+    "models": {
+      "providers": {
+        "llama-cpp": {
+          "baseUrl": "http://127.0.0.1:36157/v1",
+          "api": "openai-completions",
+          "apiKey": "[REDACTED SYNTHETIC LOCAL MARKER]",
+          "params": {
+            "modelCacheDir": "/home/proof/.openclaw/models/llama.cpp"
+          },
+          "localService": {
+            "command": "/home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server",
+            "args": [
+              "--host",
+              "127.0.0.1",
+              "--port",
+              "36157",
+              "--models-preset",
+              "/home/proof/.openclaw/tools/llama.cpp/models-2b89d7fa-f91d-4ec6-bde1-cb24a10830ec.ini",
+              "--models-max",
+              "2",
+              "--metrics",
+              "--no-ui"
+            ],
+            "healthUrl": "http://127.0.0.1:36157/health",
+            "readyTimeoutMs": 30000,
+            "idleStopMs": 600000
+          },
+          "models": [
+            {
+              "id": "proof-qwen2.5-0.5b",
+              "name": "Synthetic proof chat (Qwen2.5 0.5B)",
+              "reasoning": false,
+              "input": [
+                "text"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 65536,
+              "contextTokens": 65536,
+              "maxTokens": 512,
+              "params": {
+                "modelPath": "hf:Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q8_0.gguf#9217f5db79a29953eb74d5343926648285ec7e67",
+                "contextSize": 65536
+              }
+            }
+          ],
+          "timeoutSeconds": 600,
+          "agentRuntime": {
+            "id": "openclaw"
+          }
+        },
+        "proof-old": {
+          "baseUrl": "http://127.0.0.1:9/v1",
+          "api": "openai-completions",
+          "models": [
+            {
+              "id": "image",
+              "name": "image",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "fallback",
+              "name": "fallback",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "audio-video",
+              "name": "audio-video",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            }
+          ]
+        }
+      },
+      "mode": "merge"
+    },
+    "memory": {
+      "search": {
+        "provider": "local",
+        "fallback": "none"
+      }
+    },
+    "tools": {
+      "profile": "full",
+      "fs": {
+        "workspaceOnly": true
+      },
+      "media": {
+        "models": [
+          {
+            "provider": "proof-old",
+            "model": "image",
+            "capabilities": [
+              "image"
+            ]
+          },
+          {
+            "provider": "proof-old",
+            "model": "audio-video",
+            "capabilities": [
+              "audio",
+              "video"
+            ]
+          }
+        ],
+        "image": {
+          "maxBytes": 10485760,
+          "maxChars": 12000,
+          "timeoutSeconds": 600
+        }
+      }
+    }
+  },
+  "before-media-config.json": {
+    "plugins": {
+      "entries": {
+        "llama-cpp": {
+          "enabled": true
+        },
+        "anthropic": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        },
+        "codex": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        }
+      },
+      "allow": [
+        "llama-cpp",
+        "memory-core",
+        "openai"
+      ]
+    },
+    "meta": {
+      "migrations": {
+        "modelPolicyAllowlist": true,
+        "utilityModelSeparation": true,
+        "webhookListeners": {
+          "telegram": [],
+          "feishu": [],
+          "msteams": [],
+          "nextcloud-talk": []
+        }
+      },
+      "lastTouchedVersion": "2026.9.9"
+    },
+    "gateway": {
+      "mode": "local",
+      "bind": "loopback",
+      "port": 19793,
+      "auth": {
+        "mode": "none"
+      }
+    },
+    "agents": {
+      "defaults": {
+        "workspace": "/home/proof/workspace",
+        "model": {
+          "primary": "llama-cpp/proof-qwen2.5-0.5b"
+        },
+        "imageModel": {
+          "primary": "proof-old/image",
+          "fallbacks": [
+            "proof-old/fallback"
+          ]
+        }
+      },
+      "entries": {
+        "main": {}
+      }
+    },
+    "models": {
+      "providers": {
+        "llama-cpp": {
+          "baseUrl": "http://127.0.0.1:36157/v1",
+          "api": "openai-completions",
+          "apiKey": "[REDACTED SYNTHETIC LOCAL MARKER]",
+          "params": {
+            "modelCacheDir": "/home/proof/.openclaw/models/llama.cpp"
+          },
+          "localService": {
+            "command": "/home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server",
+            "args": [
+              "--host",
+              "127.0.0.1",
+              "--port",
+              "36157",
+              "--models-preset",
+              "/home/proof/.openclaw/tools/llama.cpp/models-2b89d7fa-f91d-4ec6-bde1-cb24a10830ec.ini",
+              "--models-max",
+              "2",
+              "--metrics",
+              "--no-ui",
+              "--image-max-tokens",
+              "512"
+            ],
+            "healthUrl": "http://127.0.0.1:36157/health",
+            "readyTimeoutMs": 30000,
+            "idleStopMs": 600000
+          },
+          "models": [
+            {
+              "id": "proof-qwen2.5-0.5b",
+              "name": "Synthetic proof chat (Qwen2.5 0.5B)",
+              "reasoning": false,
+              "input": [
+                "text"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 65536,
+              "contextTokens": 65536,
+              "maxTokens": 512,
+              "params": {
+                "modelPath": "hf:Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q8_0.gguf#9217f5db79a29953eb74d5343926648285ec7e67",
+                "contextSize": 65536
+              }
+            }
+          ],
+          "timeoutSeconds": 600,
+          "agentRuntime": {
+            "id": "openclaw"
+          }
+        },
+        "proof-old": {
+          "baseUrl": "http://127.0.0.1:9/v1",
+          "api": "openai-completions",
+          "models": [
+            {
+              "id": "image",
+              "name": "image",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "fallback",
+              "name": "fallback",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "audio-video",
+              "name": "audio-video",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            }
+          ]
+        }
+      },
+      "mode": "merge"
+    },
+    "memory": {
+      "search": {
+        "provider": "local",
+        "fallback": "none"
+      }
+    },
+    "tools": {
+      "profile": "full",
+      "fs": {
+        "workspaceOnly": true
+      },
+      "media": {
+        "models": [
+          {
+            "provider": "proof-old",
+            "model": "image",
+            "capabilities": [
+              "image"
+            ]
+          },
+          {
+            "provider": "proof-old",
+            "model": "audio-video",
+            "capabilities": [
+              "audio",
+              "video"
+            ]
+          }
+        ],
+        "image": {
+          "maxBytes": 10485760,
+          "maxChars": 12000,
+          "timeoutSeconds": 600
+        }
+      }
+    },
+    "wizard": {
+      "lastRunAt": "2026-10-12T02:52:27.687Z",
+      "lastRunVersion": "2026.9.9",
+      "lastRunCommand": "doctor",
+      "lastRunMode": "local"
+    }
+  },
+  "after-ordinary-config.json": {
+    "plugins": {
+      "entries": {
+        "llama-cpp": {
+          "enabled": true
+        },
+        "anthropic": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        },
+        "codex": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        }
+      },
+      "allow": [
+        "llama-cpp",
+        "memory-core",
+        "openai"
+      ]
+    },
+    "meta": {
+      "migrations": {
+        "modelPolicyAllowlist": true,
+        "utilityModelSeparation": true,
+        "webhookListeners": {
+          "telegram": [],
+          "feishu": [],
+          "msteams": [],
+          "nextcloud-talk": []
+        }
+      },
+      "lastTouchedVersion": "2026.9.9"
+    },
+    "gateway": {
+      "mode": "local",
+      "bind": "loopback",
+      "port": 19793,
+      "auth": {
+        "mode": "none"
+      }
+    },
+    "agents": {
+      "defaults": {
+        "workspace": "/home/proof/workspace",
+        "model": {
+          "primary": "llama-cpp/proof-qwen2.5-0.5b"
+        },
+        "imageModel": {
+          "primary": "llama-cpp/smolvlm2-2.2b-instruct-q4_k_m",
+          "fallbacks": []
+        }
+      },
+      "entries": {
+        "main": {}
+      }
+    },
+    "models": {
+      "providers": {
+        "llama-cpp": {
+          "baseUrl": "http://127.0.0.1:36967/v1",
+          "api": "openai-completions",
+          "apiKey": "[REDACTED SYNTHETIC LOCAL MARKER]",
+          "params": {
+            "modelCacheDir": "/home/proof/.openclaw/models/llama.cpp",
+            "mediaModels": {
+              "ocr": "glm-ocr-q8_0",
+              "vision": "smolvlm2-2.2b-instruct-q4_k_m"
+            }
+          },
+          "localService": {
+            "command": "/home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server",
+            "args": [
+              "--metrics",
+              "--no-ui",
+              "--image-max-tokens",
+              "512",
+              "--host",
+              "127.0.0.1",
+              "--port",
+              "36967",
+              "--models-preset",
+              "/home/proof/.openclaw/tools/llama.cpp/models-5b97c164-2a2f-4a53-9f75-e27dd9806a06.ini",
+              "--models-max",
+              "1"
+            ],
+            "healthUrl": "http://127.0.0.1:36967/health",
+            "readyTimeoutMs": 30000,
+            "idleStopMs": 600000
+          },
+          "models": [
+            {
+              "id": "proof-qwen2.5-0.5b",
+              "name": "Synthetic proof chat (Qwen2.5 0.5B)",
+              "reasoning": false,
+              "input": [
+                "text"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 65536,
+              "contextTokens": 65536,
+              "maxTokens": 512,
+              "params": {
+                "modelPath": "hf:Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q8_0.gguf#9217f5db79a29953eb74d5343926648285ec7e67",
+                "contextSize": 65536
+              }
+            },
+            {
+              "id": "glm-ocr-q8_0",
+              "name": "GLM-OCR (Q8_0)",
+              "api": "openai-completions",
+              "baseUrl": "http://127.0.0.1:36967/v1",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 8192,
+              "contextTokens": 8192,
+              "maxTokens": 4096,
+              "params": {
+                "modelPath": "hf:ggml-org/GLM-OCR-GGUF/GLM-OCR-Q8_0.gguf#65a42de1148dbed2297e922b5dbc7d9b70c36578",
+                "mmprojPath": "hf:ggml-org/GLM-OCR-GGUF/mmproj-GLM-OCR-Q8_0.gguf#65a42de1148dbed2297e922b5dbc7d9b70c36578",
+                "contextSize": 8192,
+                "imageMaxTokens": 1024,
+                "device": "none"
+              },
+              "compat": {
+                "supportsTools": false,
+                "supportsUsageInStreaming": true
+              }
+            },
+            {
+              "id": "smolvlm2-2.2b-instruct-q4_k_m",
+              "name": "SmolVLM2 2.2B (Q4_K_M)",
+              "api": "openai-completions",
+              "baseUrl": "http://127.0.0.1:36967/v1",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 8192,
+              "contextTokens": 8192,
+              "maxTokens": 2048,
+              "params": {
+                "modelPath": "hf:ggml-org/SmolVLM2-2.2B-Instruct-GGUF/SmolVLM2-2.2B-Instruct-Q4_K_M.gguf#1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91",
+                "mmprojPath": "hf:ggml-org/SmolVLM2-2.2B-Instruct-GGUF/mmproj-SmolVLM2-2.2B-Instruct-Q8_0.gguf#1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91",
+                "contextSize": 8192,
+                "imageMaxTokens": 1024,
+                "device": "none"
+              },
+              "compat": {
+                "supportsTools": false,
+                "supportsUsageInStreaming": true
+              }
+            }
+          ],
+          "timeoutSeconds": 600,
+          "agentRuntime": {
+            "id": "openclaw"
+          }
+        },
+        "proof-old": {
+          "baseUrl": "http://127.0.0.1:9/v1",
+          "api": "openai-completions",
+          "models": [
+            {
+              "id": "image",
+              "name": "image",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "fallback",
+              "name": "fallback",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "audio-video",
+              "name": "audio-video",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            }
+          ]
+        }
+      },
+      "mode": "merge"
+    },
+    "memory": {
+      "search": {
+        "provider": "local",
+        "fallback": "none"
+      }
+    },
+    "tools": {
+      "profile": "full",
+      "fs": {
+        "workspaceOnly": true
+      },
+      "media": {
+        "models": [
+          {
+            "provider": "proof-old",
+            "model": "audio-video",
+            "capabilities": [
+              "audio",
+              "video"
+            ]
+          },
+          {
+            "provider": "llama-cpp",
+            "model": "smolvlm2-2.2b-instruct-q4_k_m",
+            "capabilities": [
+              "image"
+            ]
+          }
+        ],
+        "image": {
+          "maxBytes": 10485760,
+          "maxChars": 12000,
+          "timeoutSeconds": 600,
+          "enabled": true
+        }
+      }
+    },
+    "wizard": {
+      "lastRunAt": "2026-10-12T02:52:27.687Z",
+      "lastRunVersion": "2026.9.9",
+      "lastRunCommand": "doctor",
+      "lastRunMode": "local"
+    }
+  },
+  "fresh-config-before.json": {
+    "plugins": {
+      "entries": {
+        "llama-cpp": {
+          "enabled": true
+        },
+        "anthropic": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        },
+        "codex": {
+          "config": {
+            "sessionCatalog": {
+              "enabled": false
+            }
+          }
+        }
+      },
+      "allow": [
+        "llama-cpp",
+        "memory-core",
+        "openai"
+      ]
+    },
+    "meta": {
+      "migrations": {
+        "modelPolicyAllowlist": true,
+        "utilityModelSeparation": true
+      },
+      "lastTouchedVersion": "2026.10.1"
+    },
+    "gateway": {
+      "mode": "local",
+      "bind": "loopback",
+      "port": 19796,
+      "auth": {
+        "mode": "none"
+      }
+    },
+    "agents": {
+      "defaults": {
+        "workspace": "/home/proof/fresh-workspace",
+        "model": {
+          "primary": "proof-old/image"
+        },
+        "imageModel": {
+          "primary": "proof-old/image",
+          "fallbacks": [
+            "proof-old/fallback"
+          ]
+        }
+      }
+    },
+    "models": {
+      "providers": {
+        "proof-old": {
+          "baseUrl": "http://127.0.0.1:9/v1",
+          "api": "openai-completions",
+          "models": [
+            {
+              "id": "image",
+              "name": "image",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "fallback",
+              "name": "fallback",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            },
+            {
+              "id": "audio-video",
+              "name": "audio-video",
+              "reasoning": false,
+              "input": [
+                "text",
+                "image"
+              ],
+              "cost": {
+                "input": 0,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              },
+              "contextWindow": 4096,
+              "maxTokens": 512
+            }
+          ]
+        }
+      }
+    },
+    "tools": {
+      "profile": "full",
+      "fs": {
+        "workspaceOnly": true
+      },
+      "media": {
+        "models": [
+          {
+            "provider": "proof-old",
+            "model": "image",
+            "capabilities": [
+              "image"
+            ]
+          },
+          {
+            "provider": "proof-old",
+            "model": "audio-video",
+            "capabilities": [
+              "audio",
+              "video"
+            ]
+          }
+        ],
+        "image": {
+          "maxBytes": 10485760,
+          "maxChars": 12000,
+          "timeoutSeconds": 600
+        }
+      }
+    }
+  },
+  "code-mode-identities.json": {
+    "jobId": "85740f6d-d1c8-4db6-b64c-c57e91ed7866",
+    "sessionKey": "agent:main:cron:85740f6d-d1c8-4db6-b64c-c57e91ed7866:trigger",
+    "approvedPath": "/home/proof/.openclaw/attachments/subagents/main/ff89f3070705f3f94197de68212f21ad/ocr.png"
+  },
+  "code-mode-results.json": {
+    "status": "ok",
+    "durationMs": 62859,
+    "results": {
+      "discovered": true,
+      "ocr": [
+        {
+          "text": "OPENCLAW OCR 4827",
+          "task": "ocr",
+          "provider": "llama-cpp",
+          "model": "glm-ocr-q8_0",
+          "path": "ocr.png"
+        },
+        {
+          "text": "OPENCLAW OCR 4827",
+          "task": "ocr",
+          "provider": "llama-cpp",
+          "model": "glm-ocr-q8_0",
+          "path": "~/workspace/ocr.png"
+        },
+        {
+          "text": "OPENCLAW OCR 4827",
+          "task": "ocr",
+          "provider": "llama-cpp",
+          "model": "glm-ocr-q8_0",
+          "path": "media://inbound/ocr.png"
+        },
+        {
+          "text": "OPENCLAW OCR 4827",
+          "task": "ocr",
+          "provider": "llama-cpp",
+          "model": "glm-ocr-q8_0",
+          "path": "/home/proof/.openclaw/attachments/subagents/main/ff89f3070705f3f94197de68212f21ad/ocr.png"
+        }
+      ],
+      "vision": {
+        "text": "Red square",
+        "task": "vision",
+        "provider": "llama-cpp",
+        "model": "smolvlm2-2.2b-instruct-q4_k_m",
+        "path": "vision.png"
+      },
+      "outsideWorkspaceDenied": true,
+      "denial": "Error: Local media path is not under an allowed directory: /home/proof/unapproved/ocr.png"
+    }
+  },
+  "code-mode-run.json": {
+    "ok": true,
+    "enqueued": true,
+    "runId": "manual:85740f6d-d1c8-4db6-b64c-c57e91ed7866:1791776708738:1",
+    "processInstanceId": "6fec74a8-f65f-449d-b64d-1d2453550c8c",
+    "completed": true,
+    "status": "ok",
+    "completionStatus": "succeeded",
+    "run": {
+      "ts": 1791776771625,
+      "jobId": "85740f6d-d1c8-4db6-b64c-c57e91ed7866",
+      "action": "finished",
+      "status": "ok",
+      "completionStatus": "succeeded",
+      "runId": "manual:85740f6d-d1c8-4db6-b64c-c57e91ed7866:1791776708738:1",
+      "runAtMs": 1791776708766,
+      "durationMs": 62859,
+      "deliveryStatus": "not-requested",
+      "delivery": {
+        "intended": {
+          "channel": "last",
+          "source": "explicit"
+        }
+      },
+      "jobName": "pr148193-code-proof"
+    }
+  },
+  "code-mode-run-history.json": {
+    "entries": [
+      {
+        "ts": 1791776771625,
+        "jobId": "85740f6d-d1c8-4db6-b64c-c57e91ed7866",
+        "action": "finished",
+        "status": "ok",
+        "completionStatus": "succeeded",
+        "runId": "manual:85740f6d-d1c8-4db6-b64c-c57e91ed7866:1791776708738:1",
+        "runAtMs": 1791776708766,
+        "durationMs": 62859,
+        "deliveryStatus": "not-requested",
+        "delivery": {
+          "intended": {
+            "channel": "last",
+            "source": "explicit"
+          }
+        },
+        "jobName": "pr148193-code-proof",
+        "tsIso": "2026-10-12T03:46:11.625+00:00",
+        "runAtIso": "2026-10-12T03:45:08.766+00:00"
+      }
+    ],
+    "total": 1,
+    "offset": 0,
+    "limit": 50,
+    "hasMore": false,
+    "nextOffset": null
+  },
+  "native-models-after-code-mode.json": {
+    "data": [
+      {
+        "id": "embeddinggemma-300m-qat-q8_0",
+        "aliases": [],
+        "tags": [],
+        "object": "model",
+        "owned_by": "llamacpp",
+        "created": 1791776942,
+        "status": {
+          "value": "unloaded",
+          "args": [
+            "/home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server",
+            "--embeddings",
+            "--host",
+            "127.0.0.1",
+            "--image-max-tokens",
+            "512",
+            "--metrics",
+            "--port",
+            "41915",
+            "--no-webui",
+            "--alias",
+            "embeddinggemma-300m-qat-q8_0",
+            "--ctx-size",
+            "2048",
+            "--model",
+            "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_embeddinggemma-300m-qat-Q8_0.gguf",
+            "--parallel",
+            "1",
+            "--ubatch-size",
+            "2048"
+          ],
+          "preset": "[embeddinggemma-300m-qat-q8_0]\nembeddings = true\nimage-max-tokens = 512\nmetrics = 1\nwebui = 0\nctx-size = 2048\nmodel = /home/proof/.openclaw/models/llama.cpp/hf_ggml-org_embeddinggemma-300m-qat-Q8_0.gguf\nparallel = 1\nubatch-size = 2048\n\n"
+        },
+        "architecture": {
+          "input_modalities": [
+            "text"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        },
+        "source": "preset",
+        "can_remove": false
+      },
+      {
+        "id": "glm-ocr-q8_0",
+        "aliases": [],
+        "tags": [],
+        "object": "model",
+        "owned_by": "llamacpp",
+        "created": 1791776942,
+        "status": {
+          "value": "unloaded",
+          "args": [
+            "/home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server",
+            "--host",
+            "127.0.0.1",
+            "--image-max-tokens",
+            "512",
+            "--jinja",
+            "--metrics",
+            "--port",
+            "39315",
+            "--no-webui",
+            "--alias",
+            "glm-ocr-q8_0",
+            "--ctx-size",
+            "8192",
+            "--device",
+            "none",
+            "--model",
+            "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_GLM-OCR-GGUF_65a42de1148dbed2297e922b5dbc7d9b70c36578_GLM-OCR-Q8_0.gguf",
+            "--mmproj",
+            "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_GLM-OCR-GGUF_65a42de1148dbed2297e922b5dbc7d9b70c36578_mmproj-GLM-OCR-Q8_0.gguf",
+            "--mmproj-device",
+            "none",
+            "--n-predict",
+            "4096",
+            "--parallel",
+            "1",
+            "--split-mode",
+            "none"
+          ],
+          "preset": "[glm-ocr-q8_0]\nimage-max-tokens = 512\njinja = true\nmetrics = 1\nwebui = 0\nctx-size = 8192\ndevice = none\nmodel = /home/proof/.openclaw/models/llama.cpp/hf_ggml-org_GLM-OCR-GGUF_65a42de1148dbed2297e922b5dbc7d9b70c36578_GLM-OCR-Q8_0.gguf\nmmproj = /home/proof/.openclaw/models/llama.cpp/hf_ggml-org_GLM-OCR-GGUF_65a42de1148dbed2297e922b5dbc7d9b70c36578_mmproj-GLM-OCR-Q8_0.gguf\nmmproj-device = none\nn-predict = 4096\nparallel = 1\nsplit-mode = none\nload-on-startup = false\n\n"
+        },
+        "architecture": {
+          "input_modalities": [
+            "text",
+            "image"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        },
+        "source": "preset",
+        "can_remove": false
+      },
+      {
+        "id": "proof-qwen2.5-0.5b",
+        "aliases": [],
+        "tags": [],
+        "object": "model",
+        "owned_by": "llamacpp",
+        "created": 1791776942,
+        "status": {
+          "value": "unloaded",
+          "args": [
+            "/home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server",
+            "--host",
+            "127.0.0.1",
+            "--image-max-tokens",
+            "512",
+            "--jinja",
+            "--metrics",
+            "--port",
+            "0",
+            "--no-webui",
+            "--alias",
+            "proof-qwen2.5-0.5b",
+            "--ctx-size",
+            "65536",
+            "--model",
+            "/home/proof/.openclaw/models/llama.cpp/hf_Qwen_Qwen2.5-0.5B-Instruct-GGUF_9217f5db79a29953eb74d5343926648285ec7e67_qwen2.5-0.5b-instruct-q8_0.gguf",
+            "--n-predict",
+            "512",
+            "--threads",
+            "2"
+          ],
+          "preset": "[proof-qwen2.5-0.5b]\nimage-max-tokens = 512\njinja = true\nmetrics = 1\nwebui = 0\nctx-size = 65536\nmodel = /home/proof/.openclaw/models/llama.cpp/hf_Qwen_Qwen2.5-0.5B-Instruct-GGUF_9217f5db79a29953eb74d5343926648285ec7e67_qwen2.5-0.5b-instruct-q8_0.gguf\nn-predict = 512\nthreads = 2\nload-on-startup = false\n\n"
+        },
+        "architecture": {
+          "input_modalities": [
+            "text"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        },
+        "source": "preset",
+        "can_remove": false
+      },
+      {
+        "id": "smolvlm2-2.2b-instruct-q4_k_m",
+        "aliases": [],
+        "tags": [],
+        "object": "model",
+        "owned_by": "llamacpp",
+        "created": 1791776942,
+        "status": {
+          "value": "loaded",
+          "args": [
+            "/home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server",
+            "--host",
+            "127.0.0.1",
+            "--image-max-tokens",
+            "512",
+            "--jinja",
+            "--metrics",
+            "--port",
+            "42013",
+            "--no-webui",
+            "--alias",
+            "smolvlm2-2.2b-instruct-q4_k_m",
+            "--ctx-size",
+            "8192",
+            "--device",
+            "none",
+            "--model",
+            "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_SmolVLM2-2.2B-Instruct-GGUF_1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91_SmolVLM2-2.2B-Instruct-Q4_K_M.gguf",
+            "--mmproj",
+            "/home/proof/.openclaw/models/llama.cpp/hf_ggml-org_SmolVLM2-2.2B-Instruct-GGUF_1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91_mmproj-SmolVLM2-2.2B-Instruct-Q8_0.gguf",
+            "--mmproj-device",
+            "none",
+            "--n-predict",
+            "2048",
+            "--parallel",
+            "1",
+            "--split-mode",
+            "none"
+          ],
+          "preset": "[smolvlm2-2.2b-instruct-q4_k_m]\nimage-max-tokens = 512\njinja = true\nmetrics = 1\nwebui = 0\nctx-size = 8192\ndevice = none\nmodel = /home/proof/.openclaw/models/llama.cpp/hf_ggml-org_SmolVLM2-2.2B-Instruct-GGUF_1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91_SmolVLM2-2.2B-Instruct-Q4_K_M.gguf\nmmproj = /home/proof/.openclaw/models/llama.cpp/hf_ggml-org_SmolVLM2-2.2B-Instruct-GGUF_1bc3c9f74ceafd4c8d4411cc9cf188bba3798f91_mmproj-SmolVLM2-2.2B-Instruct-Q8_0.gguf\nmmproj-device = none\nn-predict = 2048\nparallel = 1\nsplit-mode = none\nload-on-startup = false\n\n"
+        },
+        "architecture": {
+          "input_modalities": [
+            "text",
+            "image"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        },
+        "source": "preset",
+        "can_remove": false,
+        "meta": {
+          "vocab_type": true,
+          "n_vocab": 49280,
+          "n_ctx": 8192,
+          "n_ctx_train": 8192,
+          "n_embd": 2048,
+          "n_params": 1812563968,
+          "size": 1110812672,
+          "ftype": "Q4_K - Medium"
+        }
+      }
+    ],
+    "object": "list"
+  },
+  "failure-preservation.json": {
+    "before": {
+      "configSha256": "6342521ca25212660a238f94bf11c73b2d2c57ca544ef5d1a092e62804b83a2e",
+      "existingPresetSha256": "285e041b6d246d2604bcb6ee97658b62f4388ccdc548ca33b9cd479bc74a3b19",
+      "presetDirInventory": [
+        "models-2b89d7fa-f91d-4ec6-bde1-cb24a10830ec.ini",
+        "models-5b97c164-2a2f-4a53-9f75-e27dd9806a06.ini",
+        "models-86496c9a-cbe9-47f4-a7ae-11b95d74fe26.ini"
+      ]
+    },
+    "after": {
+      "configSha256": "6342521ca25212660a238f94bf11c73b2d2c57ca544ef5d1a092e62804b83a2e",
+      "existingPresetSha256": "285e041b6d246d2604bcb6ee97658b62f4388ccdc548ca33b9cd479bc74a3b19",
+      "presetDirInventory": [
+        "models-2b89d7fa-f91d-4ec6-bde1-cb24a10830ec.ini",
+        "models-5b97c164-2a2f-4a53-9f75-e27dd9806a06.ini",
+        "models-86496c9a-cbe9-47f4-a7ae-11b95d74fe26.ini"
+      ]
+    },
+    "exact": true
+  },
+  "chat-fixture-integrity-metadata.json": [
+    {
+      "type": "file",
+      "oid": "92271af457052afc8f1499dd480502e0bcbf87a0",
+      "size": 675710816,
+      "lfs": {
+        "oid": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+        "size": 675710816,
+        "pointerSize": 134
+      },
+      "xetHash": "4a774f8683c7a6ec686a4223565556409433745adf6e38fa5cba5bb0ad0e738e",
+      "path": "qwen2.5-0.5b-instruct-q8_0.gguf"
+    }
+  ],
+  "structured-agent-run.json": {
+    "runId": "26f0c917-2ef5-499a-bd0f-ef5fbd5a984b",
+    "status": "ok",
+    "summary": "completed",
+    "result": {
+      "payloads": [
+        {
+          "text": "```md\n<!-- observed: YYYY-MM-DD | status: active -->\n\n- Prefer concise progress updates during implementation work.\n```\n\n## Related\n\n- [Agent workspace](/concepts/agent-workspace)\n## /home/proof/workspace/GATEWAY.md\n# GATEWAY.md - Gateway\n\n### Main Process Context\n\nIn the context of the main process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Process Context\n\nIn the context of the process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Global Image Context\n\nIn the context of the global image, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Main Session Context\n\nIn the context of the main session, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### User Model Context\n\nIn the context of the user model, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Persistent Data Context\n\nIn the context of the persistent data, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama",
+          "mediaUrl": null
+        },
+        {
+          "text": "\u26a0\ufe0f Reply truncated at the model's output token limit. The text above is partial \u2014 ask to continue it.",
+          "mediaUrl": null
+        }
+      ],
+      "meta": {
+        "durationMs": 88438,
+        "agentMeta": {
+          "sessionId": "51bc274f-e538-4c64-8044-37b93212eea1",
+          "sessionFile": "agent:main:pr148193-structured-proof",
+          "provider": "llama-cpp",
+          "model": "proof-qwen2.5-0.5b",
+          "contextTokens": 65536,
+          "contextTokensSource": "resolved",
+          "agentHarnessId": "openclaw",
+          "credentialSource": {
+            "kind": "direct",
+            "evidence": "synthetic",
+            "authorization": "[REDACTED SYNTHETIC LOCAL MARKER]"
+          },
+          "usage": {
+            "input": 5254,
+            "output": 512,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 5766,
+            "cost": {
+              "total": 0
+            }
+          },
+          "lastCallUsage": {
+            "input": 5254,
+            "output": 512,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "cacheTelemetry": {
+              "state": "available"
+            },
+            "cost": {
+              "total": 0
+            },
+            "contextUsage": {
+              "state": "available",
+              "promptTokens": 5254,
+              "totalTokens": 5766
+            },
+            "total": 5766
+          },
+          "promptTokens": 5254,
+          "contextBudgetStatus": {
+            "schemaVersion": 1,
+            "source": "pre-prompt-estimate",
+            "updatedAt": 1791777681374,
+            "provider": "llama-cpp",
+            "model": "proof-qwen2.5-0.5b",
+            "route": "fits",
+            "shouldCompact": false,
+            "estimatedPromptTokens": 7015,
+            "contextTokenBudget": 65536,
+            "promptBudgetBeforeReserve": 49152,
+            "reserveTokens": 16384,
+            "effectiveReserveTokens": 16384,
+            "remainingPromptBudgetTokens": 42137,
+            "overflowTokens": 0,
+            "toolResultReducibleChars": 0,
+            "messageCount": 0,
+            "unwindowedMessageCount": 0,
+            "sessionId": "51bc274f-e538-4c64-8044-37b93212eea1"
+          },
+          "codeModeEngaged": false,
+          "assistantTurns": 1,
+          "bridgeCalls": {
+            "search": 0,
+            "describe": 0,
+            "call": 0
+          },
+          "costUsd": 0,
+          "terminalReceipt": {
+            "runId": "26f0c917-2ef5-499a-bd0f-ef5fbd5a984b",
+            "sessionId": "51bc274f-e538-4c64-8044-37b93212eea1",
+            "turnId": "26f0c917-2ef5-499a-bd0f-ef5fbd5a984b",
+            "requested": {
+              "provider": "llama-cpp",
+              "model": "proof-qwen2.5-0.5b"
+            },
+            "effective": {
+              "provider": "llama-cpp",
+              "model": "proof-qwen2.5-0.5b",
+              "responseModel": "proof-qwen2.5-0.5b"
+            },
+            "successfulToolNames": [],
+            "rerouted": false,
+            "terminalDisposition": "visible"
+          }
+        },
+        "aborted": false,
+        "systemPromptReport": {
+          "source": "run",
+          "generatedAt": 1791777680717,
+          "sessionId": "51bc274f-e538-4c64-8044-37b93212eea1",
+          "sessionKey": "agent:main:pr148193-structured-proof",
+          "provider": "llama-cpp",
+          "model": "proof-qwen2.5-0.5b",
+          "workspaceDir": "/home/proof/workspace",
+          "bootstrapMaxChars": 20000,
+          "bootstrapTotalMaxChars": 60000,
+          "bootstrapTruncation": {
+            "warningMode": "always",
+            "warningShown": false,
+            "truncatedFiles": 0,
+            "nearLimitFiles": 0,
+            "totalNearLimit": false
+          },
+          "sandbox": {
+            "mode": "off",
+            "sandboxed": false
+          },
+          "systemPrompt": {
+            "chars": 19527,
+            "hash": "a9df782868eba2427d258a52e2b2d4b6682eb9ffe268fb4c2418a83a18667d63",
+            "projectContextChars": 12985,
+            "nonProjectContextChars": 6542
+          },
+          "injectedWorkspaceFiles": [
+            {
+              "name": "AGENTS.md",
+              "path": "/home/proof/workspace/AGENTS.md",
+              "missing": false,
+              "rawChars": 6449,
+              "injectedChars": 6449,
+              "truncated": false
+            },
+            {
+              "name": "SOUL.md",
+              "path": "/home/proof/workspace/SOUL.md",
+              "missing": false,
+              "rawChars": 1526,
+              "injectedChars": 1526,
+              "truncated": false
+            },
+            {
+              "name": "IDENTITY.md",
+              "path": "/home/proof/workspace/IDENTITY.md",
+              "missing": false,
+              "rawChars": 1453,
+              "injectedChars": 1453,
+              "truncated": false
+            },
+            {
+              "name": "USER.md",
+              "path": "/home/proof/workspace/USER.md",
+              "missing": false,
+              "rawChars": 1136,
+              "injectedChars": 1136,
+              "truncated": false
+            },
+            {
+              "name": "MEMORY.md",
+              "path": "/home/proof/workspace/MEMORY.md",
+              "missing": false,
+              "rawChars": 120,
+              "injectedChars": 120,
+              "truncated": false
+            }
+          ],
+          "skills": {
+            "promptChars": 0,
+            "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "entries": []
+          },
+          "tools": {
+            "listChars": 0,
+            "schemaChars": 1474,
+            "entries": [
+              {
+                "name": "tool_search",
+                "summaryChars": 502,
+                "summaryHash": "acdcab138b356606711452241e668c366bdb15428e39a28a94d7be27d7968626",
+                "schemaChars": 1139,
+                "schemaHash": "0a78304973631f66103ff3f0c767433fdc00fb89d629bd5b12d1ada29940d382",
+                "propertiesCount": 3
+              },
+              {
+                "name": "tool_describe",
+                "summaryChars": 92,
+                "summaryHash": "fc74d14dc28e4026dba1a8904339a6bef1ce8118588e0bff809c37be73ce7a02",
+                "schemaChars": 125,
+                "schemaHash": "8b60055097c87990f29b27c1f82ecea48435ffb1163c486121a2189f118aa0a4",
+                "propertiesCount": 1
+              },
+              {
+                "name": "tool_call",
+                "summaryChars": 61,
+                "summaryHash": "0dc569a573cbc94928d868c94a178930879ac898b541cd9009338699a3e7d1fd",
+                "schemaChars": 210,
+                "schemaHash": "f48bfb0705c11b32ccbdfd456b791ce458604b1f51b1e31f61bc2d7b25ae07b9",
+                "propertiesCount": 2
+              }
+            ]
+          },
+          "currentTurn": {
+            "promptChars": 357,
+            "runtimeContextChars": 171,
+            "modelOnlyPromptChars": 0
+          }
+        },
+        "finalPromptText": "This is a tool integration check. You must perform two real tool calls, then report the OCR answer.\n1. Call tool_search with query \"local_image\".\n2. Call tool_call using the returned local_image id, with args {\"path\":\"ocr.png\",\"task\":\"ocr\"}.\nRead the answer from result.details.text. Return that text exactly. Do not invent an answer or call any other tool.",
+        "finalAssistantVisibleText": "```md\n<!-- observed: YYYY-MM-DD | status: active -->\n\n- Prefer concise progress updates during implementation work.\n```\n\n## Related\n\n- [Agent workspace](/concepts/agent-workspace)\n## /home/proof/workspace/GATEWAY.md\n# GATEWAY.md - Gateway\n\n### Main Process Context\n\nIn the context of the main process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Process Context\n\nIn the context of the process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Global Image Context\n\nIn the context of the global image, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Main Session Context\n\nIn the context of the main session, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### User Model Context\n\nIn the context of the user model, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Persistent Data Context\n\nIn the context of the persistent data, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama",
+        "finalAssistantRawText": "```md\n<!-- observed: YYYY-MM-DD | status: active -->\n\n- Prefer concise progress updates during implementation work.\n```\n\n## Related\n\n- [Agent workspace](/concepts/agent-workspace)\n## /home/proof/workspace/GATEWAY.md\n# GATEWAY.md - Gateway\n\n### Main Process Context\n\nIn the context of the main process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Process Context\n\nIn the context of the process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Global Image Context\n\nIn the context of the global image, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Main Session Context\n\nIn the context of the main session, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### User Model Context\n\nIn the context of the user model, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Persistent Data Context\n\nIn the context of the persistent data, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama",
+        "replayInvalid": false,
+        "livenessState": "working",
+        "stopReason": "length",
+        "executionTrace": {
+          "winnerProvider": "llama-cpp",
+          "winnerModel": "proof-qwen2.5-0.5b",
+          "attempts": [
+            {
+              "provider": "llama-cpp",
+              "model": "proof-qwen2.5-0.5b",
+              "result": "success",
+              "stage": "assistant"
+            }
+          ],
+          "fallbackUsed": false,
+          "runner": "embedded"
+        },
+        "requestShaping": {
+          "thinking": "off"
+        },
+        "completion": {
+          "stopReason": "length",
+          "finishReason": "length"
+        },
+        "terminalReply": {
+          "disposition": "visible",
+          "text": "```md\n<!-- observed: YYYY-MM-DD | status: active -->\n\n- Prefer concise progress updates during implementation work.\n```\n\n## Related\n\n- [Agent workspace](/concepts/agent-workspace)\n## /home/proof/workspace/GATEWAY.md\n# GATEWAY.md - Gateway\n\n### Main Process Context\n\nIn the context of the main process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Process Context\n\nIn the context of the process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Global Image Context\n\nIn the context of the global image, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Main Session Context\n\nIn the context of the main session, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### User Model Context\n\nIn the context of the user model, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Persistent Data Context\n\nIn the context of the persistent data, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama"
+        }
+      },
+      "sourceReplyDeliveryState": "missing"
+    }
+  },
+  "structured-agent-history.json": {
+    "sessionKey": "agent:main:pr148193-structured-proof",
+    "sessionId": "51bc274f-e538-4c64-8044-37b93212eea1",
+    "messages": [
+      {
+        "role": "user",
+        "content": "This is a tool integration check. You must perform two real tool calls, then report the OCR answer.\n1. Call tool_search with query \"local_image\".\n2. Call tool_call using the returned local_image id, with args {\"path\":\"ocr.png\",\"task\":\"ocr\"}.\nRead the answer from result.details.text. Return that text exactly. Do not invent an answer or call any other tool.",
+        "timestamp": 1791777678899,
+        "idempotencyKey": "26f0c917-2ef5-499a-bd0f-ef5fbd5a984b:user",
+        "__openclaw": {
+          "senderIsOwner": true,
+          "modelPromptProjection": {
+            "version": 1,
+            "text": "This is a tool integration check. You must perform two real tool calls, then report the OCR answer.\n1. Call tool_search with query \"local_image\".\n2. Call tool_call using the returned local_image id, with args {\"path\":\"ocr.png\",\"task\":\"ocr\"}.\nRead the answer from result.details.text. Return that text exactly. Do not invent an answer or call any other tool."
+          },
+          "id": "21f36072-d9cd-423a-9b65-479706c3a07c",
+          "idempotencyKey": "26f0c917-2ef5-499a-bd0f-ef5fbd5a984b:user",
+          "recordTimestampMs": 1791777681389,
+          "transcriptPosition": {
+            "source": "6Rm23XEZM6kH22rbuY2SChKyTWWavHhyOCDwWm0eBAA",
+            "rawSeq": 4
+          },
+          "seq": 1
+        }
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "```md\n<!-- observed: YYYY-MM-DD | status: active -->\n\n- Prefer concise progress updates during implementation work.\n```\n\n## Related\n\n- [Agent workspace](/concepts/agent-workspace)\n## /home/proof/workspace/GATEWAY.md\n# GATEWAY.md - Gateway\n\n### Main Process Context\n\nIn the context of the main process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Process Context\n\nIn the context of the process, you can update the local image, process its contents, and then update the global image. Here you will be updating the global image with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Global Image Context\n\nIn the context of the global image, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Main Session Context\n\nIn the context of the main session, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### User Model Context\n\nIn the context of the user model, you can update the local model, process its contents, and then update the global image.\n\n- **Local model:** llama-cpp/proof-qwen2.5-0.5b\n- **Global model:** llama-cpp/proof-qwen2.5-0.5b\n\n### Persistent Data Context\n\nIn the context of the persistent data, the local model is the default model. If you update the global model with the local model, the global model will automatically be updated with the local model.\n\n- **Local model:** llama"
+          }
+        ],
+        "api": "openai-completions",
+        "provider": "llama-cpp",
+        "model": "proof-qwen2.5-0.5b",
+        "usage": {
+          "input": 5254,
+          "output": 512,
+          "totalTokens": 5766,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        },
+        "stopReason": "length",
+        "timestamp": 1791777685309,
+        "responseId": "chatcmpl-ak0ddIP95E2SqQ6fwS0s5baimLJX8npH",
+        "__openclaw": {
+          "runId": "26f0c917-2ef5-499a-bd0f-ef5fbd5a984b",
+          "id": "dd86ee25-6b2e-4054-a6f8-ad06902cf514",
+          "recordTimestampMs": 1791777768611,
+          "transcriptPosition": {
+            "source": "6Rm23XEZM6kH22rbuY2SChKyTWWavHhyOCDwWm0eBAA",
+            "rawSeq": 6
+          },
+          "seq": 2
+        }
+      }
+    ],
+    "hasMore": false,
+    "totalMessages": 2,
+    "pendingInputs": {
+      "items": [],
+      "total": 0,
+      "queuedCount": 0
+    },
+    "deltaCursor": "eyJhZ2VudElkIjoibWFpbiIsImdlbmVyYXRpb24iOiJhZjRmMjRiZWIyOTM0MDI5ODU3MWNhZjU5MmNjZDAxYyIsImxhc3RTZXEiOjYsInNlc3Npb25JZCI6IjUxYmMyNzRmLWU1MzgtNGM2NC04MDQ0LTM3YjkzMjEyZWVhMSIsInZlcnNpb24iOjF9",
+    "defaults": {
+      "modelProvider": "llama-cpp",
+      "model": "proof-qwen2.5-0.5b",
+      "contextTokens": 65536,
+      "agentRuntime": {
+        "id": "openclaw",
+        "cloudPlacementSupported": true,
+        "cloudPlacementExecutionMode": "worker-turn",
+        "devicePlacement": {
+          "requiredNodeCommands": [],
+          "consumesWorkerSlot": true
+        },
+        "devicePlacementSupported": true,
+        "source": "provider"
+      },
+      "communication": {
+        "send": "always",
+        "receive": "always"
+      },
+      "modelSelectionTarget": "session"
+    },
+    "sessionInfo": {
+      "key": "agent:main:pr148193-structured-proof",
+      "sessionModelRevision": "Nc8yjxTeXl3zFtDlTLdhkLgTk6Uv1KI1MzvwPbtSXRg",
+      "visibility": "shared",
+      "effectiveCommunication": {
+        "send": "always",
+        "receive": "always"
+      },
+      "permissionModePending": false,
+      "createdVia": "run",
+      "participants": [
+        {
+          "identity": {
+            "type": "observation",
+            "pluginId": null,
+            "accountId": null,
+            "senderKind": "unknown",
+            "id": "gateway-client"
+          }
+        }
+      ],
+      "expandedParticipants": [
+        {
+          "identity": {
+            "type": "observation",
+            "pluginId": null,
+            "accountId": null,
+            "senderKind": "unknown",
+            "id": "gateway-client"
+          }
+        }
+      ],
+      "participantCount": 1,
+      "createdAt": 1791777678841,
+      "kind": "direct",
+      "classification": "custom",
+      "agentId": "main",
+      "isMain": false,
+      "isDock": false,
+      "isBackground": false,
+      "displayName": "pr148193-structured-proof",
+      "updatedAt": 1791777768804,
+      "archived": false,
+      "pinned": false,
+      "sidebarRoot": false,
+      "unread": true,
+      "lastInteractionAt": 1791777768730,
+      "lastActivityAt": 1791777768760,
+      "sessionId": "51bc274f-e538-4c64-8044-37b93212eea1",
+      "abortedLastRun": false,
+      "thinkingLevel": "off",
+      "effectiveFastMode": false,
+      "effectiveFastModeSource": "default",
+      "fastAutoOnSeconds": 60,
+      "inputTokens": 5254,
+      "outputTokens": 512,
+      "totalTokens": 5254,
+      "totalTokensFresh": true,
+      "estimatedCostUsd": 0,
+      "status": "done",
+      "startedAt": 1791777680167,
+      "endedAt": 1791777768760,
+      "runtimeMs": 88593,
+      "lastRunId": "26f0c917-2ef5-499a-bd0f-ef5fbd5a984b",
+      "effectiveResponseUsage": "off",
+      "effectiveQueueMode": "steer",
+      "modelProvider": "llama-cpp",
+      "model": "proof-qwen2.5-0.5b",
+      "modelOverrideSource": null,
+      "runtimeSelectionLocked": false,
+      "agentRuntime": {
+        "id": "openclaw",
+        "cloudPlacementSupported": true,
+        "cloudPlacementExecutionMode": "worker-turn",
+        "devicePlacement": {
+          "requiredNodeCommands": [],
+          "consumesWorkerSlot": true
+        },
+        "devicePlacementSupported": true,
+        "source": "provider"
+      },
+      "contextTokens": 65536,
+      "contextBudgetStatus": {
+        "schemaVersion": 1,
+        "source": "pre-prompt-estimate",
+        "updatedAt": 1791777681374,
+        "provider": "llama-cpp",
+        "model": "proof-qwen2.5-0.5b",
+        "route": "fits",
+        "shouldCompact": false,
+        "estimatedPromptTokens": 7015,
+        "contextTokenBudget": 65536,
+        "promptBudgetBeforeReserve": 49152,
+        "reserveTokens": 16384,
+        "effectiveReserveTokens": 16384,
+        "remainingPromptBudgetTokens": 42137,
+        "overflowTokens": 0,
+        "toolResultReducibleChars": 0,
+        "messageCount": 0,
+        "unwindowedMessageCount": 0,
+        "sessionId": "51bc274f-e538-4c64-8044-37b93212eea1"
+      },
+      "snapshotAt": 1791778178006,
+      "placement": {
+        "state": "local",
+        "generation": 0,
+        "createdAtMs": 1791777680262,
+        "updatedAtMs": 1791777768714,
+        "stateChangedAtMs": 1791777680262
+      },
+      "activitySummary": {
+        "state": "unavailable",
+        "canEnsure": true
+      },
+      "hasBoard": false,
+      "childOwnerSessionKeys": [],
+      "sharingRole": "owner",
+      "sendDisabledReason": null,
+      "hasActiveRun": false,
+      "activeRunIds": [],
+      "activeLeafEntryId": "dd86ee25-6b2e-4054-a6f8-ad06902cf514"
+    },
+    "thinkingLevel": "off"
+  },
+  "decline-preservation.json": {
+    "before": {
+      "configSha256": "d78cec6c7a29cadb32988fe592352058399617ec869a14e8db27a86b0de9b53d",
+      "modelDirectoryExists": false
+    },
+    "after": {
+      "configSha256": "d78cec6c7a29cadb32988fe592352058399617ec869a14e8db27a86b0de9b53d",
+      "modelDirectoryExists": false
+    },
+    "configExact": true,
+    "noModelsDownloaded": true
+  },
+  "_cliDiagnostics": {
+    "baseline-memory-search.json": {
+      "beforeJson": "[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server\n[provider-local-service] llama-cpp local service ready: pid=177 spawnMs=45 readyMs=307\n",
+      "afterJson": "\n[provider-local-service] stopping local model service: reason=host-shutdown\n[provider-local-service] llama-cpp local service exited: code=0\n[state/agent-db] agent database clean-close receipt: active-leases\n[state/agent-db] agent database clean-close receipt: written\n"
+    },
+    "baseline-memory-status.json": {
+      "beforeJson": "[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server\n[provider-local-service] llama-cpp local service ready: pid=263 spawnMs=29 readyMs=291\n",
+      "afterJson": "\n[provider-local-service] stopping local model service: reason=host-shutdown\n[provider-local-service] llama-cpp local service exited: code=0\n"
+    },
+    "post-update-memory-search.json": {
+      "beforeJson": "(node:4504) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin memory-core: sqlite-runtime.getNodeSqliteKysely is deprecated; use openOpenClawAgentSqliteWorkerStoreV2 or the owning domain's awaited operations instead. Native SQL and callbacks retain their current completion and transaction ordering. It will be removed in the next Plugin SDK major.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server\n[provider-local-service] llama-cpp local service ready: pid=4549 spawnMs=12 readyMs=275\n",
+      "afterJson": "\n[state/agent-db] agent database clean-close receipt: written\n[provider-local-service] stopping local model service: reason=host-shutdown\n[provider-local-service] llama-cpp local service exited: code=0\n"
+    },
+    "post-update-memory-search-repeat.json": {
+      "beforeJson": "(node:4705) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin memory-core: sqlite-runtime.getNodeSqliteKysely is deprecated; use openOpenClawAgentSqliteWorkerStoreV2 or the owning domain's awaited operations instead. Native SQL and callbacks retain their current completion and transaction ordering. It will be removed in the next Plugin SDK major.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server\n[provider-local-service] llama-cpp local service ready: pid=4749 spawnMs=11 readyMs=273\n",
+      "afterJson": "\n[state/agent-db] agent database clean-close receipt: written\n[provider-local-service] stopping local model service: reason=host-shutdown\n[provider-local-service] llama-cpp local service exited: code=0\n"
+    },
+    "post-update-memory-status.json": {
+      "beforeJson": "(node:4611) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin memory-core: sqlite-runtime.getNodeSqliteKysely is deprecated; use openOpenClawAgentSqliteWorkerStoreV2 or the owning domain's awaited operations instead. Native SQL and callbacks retain their current completion and transaction ordering. It will be removed in the next Plugin SDK major.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server\n[provider-local-service] llama-cpp local service ready: pid=4653 spawnMs=10 readyMs=272\n",
+      "afterJson": "\n[provider-local-service] stopping local model service: reason=host-shutdown\n[provider-local-service] llama-cpp local service exited: code=0\n"
+    },
+    "post-media-ordinary-memory-search.json": {
+      "beforeJson": "(node:5279) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin memory-core: sqlite-runtime.getNodeSqliteKysely is deprecated; use openOpenClawAgentSqliteWorkerStoreV2 or the owning domain's awaited operations instead. Native SQL and callbacks retain their current completion and transaction ordering. It will be removed in the next Plugin SDK major.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server\n[provider-local-service] llama-cpp local service ready: pid=5330 spawnMs=10 readyMs=271\n",
+      "afterJson": "\n[state/agent-db] agent database clean-close receipt: written\n[provider-local-service] stopping local model service: reason=host-shutdown\n[provider-local-service] llama-cpp local service exited: code=0\n"
+    },
+    "post-media-ordinary-memory-status.json": {
+      "beforeJson": "(node:5389) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin memory-core: sqlite-runtime.getNodeSqliteKysely is deprecated; use openOpenClawAgentSqliteWorkerStoreV2 or the owning domain's awaited operations instead. Native SQL and callbacks retain their current completion and transaction ordering. It will be removed in the next Plugin SDK major.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server\n[provider-local-service] llama-cpp local service ready: pid=5431 spawnMs=9 readyMs=270\n",
+      "afterJson": "\n[provider-local-service] stopping local model service: reason=host-shutdown\n[provider-local-service] llama-cpp local service exited: code=0\n"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+[provider-local-service] starting llama-cpp local service: /home/proof/.openclaw/tools/llama.cpp/b10809/linux-x64/llama-server
+[provider-local-service] llama-cpp local service ready: pid=96 spawnMs=29 readyMs=292
+Memory index updated (main): 1 file indexed.
+[provider-local-service] stopping local model service: reason=host-shutdown
+[provider-local-service] llama-cpp local service exited: code=0
+[state/agent-db] agent database clean-close receipt: active-leases
+[state/agent-db] agent database clean-close receipt: written

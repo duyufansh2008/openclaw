@@ -1,0 +1,22 @@
+[provider-local-service] starting llama-cpp local service: /home/proof/fresh-state/tools/llama.cpp/b10809/linux-x64/llama-server
+[provider-local-service] llama-cpp local service ready: pid=5083 spawnMs=30 readyMs=291
+[provider-transport-fetch] [model-fetch] response provider=llama-cpp api=openai-completions model=smolvlm2-2.2b-instruct-q4_k_m status=200 elapsedMs=2213 dispatcher=new contentType=text/event-stream
+{
+  "ok": true,
+  "capability": "image.describe",
+  "transport": "local",
+  "provider": "llama-cpp",
+  "model": "smolvlm2-2.2b-instruct-q4_k_m",
+  "attempts": [],
+  "outputs": [
+    {
+      "path": "/home/proof/workspace/vision.png",
+      "text": "Red square",
+      "provider": "llama-cpp",
+      "model": "smolvlm2-2.2b-instruct-q4_k_m",
+      "kind": "image.description"
+    }
+  ]
+}
+[provider-local-service] stopping local model service: reason=host-shutdown
+[provider-local-service] llama-cpp local service exited: code=0

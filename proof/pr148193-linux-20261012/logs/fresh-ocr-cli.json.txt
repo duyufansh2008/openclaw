@@ -1,0 +1,22 @@
+[provider-local-service] starting llama-cpp local service: /home/proof/fresh-state/tools/llama.cpp/b10809/linux-x64/llama-server
+[provider-local-service] llama-cpp local service ready: pid=4837 spawnMs=32 readyMs=294
+[provider-transport-fetch] [model-fetch] response provider=llama-cpp api=openai-completions model=glm-ocr-q8_0 status=200 elapsedMs=1240 dispatcher=new contentType=text/event-stream
+{
+  "ok": true,
+  "capability": "image.describe",
+  "transport": "local",
+  "provider": "llama-cpp",
+  "model": "glm-ocr-q8_0",
+  "attempts": [],
+  "outputs": [
+    {
+      "path": "/home/proof/workspace/ocr.png",
+      "text": "OPENCLAW OCR 4827",
+      "provider": "llama-cpp",
+      "model": "glm-ocr-q8_0",
+      "kind": "image.description"
+    }
+  ]
+}
+[provider-local-service] stopping local model service: reason=host-shutdown
+[provider-local-service] llama-cpp local service exited: code=0

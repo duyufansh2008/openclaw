@@ -1,0 +1,24 @@
+Script started on 2026-10-12 11:37:34+08:00 [COMMAND="/root/pr148193-proof/run-isolated /home/proof/stable-prefix/bin/openclaw models auth login --provider llama-cpp --method local" TERM="xterm" TTY="/dev/pts/2" COLUMNS="80" LINES="24"]
+│
+◇
+OpenClaw 2026.9.9 (8c68e28) — Your .zshrc wishes it could do what I do.
+Installed Gateway service state and config paths could not be verified. Inspect the service environment with `openclaw gateway status --deep` before repairing plugin state.
+│
+◇  Provider sign-in ───────────────────────────────────────────────────────╮
+│                                                                          │
+│  Scope: System / agent                                                   │
+│  Agent: main                                                             │
+│  Location: the machine running OpenClaw                                  │
+│  For personal model accounts on a Gateway, run openclaw models accounts  │
+│  login --help.                                                           │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+(node:5139) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin SDK: loadAuthProfileStoreWithoutExternalProfiles is deprecated; use loadAuthProfileStoreWithoutExternalProfilesAsync instead. The legacy contract remains supported in the current Plugin SDK major. It will be removed in the next Plugin SDK major.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+│
+[progress sample] Preparing managed llama.cpp server
+◇  Managed llama.cpp server prepared
+Updated config: ~/.openclaw/openclaw.json
+  Backup: ~/.openclaw/openclaw.json.bak
+Default model available: llama-cpp/proof-qwen2.5-0.5b (current default unchanged; run openclaw models set llama-cpp/proof-qwen2.5-0.5b to apply)
+Script done on 2026-10-12 11:37:48+08:00 [COMMAND_EXIT_CODE="0"]

@@ -1,0 +1,85 @@
+Script started on 2026-10-12 12:14:09+08:00 [COMMAND="/root/pr148193-proof/run-isolated env OPENCLAW_STATE_DIR=/home/proof/decline-state OPENCLAW_CONFIG_PATH=/home/proof/decline-state/openclaw.json /home/proof/candidate-prefix/bin/openclaw models auth login --provider llama-cpp --method local-media" TERM="xterm" TTY="/dev/pts/0" COLUMNS="80" LINES="24"]
+Your OpenClaw config was written by version 2026.10.1, but this command is running 2026.9.9.
+Check: `openclaw --version`, `which openclaw`, and `openclaw gateway status --deep`.
+If unexpected, update PATH so `openclaw` points to the version you want, or reinstall the Gateway service from that same OpenClaw install.
+│
+◇
+OpenClaw 2026.9.9 (8c68e28)
+Your second brain, except this one actually remembers where you left things.
+Installed Gateway service state and config paths could not be verified. Inspect the service environment with `openclaw gateway status --deep` before repairing plugin state.
+│
+◇  Provider sign-in ───────────────────────────────────────────────────────╮
+│                                                                          │
+│  Scope: System / agent                                                   │
+│  Agent: main                                                             │
+│  Location: the machine running OpenClaw                                  │
+│  For personal model accounts on a Gateway, run openclaw models accounts  │
+│  login --help.                                                           │
+│                                                                          │
+├──────────────────────────────────────────────────────────────────────────╯
+(node:7045) [DEP_PLUGIN_SDK] DeprecationWarning: Plugin SDK: loadAuthProfileStoreWithoutExternalProfiles is deprecated; use loadAuthProfileStoreWithoutExternalProfilesAsync instead. The legacy contract remains supported in the current Plugin SDK major. It will be removed in the next Plugin SDK major.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+│
+◆  Gateway host: pr148193-linux-proof (linux/x64)
+│  Backend: CPU
+│  nvidia-smi did not report a usable NVIDIA GPU.
+│  RAM: 15.3 GiB total, 13.3 GiB available.
+│  Disk: 271.3 GiB model volume; 271.3 GiB runtime volume (shared budget).
+│  GLM-OCR (Q8_0) (OCR, 4 GiB) and SmolVLM2 2.2B (Q4_K_M) (vision, 5 GiB) fit
+│  the 11.5 GiB CPU memory budget. Load one model at a time, preserving the chat
+│   and embedding inventory. Images stay local; runtime verification must pass
+│  before activation.
+│  OCR: GLM-OCR (Q8_0)
+│  Recognizes text; use the vision model for scenes, charts, and spatial
+│  questions.
+│  Dense or multi-column pages may need separate crops; no document layout
+│  detector is installed.
+│  Image encoding is limited to 1024 tokens (about 0.8 megapixels); small text
+│  may lose detail.
+│  VISION: SmolVLM2 2.2B (Q4_K_M)
+│  Small English-focused vision model; complex diagrams and spatial reasoning
+│  may be inaccurate.
+│  GLM-OCR-Q8_0.gguf: 0.9 GiB download
+│  mmproj-GLM-OCR-Q8_0.gguf: 0.5 GiB download
+│  SmolVLM2-2.2B-Instruct-Q4_K_M.gguf: 1 GiB download
+│  mmproj-SmolVLM2-2.2B-Instruct-Q8_0.gguf: 0.6 GiB download
+│  llama.cpp runtime: 16,734,586 bytes download.
+│  Total download: 2.9 GiB; required free disk including runtime staging: 4.9
+│  GiB.
+│  Load one model at a time; switching between chat, embeddings, OCR and vision
+│  may add latency. Existing chat defaults, inventory and embeddings are
+│  preserved.
+│  Replace image-understanding routes and the image tool default with local
+│  vision, without remote fallbacks. OCR is selected explicitly with local_image
+│   task=ocr; ambiguous tasks use vision.
+│  These image inference routes stay local. Original images remain available; an
+│   existing cloud chat model can still receive them under its normal
+│  native-vision policy.
+│  Download, verify real OCR and spatial image understanding, then activate?
+│  ○ Yes / ● No
+└
+│  detector is installed.
+│  Image encoding is limited to 1024 tokens (about 0.8 megapixels); small text
+│  may lose detail.
+│  VISION: SmolVLM2 2.2B (Q4_K_M)
+│  Small English-focused vision model; complex diagrams and spatial reasoning
+│  may be inaccurate.
+│  GLM-OCR-Q8_0.gguf: 0.9 GiB download
+│  mmproj-GLM-OCR-Q8_0.gguf: 0.5 GiB download
+│  SmolVLM2-2.2B-Instruct-Q4_K_M.gguf: 1 GiB download
+│  mmproj-SmolVLM2-2.2B-Instruct-Q8_0.gguf: 0.6 GiB download
+│  llama.cpp runtime: 16,734,586 bytes download.
+│  Total download: 2.9 GiB; required free disk including runtime staging: 4.9
+│  GiB.
+│  Load one model at a time; switching between chat, embeddings, OCR and vision
+│  may add latency. Existing chat defaults, inventory and embeddings are
+│  preserved.
+│  Replace image-understanding routes and the image tool default with local
+│  vision, without remote fallbacks. OCR is selected explicitly with local_image
+│   task=ocr; ambiguous tasks use vision.
+│  These image inference routes stay local. Original images remain available; an
+│   existing cloud chat model can still receive them under its normal
+│  native-vision policy.
+│  Download, verify real OCR and spatial image understanding, then activate?
+│  No
+Script done on 2026-10-12 12:14:34+08:00 [COMMAND_EXIT_CODE="0"]
