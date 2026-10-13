@@ -2,7 +2,7 @@ import { realpathSync } from "node:fs";
 import { createTestPluginServiceScheduler } from "openclaw/plugin-sdk/plugin-test-api";
 import { resolveRuntimeWorkerUrl } from "openclaw/plugin-sdk/process-runtime";
 import { useAutoCleanupTempDirTracker } from "openclaw/plugin-sdk/test-env";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { resolveLogbookConfig } from "./config.js";
 import { LogbookService } from "./service.js";
 import { logbookSqliteBackendEntrypoint } from "./sqlite-backend-entrypoint.test-support.js";
@@ -33,6 +33,7 @@ async function makeService(params: {
   invoke: (args: { nodeId: string; command: string }) => Promise<unknown>;
   config?: Record<string, unknown>;
   fullConfig?: Record<string, unknown>;
+  logger?: typeof quietLogger;
 }) {
   const dataDir = realpathSync(tempDirs.make("logbook-service-test-"));
   const invoked: Array<{ nodeId: string; command: string }> = [];
@@ -50,7 +51,7 @@ async function makeService(params: {
     {
       runtime: runtime as never,
       fullConfig: (params.fullConfig ?? {}) as never,
-      logger: quietLogger as never,
+      logger: (params.logger ?? quietLogger) as never,
       dataDir,
       workerModuleUrl,
       scheduler: createTestPluginServiceScheduler(),
@@ -107,6 +108,32 @@ describe("LogbookService capture node selection", () => {
 });
 
 describe("LogbookService vision model selection", () => {
+  it("warns about a missing model only when analysis work is pending", async () => {
+    const warn = vi.fn();
+    const { service, tick } = await makeService({
+      nodes: [{ nodeId: "capture-node", commands: ["logbook.snapshot"] }],
+      invoke: async () => framePayload,
+      logger: { ...quietLogger, warn },
+    });
+    const analyze = () =>
+      (service as unknown as { analysisTick(): Promise<void> }).analysisTick.call(service);
+
+    await analyze();
+    expect(warn).not.toHaveBeenCalled();
+
+    await tick();
+    const clock = vi.spyOn(Date, "now").mockReturnValue(Date.now() + 10 * 60 * 1000 + 1);
+    try {
+      await analyze();
+      await analyze();
+    } finally {
+      clock.mockRestore();
+    }
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      expect.stringContaining("logbook: analysis paused; no vision model"),
+    );
+  });
+
   it("borrows only a media provider with structured extraction", async () => {
     const { service } = await makeService({
       nodes: [],
