@@ -123,13 +123,8 @@ describe("LogbookService vision model selection", () => {
     expect(warn).not.toHaveBeenCalled();
 
     await tick();
-    const clock = vi.spyOn(Date, "now").mockReturnValue(Date.now() + 10 * 60 * 1000 + 1);
-    try {
-      await analyze();
-      await analyze();
-    } finally {
-      clock.mockRestore();
-    }
+    await analyze();
+    await analyze();
     expect(warn).toHaveBeenCalledExactlyOnceWith(
       expect.stringContaining("logbook: analysis paused; no vision model"),
     );
