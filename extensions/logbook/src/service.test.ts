@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { resolveLogbookConfig } from "./config.js";
 import { LogbookService } from "./service.js";
 import { logbookSqliteBackendEntrypoint } from "./sqlite-backend-entrypoint.test-support.js";
+import { LogbookStore } from "./store.js";
 
 const workerModuleUrl = resolveRuntimeWorkerUrl(logbookSqliteBackendEntrypoint);
 const services: LogbookService[] = [];
@@ -129,6 +130,38 @@ describe("LogbookService vision model selection", () => {
     } finally {
       clock.mockRestore();
     }
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      expect.stringContaining("logbook: analysis paused; no vision model"),
+    );
+  });
+
+  it("warns when a pending batch has no unbatched frames", async () => {
+    const warn = vi.fn();
+    const { service } = await makeService({
+      nodes: [],
+      invoke: async () => framePayload,
+      config: { captureEnabled: false },
+      logger: { ...quietLogger, warn },
+    });
+    const store = (service as unknown as { store: LogbookStore }).store;
+    const capturedAtMs = Date.now();
+    const day = new Date(capturedAtMs).toISOString().slice(0, 10);
+    const frameId = await store.captureFrame({
+      capturedAtMs,
+      day,
+      screenIndex: 0,
+      buffer: Buffer.from("fake-jpeg"),
+    });
+    await store.createBatch({
+      day,
+      startMs: capturedAtMs,
+      endMs: capturedAtMs + 1000,
+      frameIds: [frameId],
+    });
+
+    expect(await store.countUnbatchedActiveFrames()).toBe(0);
+    expect(await store.nextPendingBatch()).not.toBeNull();
+    await (service as unknown as { analysisTick(): Promise<void> }).analysisTick();
     expect(warn).toHaveBeenCalledExactlyOnceWith(
       expect.stringContaining("logbook: analysis paused; no vision model"),
     );
