@@ -1,6 +1,7 @@
 import { stripAnsi } from "../../packages/terminal-core/src/ansi.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { formatErrorMessage } from "./errors.js";
+import { retryableGitNetworkOperation, withGitNetworkRetry } from "./git-network-retry.js";
 import { parseNpmErrorCode } from "./npm-error.js";
 import { trimLogTail } from "./restart-sentinel.js";
 import { createUpdateErrorFact, createUpdateFailureFact } from "./update-failure-facts.js";
@@ -198,18 +199,28 @@ export function normalizeFallbackFailureReason(
 
 export async function buildUpdateCommandRunner(
   runCommand?: CommandRunner,
+  beforeGitNetworkAttempt?: () => void,
 ): Promise<{ defaultCommandEnv: NodeJS.ProcessEnv; runCommand: CommandRunner }> {
   const defaultCommandEnv = await createGlobalInstallEnv();
   return {
     defaultCommandEnv,
     runCommand:
       runCommand ??
-      (async (argv, options) =>
-        await runCommandWithTimeout(argv, {
-          ...options,
-          env: options.env ? { ...defaultCommandEnv, ...options.env } : defaultCommandEnv,
-          // Package-manager trees must not outlive a timed-out updater.
-          killProcessTree: true,
-        })),
+      (async (argv, options) => {
+        const operation =
+          argv[0] === "git" ? retryableGitNetworkOperation(argv.slice(1)) : undefined;
+        return await withGitNetworkRetry(
+          operation,
+          { ...options, beforeRun: operation ? beforeGitNetworkAttempt : undefined },
+          (timeoutMs) =>
+            runCommandWithTimeout(argv, {
+              ...options,
+              timeoutMs,
+              env: options.env ? { ...defaultCommandEnv, ...options.env } : defaultCommandEnv,
+              // Package-manager trees must not outlive a timed-out updater.
+              killProcessTree: true,
+            }),
+        );
+      }),
   };
 }

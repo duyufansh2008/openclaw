@@ -523,7 +523,7 @@ export async function updateGitInstall(params: {
     gitArtifactStorageRoot?: string,
   ) =>
     updateGitCheckout({
-      ...(await buildUpdateCommandRunner()),
+      ...(await buildUpdateCommandRunner(undefined, assertCurrent)),
       gitRoot,
       timeoutMs: params.timeoutMs ?? UPDATE_RUNNER_TIMEOUT_MS,
       startedAt: params.startedAt,
