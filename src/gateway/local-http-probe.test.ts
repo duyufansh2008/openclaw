@@ -13,6 +13,7 @@ import { loadGatewayTlsServerRuntime } from "../infra/tls/gateway.js";
 import { createDeferredCore } from "../shared/deferred.js";
 import { PROXY_FIXTURE_CERTIFICATE } from "../test-helpers/proxy-tls-fixture.js";
 import { withTestDir } from "../test-helpers/temp-dir.js";
+import { reserveTestPortListener } from "../test-utils/port-claims.js";
 import { createConfiguredGatewayLocalProbe } from "./local-http-probe.js";
 
 const fingerprint = new X509Certificate(TEST_TLS_CERT_PEM).fingerprint256;
@@ -111,6 +112,58 @@ test("cancels pending readiness requests when the repair budget expires", async 
     await new Promise<void>((resolve) => {
       server.close(() => resolve());
     });
+  }
+});
+
+test("retains detailed readiness beyond 1 KiB and refuses incomplete core proof", async () => {
+  const failing = Array.from({ length: 80 }, (_, index) => `unavailable-channel-${index}`);
+  let body = "";
+  const {
+    claim,
+    listener: server,
+    releaseListener,
+  } = await reserveTestPortListener({
+    offsets: [0],
+    createListener: () =>
+      createHttpServer((request, response) => {
+        response.writeHead(request.url === "/healthz" ? 200 : 503);
+        response.end(request.url === "/readyz" ? body : '{"ok":true}');
+      }),
+  });
+  try {
+    for (const coreReady of [true, false]) {
+      body = JSON.stringify({ ready: false, coreReady, failing });
+      expect(body.length).toBeGreaterThan(1_024);
+      await expect(
+        waitForGatewayHttpReadiness({
+          attempts: 1,
+          deadlineAt: performance.now() + 1_000,
+          delayMs: 0,
+          port: claim.port,
+          requireChannelHealth: false,
+        }),
+      ).resolves.toEqual({
+        healthz: 200,
+        readyz: 503,
+        coreReady,
+        ...(coreReady ? { failingChannels: failing } : {}),
+      });
+    }
+    // Even a valid core-ready prefix cannot certify an over-budget response.
+    body = JSON.stringify({ ready: false, coreReady: true, failing, padding: "x".repeat(65_536) });
+    await expect(
+      waitForGatewayHttpReadiness({
+        attempts: 1,
+        deadlineAt: performance.now() + 1_000,
+        delayMs: 0,
+        port: claim.port,
+        requireChannelHealth: false,
+      }),
+    ).resolves.toEqual({ healthz: 200, readyz: 503, coreReady: false });
+  } finally {
+    server.closeAllConnections();
+    await releaseListener();
+    await claim.release();
   }
 });
 

@@ -229,12 +229,25 @@ export async function verifyUpdatedGateway(
       assertCurrent,
       deadline: params.opts.run?.deadline ?? params.deadline,
     });
-  const channelWarnings = [
+  const channelFailures = new Map<string, string>();
+  const channelsWithRpcWarnings = new Set<string>();
+  for (const { id, error } of [
     ...(health.channelProbeErrors ?? []),
     ...(health.channelProbeTimeouts ?? []),
     ...(health.channelRuntimeWarnings ?? []),
-    ...(http?.failingChannels ?? []).map((id) => ({ id, error: "channel readiness unavailable" })),
-  ].map(({ id, error }) =>
+  ]) {
+    if (!channelFailures.has(id)) {
+      channelFailures.set(id, error);
+    }
+    // RPC can name individual accounts; HTTP names only their parent channel.
+    channelsWithRpcWarnings.add(id.split("/")[0] ?? id);
+  }
+  for (const id of http?.failingChannels ?? []) {
+    if (!channelsWithRpcWarnings.has(id)) {
+      channelFailures.set(id, "channel readiness unavailable");
+    }
+  }
+  const channelWarnings = Array.from(channelFailures, ([id, error]) =>
     redactSupportDiagnosticLine(
       `Channel health warning (${id}: ${error}). Run openclaw channels status --probe or openclaw health --json to inspect it.`,
       { env: params.serviceEnv, stateDir: resolveStateDir(params.serviceEnv) },

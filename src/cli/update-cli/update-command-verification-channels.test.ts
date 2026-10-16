@@ -9,6 +9,7 @@ import {
   renderUpdateRunReport,
   updateRunReportInputFromResult,
 } from "../../infra/update-run-report.js";
+import { updateRunStepsFromResultStep } from "../../infra/update-run-step.js";
 import type { UpdateRunResult } from "../../infra/update-runner-types.js";
 import { defaultRuntime } from "../../runtime.js";
 import {
@@ -115,8 +116,90 @@ describe("update repair channel warnings", () => {
       });
       expect(result.steps[0]).toMatchObject({ exitCode: coreFailed ? 1 : 0 });
       expect(result.steps[0]?.warnings?.join("\n")).toContain("whatsapp");
+      expect(result.steps[0]?.warnings).toHaveLength(1);
     },
   );
+
+  it("keeps RPC details and HTTP-only channels within the warning receipt budget", async () => {
+    vi.spyOn(gatewayService, "resolveGatewayService").mockReturnValue(
+      makeGatewayService({ status: "running", pid: 8000 }),
+    );
+    inspectPortUsage.mockImplementation(async (port) => ({
+      port,
+      status: "busy",
+      listeners: [{ pid: 8000 }],
+      hints: [],
+    }));
+    const rpcChannels = Array.from({ length: 17 }, (_, index) => `channel-${index}`);
+    callGateway.mockImplementation(
+      gatewayHealthResponse({
+        server: { version: "2026.10.3", buildId: "candidate", bootId: "candidate-boot" },
+        health: {
+          channels: Object.fromEntries(
+            rpcChannels.map((id) => [
+              id,
+              {
+                configured: true,
+                running: false,
+                probe: { ok: false, error: "re-pair required" },
+              },
+            ]),
+          ),
+        },
+      }),
+    );
+    const readiness = createReadinessChecker({
+      startedAt: Date.now() - 300_000,
+      channelManager: {
+        getRuntimeSnapshot: () => ({
+          channels: {},
+          channelAccounts: Object.fromEntries(
+            [...rpcChannels, "http-only"].map((id) => [
+              id,
+              {
+                default: { accountId: "default", enabled: true, configured: true, running: false },
+              },
+            ]),
+          ),
+        }),
+        getAutostartSuppression: () => null,
+        isAmbientAutostartSuppressed: () => false,
+      },
+    });
+    const result: UpdateRunResult = { status: "ok", mode: "npm", steps: [], durationMs: 0 };
+    const validation = await verifyUpdatedGateway({
+      result,
+      opts: { json: false },
+      purpose: "recovery",
+      serviceEnv: { HOME: "/synthetic-home" },
+      gatewayPort: await listen(readiness),
+      expectedVersion: "2026.10.3",
+      expectedBuildId: "candidate",
+      requireRunningService: true,
+      waitForStartup: false,
+    });
+    expect(validation.ok).toBe(true);
+    const step = result.steps[0]!;
+    expect(step.warnings).toHaveLength(18);
+    const receipts = updateRunStepsFromResultStep(step).filter((row) =>
+      row.step.startsWith("warning:"),
+    );
+    expect(receipts).toHaveLength(18);
+    expect(receipts.at(-1)?.detail).toContain("http-only: channel readiness unavailable");
+    for (const id of rpcChannels) {
+      expect(step.warnings?.filter((warning) => warning.includes(`(${id}:`))).toEqual([
+        `Channel health warning (${id}: re-pair required). Run openclaw channels status --probe or openclaw health --json to inspect it.`,
+      ]);
+    }
+    expect(
+      vi
+        .mocked(defaultRuntime.log)
+        .mock.calls.flat()
+        .filter((line) => String(line).includes("Channel health warning")),
+    ).toHaveLength(18);
+    const report = renderUpdateRunReport(updateRunReportInputFromResult(result)).markdown;
+    expect(report.match(/channel-0: re-pair required/g)).toHaveLength(1);
+  });
 
   it.each(["channel probe", "plugin load"] as const)(
     "completes verified activation with a named warning (%s)",
@@ -259,13 +342,19 @@ describe("update repair channel warnings", () => {
       opts: { json },
       purpose: "recovery",
       serviceEnv: { HOME: "/synthetic-home" },
-      gatewayPort: await listen(),
+      gatewayPort: await listen(() => ({
+        ready: false,
+        coreReady: true,
+        failing: ["telegram", "discord"],
+        uptimeMs: 300_000,
+      })),
       expectedVersion: "2026.9.8",
       expectedBuildId: "candidate",
       waitForStartup: false,
     });
     expect(validation.ok).toBe(true);
     expect(result.steps[0]).toMatchObject({ exitCode: 0 });
+    expect(result.steps[0]?.warnings).toHaveLength(3);
     const report = renderUpdateRunReport(updateRunReportInputFromResult(result)).markdown;
     for (const id of ["telegram/suppressed", "telegram/stopped", "discord"]) {
       expect(report).toContain(id);
