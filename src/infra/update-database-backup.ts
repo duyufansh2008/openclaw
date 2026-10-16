@@ -5,6 +5,8 @@ import { sameFileIdentity } from "@openclaw/fs-safe/advanced";
 import { z } from "zod";
 import type { DoctorRehearsalDatabaseCoverage } from "../commands/doctor-rehearsal-databases.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
+import { readPluginMetadataStateRows } from "../plugins/plugin-metadata-state-worker.js";
+import type { PluginMetadataStateRow } from "../plugins/plugin-metadata-state.kernel.js";
 import { openClawStateDatabaseCache } from "../state/openclaw-state-db-cache.js";
 import {
   getOpenClawDatabaseMaintenanceScope,
@@ -12,6 +14,7 @@ import {
   maintenanceOwnerMayCopySourcesInProcess,
 } from "../state/openclaw-state-maintenance-context.js";
 import { resolvePathViaExistingAncestorSync } from "./boundary-path.js";
+import { getDatabaseEngineSelection } from "./database-engine/context.js";
 import {
   ensureDurableDirectory,
   requireDirectorySync,
@@ -268,6 +271,8 @@ export async function createUpdateDatabaseBackupInProcess(
     inspectionPlan: InspectionPlan;
     /** Exact families admitted by the owning Doctor before launching this backup child. */
     excludedDatabasePaths?: readonly string[];
+    /** PostgreSQL metadata facts read under the parent's maintenance admission. */
+    pluginMetadataRows?: readonly PluginMetadataStateRow[];
     onProgress?: (progress: UpdateStateInspectionProgress) => void;
   },
 ): Promise<UpdateDatabaseBackup> {
@@ -294,22 +299,24 @@ export async function createUpdateDatabaseBackupInProcess(
     const { updateStateDatabaseExists } = await import("./update-candidate-state.sizes.js");
     const shared = path.resolve(input.stateDir, "state", "openclaw.sqlite");
     const env = { ...process.env, ...input.env, OPENCLAW_STATE_DIR: input.stateDir };
-    // The parent's maintenance authority does not cross this process boundary.
-    // Derive metadata from private bytes, keeping source plugin/resource roots.
-    const rows = (await updateStateDatabaseExists(shared))
-      ? await withPreparedSqliteSnapshot(
-          input.stopped || input.preserveSourceArtifacts
-            ? prepareSqliteReadOnlyLocationSyncInProcess(shared, input.stagingRoot)
-            : await prepareSqliteReadOnlyLocationInProcess(shared, input.stagingRoot),
-          (location) => {
-            using db = openNodeSqliteDatabase(location, { readOnly: true });
-            return readPluginMetadataStateRowsInDatabase(db, [
-              "plugins.bundledDiscovery",
-              "plugins.installedIndex",
-            ]);
-          },
-        )
-      : [];
+    // Parent admission supplies PostgreSQL facts; SQLite metadata comes from private
+    // bytes because maintenance authority does not cross this process boundary.
+    const rows =
+      input.pluginMetadataRows ??
+      ((await updateStateDatabaseExists(shared))
+        ? await withPreparedSqliteSnapshot(
+            input.stopped || input.preserveSourceArtifacts
+              ? prepareSqliteReadOnlyLocationSyncInProcess(shared, input.stagingRoot)
+              : await prepareSqliteReadOnlyLocationInProcess(shared, input.stagingRoot),
+            (location) => {
+              using db = openNodeSqliteDatabase(location, { readOnly: true });
+              return readPluginMetadataStateRowsInDatabase(db, [
+                "plugins.bundledDiscovery",
+                "plugins.installedIndex",
+              ]);
+            },
+          )
+        : []);
     await using cache = createPluginCache();
     return await withPluginCache(cache, async () => {
       const activate = await prepareBundledDiscoveryMode(env, async () =>
@@ -509,6 +516,15 @@ export async function createUpdateDatabaseBackup({
         stagingRoot: directory,
       };
       const shared = path.resolve(input.stateDir, "state", "openclaw.sqlite");
+      // A PostgreSQL anchor has no machine-state rows. The existing retained reader
+      // inherits parent admission and closes its connection before capture starts.
+      const pluginMetadataRows = getDatabaseEngineSelection()?.input
+        ? await readPluginMetadataStateRows(
+            ["plugins.bundledDiscovery", "plugins.installedIndex"],
+            { path: shared, env: sourceEnv },
+            true,
+          )
+        : undefined;
       const scope = getOpenClawDatabaseMaintenanceScope();
       const custody =
         acquisition?.mode === "maintenance-owner" &&
@@ -536,7 +552,7 @@ export async function createUpdateDatabaseBackup({
       const excludedDatabasePaths = rehearsal?.admit(
         inspectionPlan.files.flatMap(([, database]) => database.spellings),
       );
-      const capturedInput = { ...workerInput, excludedDatabasePaths };
+      const capturedInput = { ...workerInput, excludedDatabasePaths, pluginMetadataRows };
       const files = [
         ...inspectionPlan.files.flatMap(([, database]) => database.spellings),
         ...(additionalPaths ?? []),

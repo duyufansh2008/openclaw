@@ -794,8 +794,10 @@ one pathname cannot safely restore every alias.
 Database engine discovery and capture run in the retained updater's backup child,
 so a first database snapshot after package replacement can still load its original
 backup code. This includes retained PostgreSQL stores from disabled plugins. The
-child reads installed plugin metadata from a private database snapshot while the
-parent retains exclusive maintenance ownership of the source state. The
+child reads installed plugin metadata from a private SQLite snapshot while the
+parent retains exclusive maintenance ownership of the source state. For
+PostgreSQL-backed shared state, the parent carries metadata from its admitted
+engine-aware reader into that child instead of querying the SQLite anchor. The
 parent resolves configured plugin load paths from the invocation directory before
 launching the child, so relative paths still include retained plugin stores. The
 already-running updater owns this behavior; a newer candidate cannot repair an
