@@ -527,13 +527,38 @@ describe("gateway probe endpoints", () => {
 
     await withGatewayServer({
       prefix: "probe-throws",
-      resolvedAuth: AUTH_NONE,
+      resolvedAuth: AUTH_TOKEN,
       overrides: { getReadiness },
       run: async (server) => {
-        const { res, getBody } = await sendRequest(server, { path: "/ready" });
+        const detailedBody = {
+          ready: false,
+          coreReady: false,
+          failing: ["internal"],
+          uptimeMs: 0,
+        };
+        for (const { name, request, expected } of [
+          { name: "local", request: { path: "/readyz" }, expected: detailedBody },
+          {
+            name: "authenticated remote",
+            request: {
+              path: "/readyz",
+              remoteAddress: "10.0.0.8",
+              host: "gateway.test",
+              authorization: "Bearer test-token",
+            },
+            expected: detailedBody,
+          },
+          {
+            name: "unauthenticated remote",
+            request: { path: "/readyz", remoteAddress: "10.0.0.8", host: "gateway.test" },
+            expected: { ready: false },
+          },
+        ]) {
+          const { res, getBody } = await sendRequest(server, request);
 
-        expect(res.statusCode).toBe(503);
-        expect(JSON.parse(getBody())).toEqual({ ready: false, failing: ["internal"], uptimeMs: 0 });
+          expect.soft(res.statusCode, name).toBe(503);
+          expect.soft(JSON.parse(getBody()), name).toEqual(expected);
+        }
       },
     });
   });
