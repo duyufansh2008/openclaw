@@ -54,7 +54,7 @@ test("probes local TLS directly under a managed proxy while enforcing its certif
           delayMs: 0,
           port: address.port,
         }),
-      ).resolves.toEqual({ healthz: 200, readyz: 200 });
+      ).resolves.toEqual({ healthz: 200, readyz: 200, coreReady: true });
       expect(paths).toEqual(expect.arrayContaining(["/healthz", "/readyz"]));
       for (const host of ["0.0.0.0", "::", "127.0.0.1"]) {
         await expect(

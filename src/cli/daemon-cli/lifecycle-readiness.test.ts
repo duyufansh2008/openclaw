@@ -81,7 +81,9 @@ describe("Gateway service readiness", () => {
     readServiceConfig.mockReset().mockResolvedValue({});
     readCliConfig.mockReset().mockResolvedValue({});
     waitForGatewayHealthyRestart.mockReset().mockResolvedValue({ healthy: true });
-    waitForGatewayHttpReadiness.mockReset().mockResolvedValue({ healthz: 200, readyz: 200 });
+    waitForGatewayHttpReadiness
+      .mockReset()
+      .mockResolvedValue({ healthz: 200, readyz: 200, coreReady: true });
     renderRestartDiagnostics.mockClear();
   });
 
@@ -168,7 +170,7 @@ describe("Gateway service readiness", () => {
       elapsedMs: 45_000,
       ...(outcome === "still-starting" ? { startupPhase: "startup-sidecars" } : {}),
     });
-    waitForGatewayHttpReadiness.mockResolvedValue({ healthz: 200, readyz: 503 });
+    waitForGatewayHttpReadiness.mockResolvedValue({ healthz: 200, readyz: 503, coreReady: false });
 
     await expect(runDaemonStart({ json: true })).rejects.toThrow(`exit ${code}`);
 

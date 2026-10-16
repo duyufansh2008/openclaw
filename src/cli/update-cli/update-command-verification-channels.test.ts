@@ -3,6 +3,7 @@ import { createServer, type Server } from "node:http";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as gatewayService from "../../daemon/service.js";
 import { gatewayHealthResponse } from "../../gateway/health-response.test-support.js";
+import { createReadinessChecker } from "../../gateway/server/readiness.js";
 import type { PackageUpdateTransaction } from "../../infra/package-update-swap-contract.js";
 import {
   renderUpdateRunReport,
@@ -21,8 +22,15 @@ import { recordUpdatePackageCompletion } from "./update-command-terminal.js";
 import { verifyUpdatedGateway } from "./update-command-verification.js";
 
 let server: Server;
-async function listen() {
-  server = createServer((_req, res) => res.writeHead(200).end());
+async function listen(readiness?: ReturnType<typeof createReadinessChecker>) {
+  server = createServer((req, res) => {
+    if (req.url === "/readyz" && readiness) {
+      const result = readiness();
+      res.writeHead(result.ready ? 200 : 503).end(JSON.stringify(result));
+    } else {
+      res.writeHead(200).end();
+    }
+  });
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
   const address = server.address();
@@ -47,6 +55,69 @@ afterEach(async () => {
 });
 
 describe("update repair channel warnings", () => {
+  it.each([false, true])(
+    "distinguishes channel readiness from core failure (core failed: %s)",
+    async (coreFailed) => {
+      const service = makeGatewayService({ status: "running", pid: 8000 });
+      vi.spyOn(gatewayService, "resolveGatewayService").mockReturnValue(service);
+      inspectPortUsage.mockImplementation(async (port) => ({
+        port,
+        status: "busy",
+        listeners: [{ pid: 8000 }],
+        hints: [],
+      }));
+      callGateway.mockImplementation(
+        gatewayHealthResponse({
+          server: { version: "2026.10.3", buildId: "candidate", bootId: "candidate-boot" },
+          health: { channels: { whatsapp: { probe: { ok: false, error: "re-pair required" } } } },
+        }),
+      );
+      const readiness = createReadinessChecker({
+        startedAt: Date.now() - 300_000,
+        getStateDatabaseFailure: () =>
+          coreFailed ? new Error("state admission failed") : undefined,
+        channelManager: {
+          getRuntimeSnapshot: () => ({
+            channels: {},
+            channelAccounts: {
+              whatsapp: {
+                default: { accountId: "default", enabled: true, configured: true, running: false },
+              },
+            },
+          }),
+          getAutostartSuppression: () => null,
+          isAmbientAutostartSuppressed: () => false,
+        },
+      });
+      expect(readiness()).toMatchObject({
+        ready: false,
+        failing: [coreFailed ? "state-database" : "whatsapp"],
+      });
+      const result: UpdateRunResult = { status: "ok", mode: "npm", steps: [], durationMs: 0 };
+      const validation = await verifyUpdatedGateway({
+        result,
+        opts: { json: true },
+        purpose: "recovery",
+        serviceEnv: { HOME: "/synthetic-home" },
+        gatewayPort: await listen(readiness),
+        expectedVersion: "2026.10.3",
+        expectedBuildId: "candidate",
+        requireRunningService: true,
+        waitForStartup: false,
+      });
+      expect(validation.ok).toBe(!coreFailed);
+      expect(result.verification).toMatchObject({
+        coreReady: !coreFailed,
+        readyz: false,
+        channelsReady: false,
+        versionMatch: true,
+        settled: !coreFailed,
+      });
+      expect(result.steps[0]).toMatchObject({ exitCode: coreFailed ? 1 : 0 });
+      expect(result.steps[0]?.warnings?.join("\n")).toContain("whatsapp");
+    },
+  );
+
   it.each(["channel probe", "plugin load"] as const)(
     "completes verified activation with a named warning (%s)",
     async (fault) => {

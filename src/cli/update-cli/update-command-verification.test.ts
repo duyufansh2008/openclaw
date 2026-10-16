@@ -217,7 +217,8 @@ describe("update readiness generation", () => {
           versionMatch: true,
           readyz: true,
           settled: true,
-          channelsReady: true,
+          coreReady: true,
+          channelsReady: false,
         }),
         expect.anything(),
       );

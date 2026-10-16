@@ -182,6 +182,7 @@ describe("gateway probe endpoints", () => {
   it("returns 404 for probe namespace variants instead of false-green Control UI HTML", async () => {
     const getReadiness: ReadinessChecker = () => ({
       ready: false,
+      coreReady: false,
       failing: ["gateway-draining"],
       uptimeMs: 1_000,
     });
@@ -405,6 +406,7 @@ describe("gateway probe endpoints", () => {
   it("re-resolves auth for remote /ready requests after shared auth rotation", async () => {
     const getReadiness: ReadinessChecker = () => ({
       ready: false,
+      coreReady: true,
       failing: ["discord", "telegram"],
       uptimeMs: 8_000,
     });
@@ -433,6 +435,7 @@ describe("gateway probe endpoints", () => {
           statusCode: 503,
           body: {
             ready: false,
+            coreReady: true,
             failing: ["discord", "telegram"],
             uptimeMs: 8_000,
           },
@@ -451,6 +454,7 @@ describe("gateway probe endpoints", () => {
           statusCode: 503,
           body: {
             ready: false,
+            coreReady: true,
             failing: ["discord", "telegram"],
             uptimeMs: 8_000,
           },
@@ -462,6 +466,7 @@ describe("gateway probe endpoints", () => {
   it("hides readiness details when trusted-proxy auth violates browser origin policy", async () => {
     const getReadiness: ReadinessChecker = () => ({
       ready: false,
+      coreReady: true,
       failing: ["discord", "telegram"],
       uptimeMs: 8_000,
     });
@@ -642,6 +647,7 @@ describe("gateway probe endpoints", () => {
         expect(readiness.res.statusCode).toBe(503);
         expect(JSON.parse(readiness.getBody())).toMatchObject({
           ready: false,
+          coreReady: true,
           failing: ["whatsapp"],
         });
 
@@ -749,6 +755,7 @@ describe("gateway probe endpoints", () => {
     const shouldEnforcePluginGatewayAuth = vi.fn(() => true);
     const getReadiness = vi.fn(() => ({
       ready: true,
+      coreReady: true,
       failing: [],
       uptimeMs: 123,
     }));
@@ -773,7 +780,12 @@ describe("gateway probe endpoints", () => {
           if (path.startsWith("/health")) {
             expect(body, path).toEqual({ ok: true, status: "live" });
           } else if (path.startsWith("/ready")) {
-            expect(body, path).toEqual({ ready: true, failing: [], uptimeMs: 123 });
+            expect(body, path).toEqual({
+              ready: true,
+              coreReady: true,
+              failing: [],
+              uptimeMs: 123,
+            });
           } else {
             expect(body, path).toMatchObject({
               ok: true,
