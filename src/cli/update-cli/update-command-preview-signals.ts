@@ -59,7 +59,7 @@ export async function withUpdatePreviewSignals<T>(
 ): Promise<T> {
   const run = opts.run;
   const admission = opts.dryRun === true && run ? previewAdmissions.get(run) : undefined;
-  if (opts.dryRun !== true || (run && !admission) || admission?.active) {
+  if (opts.dryRun !== true || admission?.active) {
     return await withMutableUpdateSignals(opts, operation);
   }
   return await withCommandProcessScope(async (stop) => {
