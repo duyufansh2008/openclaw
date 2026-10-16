@@ -384,14 +384,17 @@ export async function verifyUpdatedGateway(
         health.waitOutcome === "still-starting" ? "still-starting" : "gateway-readiness-pending",
     };
   }
-  const httpFailed = http !== undefined && !coreReady;
+  const httpFailure =
+    http !== undefined && !coreReady
+      ? `Gateway HTTP readiness unverified: healthz=${http.healthz ?? "unavailable"}; readyz=${http.readyz ?? "unavailable"}.`
+      : undefined;
   const diagnosticLines: [string, ...string[]] = [
     params.purpose === "package-replacement"
       ? "Package update installed; Gateway readiness remains unverified with --no-restart. Its replacement restart may still be starting."
       : params.purpose === "recovery"
         ? "Gateway recovery check did not verify serving health."
         : "Gateway did not become healthy after restart.",
-    ...(httpFailed ? ["Gateway /readyz did not return HTTP 200."] : []),
+    ...(httpFailure ? [httpFailure] : []),
     ...(health.healthy && params.requireRunningService
       ? ["Gateway responded, but the managed service did not report running after restart."]
       : []),
@@ -413,7 +416,7 @@ export async function verifyUpdatedGateway(
       ? "build-id-mismatch"
       : health.activatedPluginErrors?.length
         ? "plugin-errors"
-        : httpFailed
+        : httpFailure
           ? "readyz-unhealthy"
           : !serviceRunning
             ? "service-not-running"
@@ -431,11 +434,11 @@ export async function verifyUpdatedGateway(
       });
     }
   }
-  if (httpFailed) {
+  if (httpFailure) {
     facts.push({
       check: "readyz",
       code: "readyz-unhealthy",
-      message: `Gateway readiness endpoint returned HTTP ${http.readyz ?? "unavailable"}; expected HTTP 200.`,
+      message: httpFailure,
     });
   }
   if (!serviceRunning) {
@@ -461,7 +464,7 @@ export async function verifyUpdatedGateway(
     params.purpose === "package-replacement"
       ? undefined
       : normalizeUpdateFailureFacts(facts, params.serviceEnv),
-    httpFailed ? "Gateway /readyz did not return HTTP 200." : reason,
+    httpFailure ?? reason,
     params.purpose === "package-replacement" ? diagnosticLines.join("\n") : undefined,
   );
   if (params.opts.json) {
