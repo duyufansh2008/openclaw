@@ -150,7 +150,8 @@ describe("Gateway service readiness", () => {
     { outcome: "still-starting", runtime: "running", code: 2 },
     { outcome: "stopped-free", runtime: "stopped", code: 1 },
     { outcome: "timeout", runtime: "running", code: 1 },
-  ])("reports managed start $outcome with exit $code", async ({ outcome, runtime, code }) => {
+    { outcome: "healthy", runtime: "running", code: 1 },
+  ])("rejects unready start $outcome with exit $code", async ({ outcome, runtime, code }) => {
     const writeJson = vi.spyOn(defaultRuntime, "writeJson").mockImplementation(() => {});
     vi.spyOn(defaultRuntime, "exit").mockImplementation((exitCode) => {
       throw new Error(`exit ${exitCode}`);
@@ -162,7 +163,7 @@ describe("Gateway service readiness", () => {
       });
     });
     waitForGatewayHealthyRestart.mockResolvedValue({
-      healthy: false,
+      healthy: outcome === "healthy",
       staleGatewayPids: [],
       runtime: { status: runtime, pid: 4242 },
       portUsage: { port: 18789, status: "busy", listeners: [], hints: [] },
@@ -170,7 +171,12 @@ describe("Gateway service readiness", () => {
       elapsedMs: 45_000,
       ...(outcome === "still-starting" ? { startupPhase: "startup-sidecars" } : {}),
     });
-    waitForGatewayHttpReadiness.mockResolvedValue({ healthz: 200, readyz: 503, coreReady: false });
+    waitForGatewayHttpReadiness.mockResolvedValue({
+      healthz: 200,
+      readyz: 503,
+      coreReady: outcome === "healthy",
+      ...(outcome === "healthy" ? { failingChannels: ["telegram"] } : {}),
+    });
 
     await expect(runDaemonStart({ json: true })).rejects.toThrow(`exit ${code}`);
 
