@@ -421,6 +421,8 @@ it.each(["error"] as const)(
 // Real signals terminate a separate process; the parent never emits into Vitest.
 it.skipIf(process.platform === "win32").each([
   { signal: "SIGTERM", mode: "fresh" },
+  { signal: "SIGTERM", mode: "command-scope" },
+  { signal: "SIGINT", mode: "command-scope" },
   { signal: "SIGTERM", mode: "resolved" },
   { signal: "SIGINT", mode: "resolved-foreign-before" },
   { signal: "SIGINT", mode: "resolved-foreign-after" },
@@ -448,11 +450,13 @@ it.skipIf(process.platform === "win32").each([
       import { closeOpenClawStateDatabaseForTest } from ${JSON.stringify(resolveRuntimeWorkerUrl(cronOwnerHardeningEntrypoints.stateDatabase).href)};
       import { admitUpdateCommandRun, withUpdatePreviewSignals } from ${JSON.stringify(resolveRuntimeWorkerUrl(updateExecutorNativeEntrypoints.commandRun).href)};
       import { resolveUpdateCommandTarget } from ${JSON.stringify(resolveRuntimeWorkerUrl(updateExecutorNativeEntrypoints.commandTarget).href)};
+      import { resolveCommandProcessSignal, withCommandProcessScope } from ${JSON.stringify(resolveRuntimeWorkerUrl(updateExecutorNativeEntrypoints.processSpawn).href)};
       const opts = { dryRun: true };
       const mode = ${JSON.stringify(mode)};
       if (mode === 'inherited') process.env.OPENCLAW_UPDATE_RUN_ID = createUpdateRun({trigger:'cli'}).runId;
       const run = await admitUpdateCommandRun({ opts, root: ${JSON.stringify(root)}, installKind: "package" });
       const preview = () => withUpdatePreviewSignals({ ...opts, run }, async () => {
+        const commandSignal = mode === 'command-scope' ? resolveCommandProcessSignal() : undefined;
         const sibling = createUpdateRun({ trigger: 'cli' });
         if (mode.startsWith('resolved')) {
           const foreign = () => recordUpdateRunPhase(run.runId, 'requested', { target: { tag: 'foreign' } });
@@ -490,6 +494,12 @@ it.skipIf(process.platform === "win32").each([
         await new Promise(resolve => {
           if (mode !== "inherited") process.once(${JSON.stringify(signal)}, resolve);
         });
+        if (mode === 'command-scope') {
+          fs.writeFileSync(${JSON.stringify(path.join(root, "preview-command-signal.json"))}, JSON.stringify({
+            present: commandSignal !== undefined,
+            aborted: commandSignal?.aborted === true,
+          }));
+        }
       });
       if (mode === "inherited") await preview();
       else {
@@ -497,7 +507,7 @@ it.skipIf(process.platform === "win32").each([
         await withCliProcessScope(() => runCliWithExitFinalization({
           run: () => withCliCommandCleanup(false, async cleanup => {
             resources = cleanup.pluginResources;
-            await preview();
+            await (mode === 'command-scope' ? withCommandProcessScope(preview) : preview());
             // A later command result must not overwrite the accepted signal.
             process.exitCode = 19;
           }),
@@ -560,6 +570,11 @@ it.skipIf(process.platform === "win32").each([
         expect(exitSignal).toBeNull();
         expect(fs.readFileSync(path.join(root, "signal-owner-unwound"), "utf8")).toBe("settled");
       }
+      if (mode === "command-scope") {
+        expect(
+          JSON.parse(fs.readFileSync(path.join(root, "preview-command-signal.json"), "utf8")),
+        ).toEqual({ present: true, aborted: true });
+      }
       const options =
         mode === "missing"
           ? {
@@ -580,7 +595,12 @@ it.skipIf(process.platform === "win32").each([
           ]),
         });
       }
-      if (mode === "fresh" || mode === "repeat" || mode === "resolved") {
+      if (
+        mode === "fresh" ||
+        mode === "repeat" ||
+        mode === "resolved" ||
+        mode === "command-scope"
+      ) {
         expect(record).toMatchObject({
           status: "skipped",
           phase: "finished",
