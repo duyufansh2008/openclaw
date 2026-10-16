@@ -15,12 +15,13 @@ const mocks = vi.hoisted(() => ({
   activate:
     vi.fn<typeof import("../../infra/update-immutable-activation.js").activateImmutableUpdate>(),
 }));
-// Only installation/service I/O is fixed. The command scope and exit gate remain real.
+// mock-isolation: Keep privileged installation I/O fixed while the real command scope and exit gate run.
 vi.mock("../../infra/update-immutable-install.js", () => ({
   adoptImmutableInstall: vi.fn(),
   inspectImmutableInstall: mocks.inspect,
   prepareImmutableUpdate: mocks.prepare,
 }));
+// mock-isolation: Isolate real service activation; this fixture observes whether activation is attempted.
 vi.mock("../../infra/update-immutable-activation.js", () => ({
   activateImmutableUpdate: mocks.activate,
 }));
