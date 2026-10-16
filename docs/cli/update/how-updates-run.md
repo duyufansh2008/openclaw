@@ -794,6 +794,8 @@ one pathname cannot safely restore every alias.
 Database engine discovery and capture run in the retained updater's backup child,
 so a first database snapshot after package replacement can still load its original
 backup code. This includes retained PostgreSQL stores from disabled plugins. The
+child reads installed plugin metadata from a private database snapshot while the
+parent retains exclusive maintenance ownership of the source state. The
 already-running updater owns this behavior; a newer candidate cannot repair an
 older updater's first capture after activation.
 

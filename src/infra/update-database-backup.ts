@@ -5,7 +5,6 @@ import { sameFileIdentity } from "@openclaw/fs-safe/advanced";
 import { z } from "zod";
 import type { DoctorRehearsalDatabaseCoverage } from "../commands/doctor-rehearsal-databases.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
-import { withArtifactPreservingStateReads } from "../state/artifact-preserving-state-reads.js";
 import { openClawStateDatabaseCache } from "../state/openclaw-state-db-cache.js";
 import {
   getOpenClawDatabaseMaintenanceScope,
@@ -280,15 +279,53 @@ export async function createUpdateDatabaseBackupInProcess(
   const { discoverBackupDatabasePaths } = await import("./backup-sqlite-snapshot.js");
   const { readBackupEngine, capturePostgresBackup } =
     await import("../snapshot/database-backup.js");
-  const discoverPostgresPaths = async () =>
-    (await discoverBackupDatabasePaths(input)).filter(
-      (file) => readBackupEngine(file).engine === "postgres",
-    );
-  // The parent's read scope does not cross the process boundary. Metadata
-  // discovery must honor the same source-artifact policy as the snapshots.
-  const postgresPaths = await (input.stopped || input.preserveSourceArtifacts
-    ? withArtifactPreservingStateReads(discoverPostgresPaths)
-    : discoverPostgresPaths());
+  const discoverPostgresPaths = async () => {
+    const { createPluginCache, withPluginCache } = await import("../plugins/plugin-cache.js");
+    const { prepareBundledDiscoveryMode } = await import("../plugins/bundled-discovery-state.js");
+    const { preparePersistedInstalledPluginIndexCacheEntry } =
+      await import("../plugins/installed-plugin-index-record-state.js");
+    const { readPluginMetadataStateRowsInDatabase } =
+      await import("../plugins/plugin-metadata-state.kernel.js");
+    const { openNodeSqliteDatabase } = await import("./node-sqlite.js");
+    const { withPreparedSqliteSnapshot } = await import("./sqlite-readonly-location-cleanup.js");
+    const { prepareSqliteReadOnlyLocationInProcess, prepareSqliteReadOnlyLocationSyncInProcess } =
+      await import("./sqlite-readonly-location.js");
+    const { updateStateDatabaseExists } = await import("./update-candidate-state.sizes.js");
+    const shared = path.resolve(input.stateDir, "state", "openclaw.sqlite");
+    const env = { ...process.env, ...input.env, OPENCLAW_STATE_DIR: input.stateDir };
+    // The parent's maintenance authority does not cross this process boundary.
+    // Derive metadata from private bytes, keeping source plugin/resource roots.
+    const rows = (await updateStateDatabaseExists(shared))
+      ? await withPreparedSqliteSnapshot(
+          input.stopped || input.preserveSourceArtifacts
+            ? prepareSqliteReadOnlyLocationSyncInProcess(shared, input.stagingRoot)
+            : await prepareSqliteReadOnlyLocationInProcess(shared, input.stagingRoot),
+          (location) => {
+            using db = openNodeSqliteDatabase(location, { readOnly: true });
+            return readPluginMetadataStateRowsInDatabase(db, [
+              "plugins.bundledDiscovery",
+              "plugins.installedIndex",
+            ]);
+          },
+        )
+      : [];
+    await using cache = createPluginCache();
+    return await withPluginCache(cache, async () => {
+      const activate = await prepareBundledDiscoveryMode(env, async () =>
+        rows.find((row) => row.state_key === "plugins.bundledDiscovery"),
+      );
+      const installed = await preparePersistedInstalledPluginIndexCacheEntry(
+        { stateDir: input.stateDir, env },
+        async () => rows.find((row) => row.state_key === "plugins.installedIndex"),
+      );
+      activate();
+      installed.assertCurrent();
+      return (await discoverBackupDatabasePaths({ ...input, env })).filter(
+        (file) => readBackupEngine(file).engine === "postgres",
+      );
+    });
+  };
+  const postgresPaths = await discoverPostgresPaths();
   const additionalPaths = [...(input.additionalPaths ?? []), ...postgresPaths];
   const includeOwners = inspectionPlan.files.some(([, database]) => database.owners !== undefined);
   const inventoryFor = (plan: InspectionPlan) =>
