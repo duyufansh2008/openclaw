@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { afterEach, expect, it, vi } from "vitest";
 import { useAutoCleanupTempDirTracker } from "../../test/helpers/temp-dir.js";
 import { acquireGatewayLock } from "./gateway-lock.js";
+import { withUserPathBaseDirectory } from "./home-dir.js";
 import { createUpdateDatabaseBackup } from "./update-database-backup.js";
 
 // mock-isolation: Activation removed the parent's cold backup chunk; the retained child uses real code.
@@ -14,20 +15,30 @@ vi.mock("./backup-sqlite-snapshot.js", () => {
 
 const dirs = useAutoCleanupTempDirTracker(afterEach);
 
-it.each(["sqlite", "sqlite-maintenance", "postgres"] as const)(
+it.each(["sqlite", "sqlite-maintenance", "postgres", "postgres-relative"] as const)(
   "keeps first-use %s capture in the retained child after runtime replacement",
   async (engine) => {
     const root = dirs.make("update-backup-runtime-");
     const stateDir = path.join(root, "state");
     const workboard = fileURLToPath(new URL("../../extensions/workboard", import.meta.url));
+    const postgres = engine.startsWith("postgres");
+    const invocationDir = path.join(root, "invocation");
+    if (engine === "postgres-relative") {
+      await fs.mkdir(path.join(invocationDir, "extensions"), { recursive: true });
+      await fs.symlink(
+        workboard,
+        path.join(invocationDir, "extensions/workboard"),
+        process.platform === "win32" ? "junction" : "dir",
+      );
+    }
     const source = path.join(
       stateDir,
-      engine !== "postgres" ? "state/openclaw.sqlite" : "plugins/workboard/workboard.sqlite",
+      postgres ? "plugins/workboard/workboard.sqlite" : "state/openclaw.sqlite",
     );
     await fs.mkdir(path.dirname(source), { recursive: true });
     {
       using db = new DatabaseSync(source);
-      if (engine !== "postgres") {
+      if (!postgres) {
         db.exec(
           "PRAGMA user_version=17; CREATE TABLE payload(value TEXT); INSERT INTO payload VALUES('preserved');",
         );
@@ -57,9 +68,10 @@ it.each(["sqlite", "sqlite-maintenance", "postgres"] as const)(
             migrationVersion: 1,
             policyHash: "fixture",
             generatedAtMs: 1,
-            installRecords: {
-              workboard: { source: "path", sourcePath: workboard, installPath: workboard },
-            },
+            installRecords:
+              engine === "postgres-relative"
+                ? {}
+                : { workboard: { source: "path", sourcePath: workboard, installPath: workboard } },
             plugins: [],
             diagnostics: [],
           },
@@ -86,21 +98,26 @@ it.each(["sqlite", "sqlite-maintenance", "postgres"] as const)(
       expect(maintenance).not.toBeNull();
     }
     const run = () =>
-      createUpdateDatabaseBackup({
-        backupRoot: path.join(root, "rollback"),
-        stateDir,
-        config: {
-          plugins: {
-            entries: { workboard: { enabled: false } },
+      withUserPathBaseDirectory(engine === "postgres-relative" ? invocationDir : undefined, () =>
+        createUpdateDatabaseBackup({
+          backupRoot: path.join(root, "rollback"),
+          stateDir,
+          config: {
+            plugins: {
+              ...(engine === "postgres-relative"
+                ? { load: { paths: ["./extensions/workboard"] } }
+                : {}),
+              entries: { workboard: { enabled: false } },
+            },
           },
-        },
-        env,
-        stopped: engine === "sqlite",
-        preserveSourceArtifacts: maintenance !== null,
-      });
+          env,
+          stopped: engine === "sqlite",
+          preserveSourceArtifacts: maintenance !== null,
+        }),
+      );
     try {
       const capture = maintenance ? maintenance.run(run) : run();
-      if (engine === "postgres") {
+      if (postgres) {
         // Disabled plugin stores still need custody, before contacting PostgreSQL or taking a snapshot.
         await expect(capture).rejects.toThrow(
           "PostgreSQL update capture requires exclusive ownership",

@@ -20,6 +20,7 @@ import {
 import { formatDiskSpaceBytes, tryReadDiskSpace } from "./disk-space.js";
 import { formatErrorMessageWithCode } from "./errors.js";
 import { sameFileMutationFingerprint } from "./file-descriptor.js";
+import { resolveUserPath } from "./home-dir.js";
 import { hasNodeErrorCode } from "./path-guards.js";
 import { isSqliteSnapshotFile } from "./sqlite-file-header.js";
 import { resolveSqliteDatabaseFilePaths } from "./sqlite-files.js";
@@ -469,6 +470,20 @@ export async function createUpdateDatabaseBackup({
   retryAdvice?: boolean;
 }): Promise<UpdateDatabaseBackup> {
   const controller = new AbortController();
+  const loadPaths = input.config.plugins?.load?.paths;
+  // The child parks its cwd and cannot inherit the updater's invocation-path scope.
+  const config = loadPaths?.length
+    ? {
+        ...input.config,
+        plugins: {
+          ...input.config.plugins,
+          load: {
+            ...input.config.plugins?.load,
+            paths: loadPaths.map((file) => resolveUserPath(file, input.env)),
+          },
+        },
+      }
+    : input.config;
   const additionalPaths = (input.additionalPaths ?? []).map((file) => path.resolve(file));
   const additionalFiles = input.additionalFiles?.map((file) => path.resolve(file));
   const signal = callerSignal
@@ -486,6 +501,7 @@ export async function createUpdateDatabaseBackup({
       // Each SQLite reader owns its token-protected scratch beneath this private backup directory.
       const workerInput = {
         ...input,
+        config,
         preserveSourceArtifacts: input.stopped || input.preserveSourceArtifacts,
         additionalPaths,
         additionalFiles,
