@@ -1,4 +1,5 @@
 import { stripAnsi } from "../../packages/terminal-core/src/ansi.js";
+import { resolveCommandProcessSignal } from "../process/exec-spawn.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { formatErrorMessage } from "./errors.js";
 import { retryableGitNetworkOperation, withGitNetworkRetry } from "./git-network-retry.js";
@@ -211,7 +212,11 @@ export async function buildUpdateCommandRunner(
           argv[0] === "git" ? retryableGitNetworkOperation(argv.slice(1)) : undefined;
         return await withGitNetworkRetry(
           operation,
-          { ...options, beforeRun: operation ? beforeGitNetworkAttempt : undefined },
+          {
+            timeoutMs: options.timeoutMs,
+            signal: resolveCommandProcessSignal(options.signal),
+            beforeRun: operation ? beforeGitNetworkAttempt : undefined,
+          },
           (timeoutMs) =>
             runCommandWithTimeout(argv, {
               ...options,

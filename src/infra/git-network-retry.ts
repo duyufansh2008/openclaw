@@ -18,24 +18,37 @@ type GitNetworkResult = {
 const log = createSubsystemLogger("git/network");
 const RETRY_DELAY_MS = 1_000;
 
+/** Resolve owner-prepared Git argv without mistaking a global option value for a command. */
+export function gitCommandName(args: readonly string[]): string | undefined {
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index]!;
+    if (["-c", "-C", "--git-dir", "--work-tree", "--namespace", "--config-env"].includes(arg)) {
+      index += 1;
+    } else if (
+      /^(?:-c.+|-C.+|--(?:git-dir|work-tree|namespace|config-env|attr-source)=.+)$/u.test(arg) ||
+      [
+        "--no-optional-locks",
+        "--no-lazy-fetch",
+        "--no-replace-objects",
+        "--bare",
+        "--literal-pathspecs",
+        "--no-pager",
+      ].includes(arg)
+    ) {
+      continue;
+    } else {
+      return arg;
+    }
+  }
+  return undefined;
+}
+
 /** Clone retries require destination cleanup by the clone owner, not this argv classifier. */
 export function retryableGitNetworkOperation(
   args: readonly string[],
 ): GitNetworkOperation | undefined {
-  for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index]!;
-    if (arg === "-c" || arg === "-C" || arg === "--git-dir" || arg === "--work-tree") {
-      index += 1;
-    } else if (
-      /^(?:-c.+|-C.+|--(?:git-dir|work-tree|config-env)=.+)$/u.test(arg) ||
-      ["--no-optional-locks", "--no-lazy-fetch", "--no-replace-objects", "--bare"].includes(arg)
-    ) {
-      continue;
-    } else {
-      return arg === "fetch" || arg === "ls-remote" ? arg : undefined;
-    }
-  }
-  return undefined;
+  const command = gitCommandName(args);
+  return command === "fetch" || command === "ls-remote" ? command : undefined;
 }
 
 function isTransientGitFailure(operation: GitNetworkOperation, result: GitNetworkResult): boolean {
@@ -69,7 +82,8 @@ function isTransientGitFailure(operation: GitNetworkOperation, result: GitNetwor
       )
     );
   }
-  return /did not send all necessary objects|could not resolve (?:host|proxy)|temporary failure in name resolution|failed to connect|connection (?:reset|timed out|refused|closed)|remote end hung up unexpectedly|unexpected disconnect|early EOF|empty reply from server|TLS connection was non-properly terminated|SSL_ERROR_SYSCALL|HTTP\/2.*(?:stream|internal_error)|RPC failed; curl (?:5|6|7|18|28|35|52|55|56|92)\b|returned error: (?:408|429|500|502|503|504)\b/iu.test(
+  // Ref advertisements can report an incomplete HTTP read without Git's RPC/curl prefix.
+  return /did not send all necessary objects|could not resolve (?:host|proxy)|temporary failure in name resolution|failed to connect|connection (?:reset|timed out|refused|closed)|transfer closed with \d+ bytes remaining to read|remote end hung up unexpectedly|unexpected disconnect|early EOF|empty reply from server|TLS connection was non-properly terminated|SSL_ERROR_SYSCALL|HTTP\/2.*(?:stream|internal_error)|RPC failed; curl (?:5|6|7|18|28|35|52|55|56|92)\b|returned error: (?:408|429|500|502|503|504)\b/iu.test(
     stderr,
   );
 }

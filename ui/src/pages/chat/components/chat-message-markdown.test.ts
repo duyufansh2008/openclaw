@@ -4,15 +4,17 @@
 // transcript mutation actions.
 import { html, nothing, render } from "lit";
 import { describe, expect, it, vi } from "vitest";
-import { markdownBlocks } from "../../../components/markdown-blocks.ts";
 import { handleMarkdownCodeBlockClick } from "../../../components/markdown-code-blocks.ts";
+import { markdownBlocksRef } from "../../../components/markdown-element-refs-solid.ts";
 import { resolveMessageDisplayMarkdown } from "../../../lib/chat/message-display.ts";
 import { extractText } from "../../../lib/chat/message-extract.ts";
 import { normalizeMessage } from "../../../lib/chat/message-normalizer.ts";
+import { renderSolidRef } from "../../../test-helpers/render-solid-ref.ts";
+import { flush } from "../../../test-helpers/solid-settle.ts";
 import { persistedMessageEntryId } from "../chat-thread-items.ts";
 import { renderGroupedMessage } from "./chat-message-bubble.ts";
 import { prepareChatMessageRender, resolveMessageActionDetails } from "./chat-message-markdown.ts";
-import { renderMessageMarkdown } from "./chat-message-text.ts";
+import { renderMessageMarkdown } from "./chat-message-text.test-support.ts";
 
 const cappedMeta = { id: "msg-1", truncated: true, reason: "display-cap" };
 
@@ -205,12 +207,14 @@ describe("user message disclosure", () => {
 
       draw(`${markdown}Retired before measurement.`);
       part.setConnected(false);
+      flush();
       measure.mockClear();
       await settle();
       fonts.dispatchEvent(new Event("loadingdone"));
       await settle();
       expect(measure).not.toHaveBeenCalled();
       part.setConnected(true);
+      flush();
       await settle();
       expect(measure).toHaveBeenCalled();
     } finally {
@@ -263,14 +267,17 @@ describe("streaming message Markdown", () => {
       isStreaming: false,
     },
   ])("retains completed code choices in the $stage", async ({ tail, isStreaming }) => {
-    const container = document.body.appendChild(document.createElement("div"));
+    const container = document.createElement("div");
+    const blocks = renderSolidRef(() => markdownBlocksRef(() => true), {
+      targetElement: container,
+    });
     const code = Array.from({ length: 10 }, (_, index) => `const value${index} = ${index};`).join(
       "\n",
     );
     const prefix = `\`\`\`ts\n${code}\n\`\`\`\n\n`;
     const renderTail = (text: string, streaming: boolean) =>
       render(
-        html`<section ${markdownBlocks()} @click=${handleMarkdownCodeBlockClick}>
+        html`<section @click=${handleMarkdownCodeBlockClick}>
           ${renderMessageMarkdown(
             prefix + text,
             "retained-fence",
@@ -307,6 +314,7 @@ describe("streaming message Markdown", () => {
       );
     } finally {
       render(nothing, container);
+      blocks.unmount();
       container.remove();
     }
   });
@@ -317,11 +325,14 @@ describe("streaming message Markdown", () => {
     "render options",
     "reference definition",
   ] as const)("updates streaming Markdown after a %s change", async (change) => {
-    const container = document.body.appendChild(document.createElement("div"));
+    const container = document.createElement("div");
+    const blocks = renderSolidRef(() => markdownBlocksRef(() => true), {
+      targetElement: container,
+    });
     const source = "```ts\nconst original = 42;\n```\n\nSee [guide][ref]\n\nTail";
     const show = (markdown: string, key = "message", interactive = true) =>
       render(
-        html`<section ${markdownBlocks()} @click=${handleMarkdownCodeBlockClick}>
+        html`<section @click=${handleMarkdownCodeBlockClick}>
           ${renderMessageMarkdown(
             markdown,
             key,
@@ -360,6 +371,7 @@ describe("streaming message Markdown", () => {
       expect(container.querySelectorAll("pre code")).toHaveLength(1);
     } finally {
       render(nothing, container);
+      blocks.unmount();
       container.remove();
     }
   });

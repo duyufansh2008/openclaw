@@ -1,4 +1,3 @@
-import { resolve } from "node:path";
 import type * as Lark from "@larksuiteoapi/node-sdk";
 import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
 import { normalizeOptionalString, uniqueStrings } from "openclaw/plugin-sdk/string-coerce-runtime";
@@ -24,28 +23,10 @@ import {
 } from "./docx-markdown.js";
 import { cleanBlocksForDescendant, patchTable } from "./docx-table-ops.js";
 import type { FeishuDocxBlock, FeishuDocxBlockChild } from "./docx-types.js";
-import { resolveDocxUploadInput } from "./docx-upload-input.js";
+import { resolveDocToolLocalRoots, resolveDocxUploadInput } from "./docx-upload-input.js";
 import { createFeishuToolClient, resolveFeishuToolAccount } from "./tool-account.js";
 import { registerFeishuTool } from "./tool-registration.js";
 import { feishuExternalToolResult as json } from "./tool-result.js";
-
-function resolveDocToolLocalRoots(ctx: {
-  workspaceDir?: string;
-  fsPolicy?: { workspaceOnly: boolean };
-}): string[] | undefined {
-  if (ctx.fsPolicy?.workspaceOnly !== true) {
-    return undefined;
-  }
-  const workspaceDir = ctx.workspaceDir?.trim();
-  // Fail closed: workspace-only with no resolved workspace must not fall back
-  // to default managed roots.
-  if (!workspaceDir) {
-    return [];
-  }
-  // Workspace paths are expected to be absolute; resolve() normalizes any
-  // accidental relative input before passing roots to loadWebMedia.
-  return [resolve(workspaceDir)];
-}
 
 const BLOCK_TYPE_NAMES: Record<number, string> = {
   1: "Page",
@@ -114,11 +95,9 @@ function normalizeConvertedBlockTree(
   }
 
   const byId = new Map<string, FeishuDocxBlock>();
-  const originalOrder = new Map<string, number>();
-  for (const [index, block] of blocks.entries()) {
+  for (const block of blocks) {
     if (typeof block?.block_id === "string") {
       byId.set(block.block_id, block);
-      originalOrder.set(block.block_id, index);
     }
   }
 
@@ -138,11 +117,6 @@ function normalizeConvertedBlockTree(
       const parentId = typeof block?.parent_id === "string" ? block.parent_id : "";
       return !childIds.has(blockId) && (!parentId || !byId.has(parentId));
     })
-    .toSorted(
-      (a, b) =>
-        (originalOrder.get(a.block_id ?? "__missing__") ?? 0) -
-        (originalOrder.get(b.block_id ?? "__missing__") ?? 0),
-    )
     .map((block) => block.block_id)
     .filter((blockId): blockId is string => typeof blockId === "string");
 
@@ -758,6 +732,12 @@ async function writeTableCells(
         continue;
       }
 
+      const converted = await convertMarkdown(client, rowValues[c] ?? "");
+      const { orderedBlocks } = normalizeConvertedBlockTree(
+        converted.blocks,
+        converted.firstLevelBlockIds,
+      );
+
       // table cell is a container block: clear existing children, then create text child blocks
       const childrenRes = await client.docx.documentBlockChildren.get({
         path: { document_id: docToken, block_id: cellId },
@@ -768,13 +748,6 @@ async function writeTableCells(
       if (existingChildren.length > 0) {
         await deleteBlockChildren(client, docToken, cellId, 0, existingChildren.length);
       }
-
-      const text = rowValues[c] ?? "";
-      const converted = await convertMarkdown(client, text);
-      const { orderedBlocks } = normalizeConvertedBlockTree(
-        converted.blocks,
-        converted.firstLevelBlockIds,
-      );
 
       if (orderedBlocks.length > 0) {
         await insertBlocks(client, docToken, orderedBlocks, cellId);
@@ -807,6 +780,7 @@ export function registerFeishuDocTools(api: OpenClawPluginApi) {
   registerFeishuTool(api, {
     family: "doc",
     name: "feishu_doc",
+    workspaceAccess: "execute",
     label: "Feishu Doc",
     description:
       "Feishu document operations. Actions: read, write, append, insert, create, list_blocks, get_block, update_block, delete_block, create_table, write_table_cells, create_table_with_values, insert_table_row, insert_table_column, delete_table_rows, delete_table_columns, merge_table_cells, upload_image, upload_file, color_text",

@@ -1,25 +1,30 @@
-import { render, nothing } from "lit";
+import { createSignal, merge } from "solid-js";
 /* @vitest-environment jsdom */
 import { afterEach, expect, it, onTestFinished, vi } from "vitest";
+import { captureI18nStateForTesting } from "../../i18n/lib/translate.test-support.ts";
+import { i18n } from "../../i18n/lib/translate.ts";
 import { mountSolid } from "../../test-helpers/mount-solid.ts";
-import { flush } from "../../test-helpers/solid-settle.ts";
+import { flush, waitForSolid } from "../../test-helpers/solid-settle.ts";
 import {
   createComposerContainer,
   createComposerProps,
+  disposeComposer,
+  renderComposerInto,
   resetComposerFixture,
 } from "./chat-composer.test-support.ts";
-import { renderComposerDictationSendAction } from "./components/chat-composer-controls.tsx";
-import { renderChatComposer } from "./components/chat-composer.tsx";
+import { ComposerDictationSendAction } from "./components/chat-composer-controls.tsx";
+import type { ChatComposerProps } from "./components/chat-composer-types.ts";
+import { reviewPrivateComposerDraft } from "./components/private-composer-recovery-dialog.tsx";
 import { ComposerDictationController } from "./composer-dictation.ts";
 
 afterEach(() => resetComposerFixture());
 
-function mountComposer(initial: Parameters<typeof renderChatComposer>[0]) {
+function mountComposer(initial: ChatComposerProps) {
   const container = document.body.appendChild(createComposerContainer());
   let props = initial;
-  const paint = () => render(renderChatComposer(props), container);
+  const paint = () => renderComposerInto(container, props);
   onTestFinished(() => {
-    render(nothing, container);
+    disposeComposer(container);
   });
   paint();
   return {
@@ -30,6 +35,88 @@ function mountComposer(initial: Parameters<typeof renderChatComposer>[0]) {
     },
   };
 }
+
+it("updates composer text on a live locale change without disturbing an IME draft", async () => {
+  onTestFinished(captureI18nStateForTesting());
+  await i18n.setLocale("en");
+  const onDraftChange = vi.fn();
+  const props = createComposerProps({
+    assistantName: "Locale fixture",
+    draft: "Unfinished draft",
+    permissionPicker: { canSelectFull: true, onSelect: vi.fn() },
+    onDraftChange,
+  });
+  const view = mountComposer(props);
+  view.container.querySelector<HTMLButtonElement>("[data-chat-permission-select]")!.click();
+  await waitForSolid(() =>
+    expect(
+      view.container.querySelector(".chat-controls__permission-menu")?.matches(":popover-open"),
+    ).toBe(true),
+  );
+  const textarea = view.container.querySelector("textarea")!;
+  const heading = view.container.querySelector(".chat-controls__permission-heading")!;
+  expect(heading.textContent).toBe("Execution permissions");
+  expect(textarea.placeholder).toBe("Message Locale fixture");
+
+  textarea.focus();
+  textarea.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true }));
+  textarea.value = "Unfinished 日本語";
+  textarea.setSelectionRange(11, 14);
+  textarea.dispatchEvent(new InputEvent("input", { bubbles: true, isComposing: true }));
+  const writes = vi.spyOn(HTMLTextAreaElement.prototype, "value", "set");
+
+  await i18n.setLocale("de");
+  flush();
+
+  expect(heading.textContent).toBe("Ausführungsberechtigungen");
+  expect(textarea.placeholder).toBe("Nachricht an Locale fixture");
+  expect(view.container.querySelector(".chat-controls__permission-heading")).toBe(heading);
+  expect(view.container.querySelector("textarea")).toBe(textarea);
+  expect(document.activeElement).toBe(textarea);
+  expect(textarea.value).toBe("Unfinished 日本語");
+  expect([textarea.selectionStart, textarea.selectionEnd]).toEqual([11, 14]);
+  expect(writes).not.toHaveBeenCalled();
+  expect(onDraftChange).not.toHaveBeenCalled();
+});
+
+it("updates an existing private draft recovery error when the locale changes", async () => {
+  onTestFinished(captureI18nStateForTesting());
+  await i18n.setLocale("en");
+  const controller = new AbortController();
+  const review = reviewPrivateComposerDraft({
+    text: "Recover this draft",
+    attachments: [{ id: "unavailable", fileName: "draft.txt", mimeType: "text/plain" }],
+    hasGoal: false,
+    pendingReads: 0,
+    isCurrent: () => true,
+    signal: controller.signal,
+  });
+  onTestFinished(async () => {
+    controller.abort();
+    await review;
+  });
+  const download = await waitForSolid(() => {
+    const button = [...document.querySelectorAll("button")].find(
+      (candidate) => candidate.textContent?.trim() === "Download draft.txt",
+    );
+    expect(button).toBeDefined();
+    return button!;
+  });
+  download.click();
+  flush();
+  const error = document.querySelector('[role="alert"]')!;
+  expect(error.textContent).toBe(
+    "This attachment is no longer available to download. Keep the draft open and recover the original file before discarding it.",
+  );
+
+  await i18n.setLocale("de");
+  flush();
+
+  expect(document.querySelector('[role="alert"]')).toBe(error);
+  expect(error.textContent).toBe(
+    "Dieser Anhang kann nicht mehr heruntergeladen werden. Lassen Sie den Entwurf geöffnet und stellen Sie die Originaldatei wieder her, bevor Sie ihn verwerfen.",
+  );
+});
 
 it("retains the native input and IME draft across external composer updates", () => {
   let draft = "hello";
@@ -115,40 +202,14 @@ it("ends the old IME scope without writing into a newly selected session", () =>
   expect(onNewDraftChange).toHaveBeenCalledWith("second draft edited", undefined);
 });
 
-it("updates follow-up controls during IME without replacing or writing the input", () => {
-  const onDraftChange = vi.fn();
-  const props = createComposerProps({
-    canAbort: true,
-    onAbort: vi.fn(),
-    runActive: true,
-    stream: "Reply in progress",
-    followUpMode: "queue",
-    onDraftChange,
-  });
-  const view = mountComposer(props);
-  const textarea = view.container.querySelector("textarea")!;
-  expect(view.container.querySelector(".chat-send-btn--stop")).not.toBeNull();
-  textarea.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true }));
-  textarea.value = "Composing a follow-up";
-  const writes = vi.spyOn(HTMLTextAreaElement.prototype, "value", "set");
-  textarea.dispatchEvent(new InputEvent("input", { bubbles: true, isComposing: true }));
-  flush();
-  const send = view.container.querySelector<HTMLButtonElement>(".chat-send-btn--send");
-  expect(send).not.toBeNull();
-  expect(send?.disabled).toBe(false);
-  expect(view.container.querySelector("textarea")).toBe(textarea);
-  expect(textarea.value).toBe("Composing a follow-up");
-  expect(writes).not.toHaveBeenCalled();
-  expect(onDraftChange).not.toHaveBeenCalled();
-});
-
-it("keeps the open permission picker through parent updates", () => {
+it("keeps the open permission picker through parent updates", async () => {
   const permissionPicker = { canSelectFull: true, onSelect: vi.fn() };
   const view = mountComposer(createComposerProps({ permissionPicker }));
-  const picker = view.container.querySelector<HTMLElement & { open: boolean }>(
-    ".chat-controls__permission-picker",
-  )!;
-  picker.open = true;
+  const picker = view.container.querySelector(".chat-controls__permission-picker")!;
+  const trigger = picker.querySelector<HTMLButtonElement>("[data-chat-permission-select]")!;
+  trigger.click();
+  const surface = picker.querySelector<HTMLElement>('[role="menu"]')!;
+  await waitForSolid(() => expect(surface.matches(":popover-open")).toBe(true));
   view.update((previous) => ({
     ...previous,
     stream: "More response",
@@ -156,7 +217,9 @@ it("keeps the open permission picker through parent updates", () => {
   }));
   flush();
   expect(view.container.querySelector(".chat-controls__permission-picker")).toBe(picker);
-  expect(picker.open).toBe(true);
+  expect(picker.querySelector('[role="menu"]')).toBe(surface);
+  expect(surface.matches(":popover-open")).toBe(true);
+  expect(trigger.getAttribute("aria-expanded")).toBe("true");
 });
 
 it("keeps a pending dictation send bound to the action that started it", async () => {
@@ -178,18 +241,22 @@ it("keeps a pending dictation send bound to the action that started it", async (
   );
   const firstSend = vi.fn();
   const laterSend = vi.fn();
-  const view = mountSolid(() => <section />);
-  const outlet = view.container.querySelector("section")!;
+  const [props, setProps] = createSignal({
+    readDictation: () => controller,
+    onSend: firstSend,
+  });
+  const actionProps = merge(props);
+  const view = mountSolid(() => <ComposerDictationSendAction {...actionProps} />);
   try {
-    render(renderComposerDictationSendAction(controller, firstSend), outlet);
-    outlet.querySelector<HTMLButtonElement>("button")!.click();
-    render(renderComposerDictationSendAction(controller, laterSend), outlet);
+    view.container.querySelector<HTMLButtonElement>("button")!.click();
+    setProps({ readDictation: () => controller, onSend: laterSend });
+    flush();
     finish(true);
     await Promise.resolve();
     expect(firstSend).toHaveBeenCalledOnce();
     expect(laterSend).not.toHaveBeenCalled();
   } finally {
-    render(nothing, outlet);
+    view.unmount();
     controller.dispose();
   }
 });

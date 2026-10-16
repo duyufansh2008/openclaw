@@ -1,5 +1,6 @@
 import { performance } from "node:perf_hooks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { withCommandProcessScope } from "../process/exec-spawn.js";
 import * as processExec from "../process/exec.js";
 import type { SpawnResult } from "../process/exec.js";
 import * as updateGlobal from "./update-global.js";
@@ -104,6 +105,30 @@ describe("default updater Git transport", () => {
     await vi.runAllTimersAsync();
     await expect(pending).resolves.toEqual(result);
     expect(execute).toHaveBeenCalledTimes(1);
+  });
+
+  it("settles inherited command cancellation during backoff without another attempt", async () => {
+    const execute = vi.spyOn(processExec, "runCommandWithTimeout").mockResolvedValue(failure);
+    const { runCommand } = await buildUpdateCommandRunner();
+    const controller = new AbortController();
+    let outcome: Awaited<ReturnType<typeof runCommand>> | undefined;
+    const pending = withCommandProcessScope(
+      () => runCommand(["git", "fetch", "origin"], { cwd: "/checkout" }),
+      controller.signal,
+    ).then((result) => {
+      outcome = result;
+      return result;
+    });
+    try {
+      await vi.advanceTimersByTimeAsync(100);
+      controller.abort();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(outcome).toMatchObject({ code: null, termination: "signal" });
+      expect(execute).toHaveBeenCalledOnce();
+    } finally {
+      await vi.runAllTimersAsync();
+      await pending;
+    }
   });
 });
 
