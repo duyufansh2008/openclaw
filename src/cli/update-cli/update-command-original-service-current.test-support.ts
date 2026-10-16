@@ -406,7 +406,7 @@ export function registerCurrentF3Controls(fixture: () => Fixture) {
           };
         });
         if (scenario === "not-ready") {
-          mocks.readiness.mockResolvedValue({ readyz: 503 });
+          mocks.readiness.mockResolvedValue({ healthz: 200, readyz: 503, coreReady: false });
         }
         const observation = observeOriginalManagedServiceRuntime(
           { root: rootB, opts: { run }, updateStepTimeoutMs: 40_000 },
@@ -587,7 +587,7 @@ export function registerCurrentF3Controls(fixture: () => Fixture) {
         );
       }
       if (scenario === "not-ready") {
-        mocks.readiness.mockResolvedValue({ readyz: 503 });
+        mocks.readiness.mockResolvedValue({ healthz: 200, readyz: 503, coreReady: false });
       }
       const restore = vi.fn();
       const compensation = compensateOriginalManagedService(
