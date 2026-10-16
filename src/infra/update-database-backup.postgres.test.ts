@@ -9,7 +9,11 @@ import { useAutoCleanupTempDirTracker } from "../../test/helpers/temp-dir.js";
 import { createOpenClawDatabaseMaintenanceScope } from "../state/openclaw-state-db-async-lifecycle.js";
 import { closeOpenClawStateDatabaseByPathAsync } from "../state/openclaw-state-db-cache.js";
 import { withOpenClawStateStartupMigrationCheckpointDatabase } from "../state/openclaw-state-db.js";
-import { installDatabaseEngineSelection } from "./database-engine/context.js";
+import {
+  getDatabaseEngineSelection,
+  installDatabaseEngineSelection,
+} from "./database-engine/context.js";
+import { resetDatabaseEngineSelectionForTest } from "./database-engine/context.test-support.js";
 import { loadDescriptor } from "./database-engine/workboard-port-descriptor.js";
 import { acquireGatewayStateOwner } from "./gateway-state-owner.js";
 import { createUpdateDatabaseBackup } from "./update-database-backup.js";
@@ -23,9 +27,9 @@ const configured: unknown = getEnvironmentData("openclaw.test.state.conformance.
 const connection = typeof configured === "string" ? configured : undefined;
 const dirs = useAutoCleanupTempDirTracker(afterEach);
 
-it.skipIf(!connection)(
-  "captures a disabled persisted plugin anchor when shared metadata lives in PostgreSQL",
-  async () => {
+it.skipIf(!connection).each(["postgres", "sqlite"] as const)(
+  "captures service PostgreSQL metadata when the updater selected %s",
+  async (callerEngine) => {
     const root = dirs.make("update-backup-shared-postgres-");
     const stateDir = path.join(root, "state");
     const shared = path.join(stateDir, "state/openclaw.sqlite");
@@ -36,8 +40,10 @@ it.skipIf(!connection)(
       OPENCLAW_STATE_DIR: stateDir,
       OPENCLAW_CONFIG_PATH: path.join(stateDir, "openclaw.json"),
       OPENCLAW_DISABLE_BUNDLED_PLUGINS: "1",
+      OPENCLAW_TEST_PG_BACKUP_CONNECTION: connection!,
     };
     const input = { connection: connection!, schemaPrefix: "update_backup_test" };
+    resetDatabaseEngineSelectionForTest();
     installDatabaseEngineSelection({ input });
     const client = new Client({ connectionString: connection });
     await client.connect();
@@ -81,6 +87,12 @@ it.skipIf(!connection)(
       await client.query(
         `INSERT INTO ${quote(namespaces[1]!)}.workboard_boards (id, created_at, updated_at) VALUES ('preserved', 1, 2)`,
       );
+      // Bootstrap represents the service's previous process; the updater boots independently.
+      resetDatabaseEngineSelectionForTest();
+      installDatabaseEngineSelection({ input: callerEngine === "postgres" ? input : undefined });
+      expect(getDatabaseEngineSelection()?.input).toEqual(
+        callerEngine === "postgres" ? input : undefined,
+      );
       const before = await Promise.all([shared, plugin].map((file) => fs.readFile(file)));
       owner = acquireGatewayStateOwner({ databasePath: shared });
       maintenance = createOpenClawDatabaseMaintenanceScope({
@@ -98,7 +110,17 @@ it.skipIf(!connection)(
             stateDir,
             env,
             config: {
-              database: { engine: "postgres", postgres: input },
+              database: {
+                engine: "postgres",
+                postgres: {
+                  connection: {
+                    source: "env",
+                    provider: "default",
+                    id: "OPENCLAW_TEST_PG_BACKUP_CONNECTION",
+                  },
+                  schemaPrefix: input.schemaPrefix,
+                },
+              },
               plugins: { entries: { workboard: { enabled: false } } },
             },
             stopped: true,

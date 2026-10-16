@@ -807,8 +807,12 @@ backup code. This includes retained PostgreSQL stores from disabled plugins. The
 child reads installed plugin metadata from a private SQLite snapshot while the
 parent retains exclusive maintenance ownership of the source state. For
 PostgreSQL-backed shared state, the parent carries metadata from its admitted
-engine-aware reader into that child instead of querying the SQLite anchor. The
-parent resolves configured plugin load paths from the invocation directory before
+engine-aware reader into that child instead of querying the SQLite anchor. That
+reader uses the service's database configuration even when the updater's calling
+profile uses another engine. PostgreSQL rollback prepares its parent recovery
+code before activation and starts its recovery worker from the retained runtime.
+The parent resolves configured plugin load paths from the invocation directory
+before
 launching the child, so relative paths still include retained plugin stores. The
 already-running updater owns this behavior; a newer candidate cannot repair an
 older updater's first capture after activation.

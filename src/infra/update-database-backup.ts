@@ -13,8 +13,9 @@ import {
   maintenanceOwnerHasSourceCustody,
   maintenanceOwnerMayCopySourcesInProcess,
 } from "../state/openclaw-state-maintenance-context.js";
+import { captureOpenClawStateReadWorkerContext } from "../state/openclaw-state-worker-context.js";
 import { resolvePathViaExistingAncestorSync } from "./boundary-path.js";
-import { getDatabaseEngineSelection } from "./database-engine/context.js";
+import { resolveDatabaseEngineInput } from "./database-engine/config.js";
 import {
   ensureDurableDirectory,
   requireDirectorySync,
@@ -516,12 +517,20 @@ export async function createUpdateDatabaseBackup({
         stagingRoot: directory,
       };
       const shared = path.resolve(input.stateDir, "state", "openclaw.sqlite");
+      const databaseEngineInput = await resolveDatabaseEngineInput(input.config, sourceEnv);
       // A PostgreSQL anchor has no machine-state rows. The existing retained reader
-      // inherits parent admission and closes its connection before capture starts.
-      const pluginMetadataRows = getDatabaseEngineSelection()?.input
+      // keeps parent admission, but engine facts belong to this service's config.
+      const pluginMetadataRows = databaseEngineInput
         ? await readPluginMetadataStateRows(
             ["plugins.bundledDiscovery", "plugins.installedIndex"],
-            { path: shared, env: sourceEnv },
+            {
+              path: shared,
+              env: sourceEnv,
+              context: {
+                ...captureOpenClawStateReadWorkerContext({ path: shared, env: sourceEnv }),
+                databaseEngineInput,
+              },
+            },
             true,
           )
         : undefined;
