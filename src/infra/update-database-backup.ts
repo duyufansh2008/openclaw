@@ -5,6 +5,7 @@ import { sameFileIdentity } from "@openclaw/fs-safe/advanced";
 import { z } from "zod";
 import type { DoctorRehearsalDatabaseCoverage } from "../commands/doctor-rehearsal-databases.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
+import { withArtifactPreservingStateReads } from "../state/artifact-preserving-state-reads.js";
 import { openClawStateDatabaseCache } from "../state/openclaw-state-db-cache.js";
 import {
   getOpenClawDatabaseMaintenanceScope,
@@ -274,12 +275,27 @@ export async function createUpdateDatabaseBackupInProcess(
   // Older parents strip owners from discovery before calling the candidate worker.
   // Compare the same admitted dialect; absent metadata must not become an inventory change.
   const inspectionPlan = input.inspectionPlan;
+  // The installed package may already be replaced. Keep cold backup imports and
+  // engine discovery in this retained child, alongside the native snapshots.
+  const { discoverBackupDatabasePaths } = await import("./backup-sqlite-snapshot.js");
+  const { readBackupEngine, capturePostgresBackup } =
+    await import("../snapshot/database-backup.js");
+  const discoverPostgresPaths = async () =>
+    (await discoverBackupDatabasePaths(input)).filter(
+      (file) => readBackupEngine(file).engine === "postgres",
+    );
+  // The parent's read scope does not cross the process boundary. Metadata
+  // discovery must honor the same source-artifact policy as the snapshots.
+  const postgresPaths = await (input.stopped || input.preserveSourceArtifacts
+    ? withArtifactPreservingStateReads(discoverPostgresPaths)
+    : discoverPostgresPaths());
+  const additionalPaths = [...(input.additionalPaths ?? []), ...postgresPaths];
   const includeOwners = inspectionPlan.files.some(([, database]) => database.owners !== undefined);
   const inventoryFor = (plan: InspectionPlan) =>
     canonicalDatabaseInventory(
       plan,
       includeOwners,
-      input.additionalPaths,
+      additionalPaths,
       input.additionalFiles,
       input.excludedDatabasePaths,
     );
@@ -303,8 +319,6 @@ export async function createUpdateDatabaseBackupInProcess(
       return undefined;
     }
   };
-  const { readBackupEngine, capturePostgresBackup } =
-    await import("../snapshot/database-backup.js");
   const engines = new Map(inventory.present.map((file) => [file, readBackupEngine(file)]));
   if (
     [...engines.values()].some((engine) => engine.engine === "postgres") &&
@@ -418,14 +432,7 @@ export async function createUpdateDatabaseBackup({
   retryAdvice?: boolean;
 }): Promise<UpdateDatabaseBackup> {
   const controller = new AbortController();
-  const { discoverBackupDatabasePaths } = await import("./backup-sqlite-snapshot.js");
-  const { readBackupEngine } = await import("../snapshot/database-backup.js");
-  const postgresPaths = (await discoverBackupDatabasePaths(input)).filter(
-    (file) => readBackupEngine(file).engine === "postgres",
-  );
-  const additionalPaths = [...(input.additionalPaths ?? []), ...postgresPaths].map((file) =>
-    path.resolve(file),
-  );
+  const additionalPaths = (input.additionalPaths ?? []).map((file) => path.resolve(file));
   const additionalFiles = input.additionalFiles?.map((file) => path.resolve(file));
   const signal = callerSignal
     ? AbortSignal.any([callerSignal, controller.signal])

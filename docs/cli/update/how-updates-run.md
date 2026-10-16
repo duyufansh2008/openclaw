@@ -791,6 +791,12 @@ largest family and 64 MiB for restoration while migrated originals remain.
 Hard-linked database or journal files refuse before migration because restoring
 one pathname cannot safely restore every alias.
 
+Database engine discovery and capture run in the retained updater's backup child,
+so a first database snapshot after package replacement can still load its original
+backup code. This includes retained PostgreSQL stores from disabled plugins. The
+already-running updater owns this behavior; a newer candidate cannot repair an
+older updater's first capture after activation.
+
 Backup metadata reuses the snapshot publisher's verified SHA-256 and byte count,
 avoiding another full database read. Recovery still verifies the stored bytes
 against that receipt before replacing any live database, so later snapshot changes
