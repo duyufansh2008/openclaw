@@ -423,6 +423,8 @@ it.skipIf(process.platform === "win32").each([
   { signal: "SIGTERM", mode: "fresh" },
   { signal: "SIGTERM", mode: "command-scope" },
   { signal: "SIGINT", mode: "command-scope" },
+  { signal: "SIGTERM", mode: "no-run-scope" },
+  { signal: "SIGINT", mode: "no-run-scope" },
   { signal: "SIGTERM", mode: "resolved" },
   { signal: "SIGINT", mode: "resolved-foreign-before" },
   { signal: "SIGINT", mode: "resolved-foreign-after" },
@@ -454,10 +456,10 @@ it.skipIf(process.platform === "win32").each([
       const opts = { dryRun: true };
       const mode = ${JSON.stringify(mode)};
       if (mode === 'inherited') process.env.OPENCLAW_UPDATE_RUN_ID = createUpdateRun({trigger:'cli'}).runId;
-      const run = await admitUpdateCommandRun({ opts, root: ${JSON.stringify(root)}, installKind: "package" });
+      const run = mode === 'no-run-scope' ? undefined : await admitUpdateCommandRun({ opts, root: ${JSON.stringify(root)}, installKind: "package" });
       const preview = () => withUpdatePreviewSignals({ ...opts, run }, async () => {
-        const commandSignal = mode === 'command-scope' ? resolveCommandProcessSignal() : undefined;
-        const sibling = createUpdateRun({ trigger: 'cli' });
+        const commandSignal = mode.endsWith('scope') ? resolveCommandProcessSignal() : undefined;
+        const sibling = mode === 'no-run-scope' ? undefined : createUpdateRun({ trigger: 'cli' });
         if (mode.startsWith('resolved')) {
           const foreign = () => recordUpdateRunPhase(run.runId, 'requested', { target: { tag: 'foreign' } });
           if (mode === 'resolved-foreign-before') foreign();
@@ -481,7 +483,7 @@ it.skipIf(process.platform === "win32").each([
         }
         if (mode === 'changed') recordUpdateRunPhase(run.runId, 'staging');
         if (mode === 'completed') finishUpdateRun(run.runId, { status: 'skipped', reason: 'dry-run' });
-        const expected = getUpdateRun(run.runId);
+        const expected = run ? getUpdateRun(run.runId) : undefined;
         if (mode === 'missing') {
           closeOpenClawStateDatabaseForTest();
           const base = ${JSON.stringify(path.join(root, "state"))};
@@ -489,12 +491,12 @@ it.skipIf(process.platform === "win32").each([
           fs.mkdirSync(family);
           fs.renameSync(base + '/openclaw.sqlite', family + '/displaced');
         }
-        process.send({ runId: run.runId, expected, sibling });
+        process.send({ runId: run?.runId, expected, sibling });
         process.channel.ref();
         await new Promise(resolve => {
           if (mode !== "inherited") process.once(${JSON.stringify(signal)}, resolve);
         });
-        if (mode === 'command-scope') {
+        if (mode.endsWith('scope')) {
           fs.writeFileSync(${JSON.stringify(path.join(root, "preview-command-signal.json"))}, JSON.stringify({
             present: commandSignal !== undefined,
             aborted: commandSignal?.aborted === true,
@@ -507,7 +509,7 @@ it.skipIf(process.platform === "win32").each([
         await withCliProcessScope(() => runCliWithExitFinalization({
           run: () => withCliCommandCleanup(false, async cleanup => {
             resources = cleanup.pluginResources;
-            await (mode === 'command-scope' ? withCommandProcessScope(preview) : preview());
+            await (mode.endsWith('scope') ? withCommandProcessScope(preview) : preview());
             // A later command result must not overwrite the accepted signal.
             process.exitCode = 19;
           }),
@@ -543,9 +545,9 @@ it.skipIf(process.platform === "win32").each([
         once(child, "message").then(
           ([payload]) =>
             payload as {
-              runId: string;
+              runId?: string;
               expected: ReturnType<typeof getUpdateRun>;
-              sibling: ReturnType<typeof createUpdateRun>;
+              sibling?: ReturnType<typeof createUpdateRun>;
             },
         ),
         closed.then(() => {
@@ -565,15 +567,22 @@ it.skipIf(process.platform === "win32").each([
         }, 100);
       }
       const [code, exitSignal] = await closed;
+      if (mode.endsWith("scope")) {
+        expect(
+          JSON.parse(fs.readFileSync(path.join(root, "preview-command-signal.json"), "utf8")),
+        ).toEqual({ present: true, aborted: true });
+      }
       expect(code ?? (exitSignal === "SIGINT" ? 130 : 143)).toBe(signal === "SIGINT" ? 130 : 143);
       if (mode !== "inherited") {
         expect(exitSignal).toBeNull();
         expect(fs.readFileSync(path.join(root, "signal-owner-unwound"), "utf8")).toBe("settled");
       }
-      if (mode === "command-scope") {
-        expect(
-          JSON.parse(fs.readFileSync(path.join(root, "preview-command-signal.json"), "utf8")),
-        ).toEqual({ present: true, aborted: true });
+      if (mode === "no-run-scope") {
+        expect(fs.existsSync(path.join(root, "state"))).toBe(false);
+        return;
+      }
+      if (!message.runId || !message.sibling) {
+        throw new Error("Admitted preview omitted its run or sibling record");
       }
       const options =
         mode === "missing"

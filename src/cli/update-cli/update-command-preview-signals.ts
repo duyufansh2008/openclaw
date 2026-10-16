@@ -52,30 +52,33 @@ export function admitUpdatePreviewSignalRun(
   previewAdmissions.set(run, { record, env: { ...env } });
 }
 
-/** Own diagnostics only for this freshly admitted invocation's lexical lifetime. */
+/** Cancel local preview work; only freshly admitted previews own ledger diagnostics. */
 export async function withUpdatePreviewSignals<T>(
   opts: UpdateCommandOptions,
   operation: () => Promise<T>,
 ): Promise<T> {
   const run = opts.run;
   const admission = opts.dryRun === true && run ? previewAdmissions.get(run) : undefined;
-  if (!admission || !run || admission.active) {
+  if (opts.dryRun !== true || (run && !admission) || admission?.active) {
     return await withMutableUpdateSignals(opts, operation);
   }
   return await withCommandProcessScope(async (stop) => {
-    admission.active = true;
-    const { env } = admission;
+    if (admission) {
+      admission.active = true;
+    }
     let interrupted = false;
     let shutdown: Promise<void> | undefined;
     let cleanup: Promise<void> | undefined;
     const settlePreview = async () => {
       if (
+        !admission ||
         !interrupted ||
         process.env.OPENCLAW_UPDATE_RUN_HANDOFF === "1" ||
         process.env[POST_CORE_UPDATE_ENV] === "1"
       ) {
         return;
       }
+      const { env } = admission;
       // Missing/displaced canonical state, pending recovery, or a changed row is
       // not permission to open a writable runtime or dispose of another owner.
       try {
@@ -97,9 +100,7 @@ export async function withUpdatePreviewSignals<T>(
       interrupted = true;
       shutdown ??= waitForSignalExitBarriers(code === 143 ? "SIGTERM" : "SIGINT")
         .catch(() => {
-          defaultRuntime.error(
-            "Preview interruption could not be recorded; history remains pending.",
-          );
+          defaultRuntime.error("Preview signal cleanup did not complete.");
         })
         .finally(() => {
           process.exitCode = code;
@@ -117,7 +118,9 @@ export async function withUpdatePreviewSignals<T>(
         // our preview here; the outer CLI finalizer joins the global drain afterward.
         await finishOwnedCleanup();
       } finally {
-        previewAdmissions.delete(run);
+        if (run) {
+          previewAdmissions.delete(run);
+        }
         const removeSignalHandlers = () => {
           process.off("SIGINT", onSigint);
           process.off("SIGTERM", onSigterm);
