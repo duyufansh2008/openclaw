@@ -1,6 +1,7 @@
 import { performance } from "node:perf_hooks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as processExec from "../process/exec.js";
+import { createCommandResult } from "../test-utils/npm-spec-install-test-helpers.js";
 import * as updateGlobal from "./update-global.js";
 import { buildUpdateCommandRunner, runStep } from "./update-runner-command.js";
 
@@ -21,6 +22,9 @@ describe("weak-network update downloads", () => {
     vi.spyOn(processExec, "runCommandWithTimeout").mockImplementation(async (argv, options) => {
       attempts += 1;
       expect(argv).toContain("--progress");
+      if (typeof options === "number") {
+        throw new Error("Expected streaming command options");
+      }
       const output = options.onOutputChunk!;
       output(
         Buffer.from("remote: private diagnostic token=fixture-secret\nReceiving obj"),
@@ -28,13 +32,13 @@ describe("weak-network update downloads", () => {
       );
       output(Buffer.from("ects:  25% (1/4), 64.00 KiB | 8.00 KiB/s\r"), "stderr");
       expect(messages.at(-1)).toBe("Receiving objects: 25% (1/4), 64.00 KiB | 8.00 KiB/s");
-      return {
+      return createCommandResult({
         code: attempts < 3 ? 128 : 0,
         termination: "exit",
         stdout: "",
         stderr:
           attempts < 3 ? "error: RPC failed; curl 56 GnuTLS recv error (-9)\nfatal: early EOF" : "",
-      };
+      });
     });
     const { runCommand } = await buildUpdateCommandRunner();
     const pending = runStep({
@@ -65,31 +69,40 @@ describe("weak-network update downloads", () => {
     },
   ])("preserves $label without a progress display", async (testCase) => {
     let attempts = 0;
-    const execute = vi.spyOn(processExec, "runCommandWithTimeout").mockImplementation(async () => ({
-      code: ++attempts <= testCase.failures ? 128 : 0,
-      termination: "exit",
-      stdout: "",
-      stderr: "error: RPC failed; curl 56 GnuTLS recv error (-9)\nfatal: early EOF",
-    }));
+    const execute = vi.spyOn(processExec, "runCommandWithTimeout").mockImplementation(async () =>
+      createCommandResult({
+        code: ++attempts <= testCase.failures ? 128 : 0,
+        termination: "exit",
+        stdout: "",
+        stderr: "error: RPC failed; curl 56 GnuTLS recv error (-9)\nfatal: early EOF",
+      }),
+    );
     const { runCommand } = await buildUpdateCommandRunner();
     const pending = runCommand(["git", "fetch", "origin"], { timeoutMs: testCase.timeoutMs });
     await vi.runAllTimersAsync();
     expect((await pending).code).toBe(testCase.expected);
     expect(attempts).toBe(testCase.attempts);
     if (testCase.timeoutMs) {
-      expect(execute.mock.calls.map(([, options]) => options.timeoutMs)).toEqual([2_000, 1_000]);
+      expect(
+        execute.mock.calls.map(([, options]) =>
+          typeof options === "number" ? options : options.timeoutMs,
+        ),
+      ).toEqual([2_000, 1_000]);
     }
   });
 
   it("keeps downloading when progress rendering fails", async () => {
     const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
     vi.spyOn(processExec, "runCommandWithTimeout").mockImplementation(async (_, options) => {
+      if (typeof options === "number") {
+        throw new Error("Expected streaming command options");
+      }
       for (let i = 0; i < 2; i++) {
         expect(
           options.onOutputChunk?.(Buffer.from("Receiving objects: 50% (1/2)\r"), "stderr"),
         ).toBeUndefined();
       }
-      return { code: 0, stdout: "", stderr: "", termination: "exit" };
+      return createCommandResult();
     });
     const { runCommand } = await buildUpdateCommandRunner();
     expect(
