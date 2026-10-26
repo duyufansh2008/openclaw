@@ -326,6 +326,7 @@ export function createUpdateRunProgress(
   };
   return {
     pendingSteps,
+    onStepProgress: progress.onStepProgress,
     onRollbackOutcome: (rollbackOutcome) => {
       if (!deferred) {
         recordUpdateRunVerification(run.runId, { rollbackOutcome }, run);

@@ -16,7 +16,7 @@ type GitNetworkResult = {
 };
 
 const log = createSubsystemLogger("git/network");
-const RETRY_DELAY_MS = 1_000;
+const DEFAULT_RETRY_DELAYS_MS = [1_000];
 
 /** Resolve owner-prepared Git argv without mistaking a global option value for a command. */
 export function gitCommandName(args: readonly string[]): string | undefined {
@@ -78,11 +78,13 @@ function isTransientGitFailure(result: GitNetworkResult): boolean {
   );
 }
 
-/** Retry one settled network read within its optional deadline and caller-owned admission. */
+/** Retry settled network reads within the original deadline and caller-owned admission. */
 export async function withGitNetworkRetry<T extends GitNetworkResult>(
   operation: GitNetworkOperation | undefined,
   options: {
     timeoutMs?: number;
+    retryDelaysMs?: readonly number[];
+    onRetry?: (attempt: number, maxAttempts: number, delayMs: number) => void;
     signal?: AbortSignal;
     beforeRun?: () => void;
     startRun?: GitOperationStarter;
@@ -97,38 +99,46 @@ export async function withGitNetworkRetry<T extends GitNetworkResult>(
     };
     return options.startRun ? options.startRun(start) : start();
   };
-  const result = await attempt(options.timeoutMs);
-  if (!operation || !isTransientGitFailure(result)) {
-    return result;
-  }
+  let result = await attempt(options.timeoutMs);
+  const delays = options.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
+  const remaining = () =>
+    options.timeoutMs === undefined ? undefined : Math.floor(deadline - performance.now());
   const cancelled = (): T => ({ ...result, code: null, signal: null, termination: "signal" });
-  if (options.signal?.aborted) {
-    return cancelled();
-  }
-  if (deadline - performance.now() <= RETRY_DELAY_MS) {
-    return result;
-  }
-  log.warn(`Git ${operation} hit a transient failure; retrying once`, {
-    operation,
-    attempt: 1,
-    maxAttempts: 2,
-    delayMs: RETRY_DELAY_MS,
-    exitCode: result.code,
-  });
-  try {
-    await sleepWithAbort(RETRY_DELAY_MS, options.signal);
-  } catch (error) {
+  for (const [index, delayMs] of delays.entries()) {
+    if (!operation || !isTransientGitFailure(result)) {
+      break;
+    }
     if (options.signal?.aborted) {
       return cancelled();
     }
-    throw error;
+    const budget = remaining();
+    if (budget !== undefined && budget <= delayMs) {
+      break;
+    }
+    log.warn(`Git ${operation} hit a transient failure; retrying`, {
+      operation,
+      attempt: index + 1,
+      maxAttempts: delays.length + 1,
+      delayMs,
+      exitCode: result.code,
+    });
+    options.onRetry?.(index + 2, delays.length + 1, delayMs);
+    try {
+      await sleepWithAbort(delayMs, options.signal);
+    } catch (error) {
+      if (options.signal?.aborted) {
+        return cancelled();
+      }
+      throw error;
+    }
+    if (options.signal?.aborted) {
+      return cancelled();
+    }
+    const timeoutMs = remaining();
+    if (timeoutMs !== undefined && timeoutMs <= 0) {
+      break;
+    }
+    result = await attempt(timeoutMs);
   }
-  if (options.signal?.aborted) {
-    return cancelled();
-  }
-  const remainingMs = Math.floor(deadline - performance.now());
-  if (remainingMs <= 0) {
-    return result;
-  }
-  return await attempt(options.timeoutMs === undefined ? undefined : remainingMs);
+  return result;
 }

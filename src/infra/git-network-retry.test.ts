@@ -82,7 +82,7 @@ it("retries the same object request once without leaking partial output or reset
   expect(calls.map((call) => call.input)).toEqual([input, input]);
   expect(calls.map((call) => call.timeoutMs)).toEqual([10_000, 9_000]);
   expect(networkLog.warn).toHaveBeenCalledExactlyOnceWith(
-    "Git fetch hit a transient failure; retrying once",
+    "Git fetch hit a transient failure; retrying",
     { operation: "fetch", attempt: 1, maxAttempts: 2, delayMs: 1_000, exitCode: 1 },
   );
 });

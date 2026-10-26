@@ -39,6 +39,7 @@ const UPDATE_STEP_NOTICE_MS = 30_000;
 
 // These CLI-only callbacks can render the row just committed by their ledger owner.
 export type UpdateDisplayProgress = {
+  onStepProgress?: UpdateStepProgress["onStepProgress"];
   onStepStart?: (
     step: Parameters<NonNullable<UpdateStepProgress["onStepStart"]>>[0],
     record?: UpdateRunRecord,
@@ -69,11 +70,13 @@ export function createUpdateProgress(
   let timer: ReturnType<typeof setTimeout> | undefined;
   let stepNotice: ReturnType<typeof setInterval> | undefined;
   let currentRecord: UpdateRunRecord | undefined;
+  let activeStep: { name: string; label: string; lastPrintAt: number } | undefined;
   let pendingRead: AbortController | undefined;
   let polling = true;
   let observation: "active" | "suspended" | "disposed" = "active";
   const seenPhases = new Set<UpdateRunPhase>();
   const stop = () => {
+    activeStep = undefined;
     clearInterval(stepNotice);
     stepNotice = undefined;
     currentSpinner?.clear();
@@ -175,6 +178,7 @@ export function createUpdateProgress(
     onStepStart: (step, record) => {
       finalize(record ?? currentRecord, false);
       const label = currentRecord ? `${currentRecord.phase} — ${step.name}` : step.name;
+      activeStep = { name: step.name, label, lastPrintAt: -Infinity };
       if (process.stdout.isTTY) {
         currentSpinner = spinner({ indicator: "timer" });
         currentSpinner.start(theme.accent(label));
@@ -187,6 +191,21 @@ export function createUpdateProgress(
           );
         }, UPDATE_STEP_NOTICE_MS);
         stepNotice.unref?.();
+      }
+    },
+    onStepProgress: (step) => {
+      if (observation !== "active" || activeStep?.name !== step.name) {
+        return;
+      }
+      const message = `${activeStep.label} — ${step.message}`;
+      if (currentSpinner) {
+        currentSpinner.message(theme.accent(message));
+      } else if (
+        Date.now() - activeStep.lastPrintAt >= 5_000 ||
+        step.message.startsWith("Retrying")
+      ) {
+        defaultRuntime.log(message);
+        activeStep.lastPrintAt = Date.now();
       }
     },
     onStepComplete: (step, record) => {

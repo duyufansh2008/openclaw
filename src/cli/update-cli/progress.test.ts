@@ -103,6 +103,23 @@ describe("update progress", () => {
     return controller;
   }
 
+  it("prints bounded transfer updates and retires them when the step stops", async () => {
+    presentation = await observe(true);
+    presentation.progress.onStepStart?.(step);
+    const transfer = { ...step, message: "Receiving objects: 25% (1/4), 64.00 KiB | 8.00 KiB/s" };
+    presentation.progress.onStepProgress?.(transfer);
+    expect(printed()).toContain(transfer.message);
+    const count = log.mock.calls.length;
+    presentation.progress.onStepProgress?.(transfer);
+    expect(log).toHaveBeenCalledTimes(count);
+    vi.advanceTimersByTime(5_000);
+    presentation.progress.onStepProgress?.(transfer);
+    expect(log).toHaveBeenCalledTimes(count + 1);
+    presentation.stop();
+    presentation.progress.onStepProgress?.(transfer);
+    expect(log).toHaveBeenCalledTimes(count + 1);
+  });
+
   async function printFailure(failed: UpdateRunResult["steps"][number]) {
     log.mockClear();
     await printResult({ ...result, runId: undefined, status: "error", steps: [failed] }, {});
