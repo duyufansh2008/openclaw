@@ -1,0 +1,294 @@
+# Task-only fork proof. Install this draft as
+# .github/workflows/pr184452-installed-upgrade.yml on the branch below.
+# This runs the public shell harness; it is not canonical Package Acceptance.
+name: PR 184452 installed upgrade proof
+
+on:
+  push:
+    branches: [taskproof/pr184452-installed-upgrade]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr184452-installed-upgrade
+  cancel-in-progress: false
+
+jobs:
+  installed-upgrade:
+    if: >-
+      github.repository == 'duyufansh2008/openclaw' &&
+      github.event.repository.private == false &&
+      github.ref == 'refs/heads/taskproof/pr184452-installed-upgrade'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CANDIDATE_SHA: 6ce0c31649d010d8dfb7a27672e81760f7bd5962
+      BASELINE_VERSION: 2026.10.7
+      NODE_OPTIONS: --max-old-space-size=8192
+      PUBLIC_PROOF_DIR: ${{ github.workspace }}/.artifacts/pr184452-public
+      OPENCLAW_CURRENT_PACKAGE_TGZ: ${{ github.workspace }}/.artifacts/pr184452-package/openclaw-candidate.tgz
+      OPENCLAW_UPGRADE_SURVIVOR_ARTIFACT_DIR: ${{ github.workspace }}/.artifacts/pr184452-private
+      OPENCLAW_DOCKER_ALL_LOG_DIR: ${{ github.workspace }}/.artifacts/pr184452-native-diagnostics
+      OPENCLAW_UPGRADE_SURVIVOR_E2E_IMAGE: openclaw-pr184452-proof:6ce0c316
+    steps:
+      - name: Checkout the exact public candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: duyufansh2008/openclaw
+          ref: 6ce0c31649d010d8dfb7a27672e81760f7bd5962
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify source identity before executing candidate tooling
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Setup the candidate's supported toolchain
+        uses: ./.github/actions/setup-node-env
+        with:
+          node-version: "24.22.1"
+          semantic-checks: "false"
+          install-bun: "true"
+          install-deps: "true"
+          frozen-lockfile: "true"
+          cache-mode: "off"
+          dependency-cache: "false"
+
+      - name: Resolve and record the current stable baseline
+        id: baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const url = 'https://registry.npmjs.org/openclaw/latest';
+          const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+          assert.equal(response.ok, true);
+          const metadata = await response.json();
+          assert.equal(metadata.name, 'openclaw');
+          assert.equal(metadata.version, process.env.BASELINE_VERSION,
+            'npm latest moved: refresh the reviewed baseline/candidate before rerunning');
+          assert.match(metadata.dist.integrity, /^sha512-[A-Za-z0-9+/=]+$/);
+          assert.equal(metadata.dist.tarball,
+            `https://registry.npmjs.org/openclaw/-/openclaw-${metadata.version}.tgz`);
+          fs.mkdirSync(process.env.PUBLIC_PROOF_DIR, { recursive: true });
+          fs.writeFileSync(path.join(process.env.PUBLIC_PROOF_DIR, 'baseline.json'),
+            JSON.stringify({ registry: url, resolvedAt: new Date().toISOString(),
+              spec: `openclaw@${metadata.version}`, version: metadata.version,
+              integrity: metadata.dist.integrity }, null, 2) + '\n');
+          NODE
+
+      - name: Build the canonical installable package from the exact source
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git diff --exit-code HEAD --
+          node scripts/package-openclaw-for-docker.mjs \
+            --allow-unreleased-changelog \
+            --output-dir "$(dirname "$OPENCLAW_CURRENT_PACKAGE_TGZ")" \
+            --output-name openclaw-candidate.tgz
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          const build = JSON.parse(execFileSync('tar', [
+            '-xOf', process.env.OPENCLAW_CURRENT_PACKAGE_TGZ, 'package/dist/build-info.json',
+          ], { encoding: 'utf8' }));
+          assert.equal(build.commit, process.env.CANDIDATE_SHA);
+          assert.equal(build.version, process.env.BASELINE_VERSION);
+          NODE
+
+      - name: Exercise the published CLI upgrade and retained SQLite state
+        id: survivor
+        shell: bash
+        env:
+          OPENCLAW_DOCKER_E2E_SELECTED_SHA: 6ce0c31649d010d8dfb7a27672e81760f7bd5962
+          OPENCLAW_UPGRADE_SURVIVOR_PUBLISHED_BASELINE: "1"
+          OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC: openclaw@2026.10.7
+          OPENCLAW_UPGRADE_SURVIVOR_SCENARIO: sqlite-volume
+          OPENCLAW_UPGRADE_SURVIVOR_VOLUME_SESSIONS: "8"
+          OPENCLAW_UPGRADE_SURVIVOR_VOLUME_EVENTS_PER_SESSION: "5"
+          OPENCLAW_UPGRADE_SURVIVOR_VOLUME_CRON_JOBS: "8"
+          OPENCLAW_UPGRADE_SURVIVOR_UPDATE_RESTART_MODE: manual
+          OPENCLAW_UPGRADE_SURVIVOR_ROOT_MANAGED_VPS: "0"
+          OPENCLAW_UPGRADE_SURVIVOR_LIVE_OPENAI: "0"
+          OPENCLAW_UPGRADE_SURVIVOR_LIVE_MODELS: ""
+        run: |
+          set -euo pipefail
+          bash scripts/e2e/upgrade-survivor-docker.sh \
+            >"$RUNNER_TEMP/pr184452-survivor-private.log" 2>&1
+
+      - name: Validate and project public proof without raw logs or state
+        if: always()
+        shell: bash
+        env:
+          SOURCE_OUTCOME: ${{ steps.source.outcome }}
+          BASELINE_OUTCOME: ${{ steps.baseline.outcome }}
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          SURVIVOR_OUTCOME: ${{ steps.survivor.outcome }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createHash } from 'node:crypto';
+          import { execFileSync } from 'node:child_process';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const digest = value => createHash('sha256').update(value).digest('hex');
+          const readText = name => {
+            const file = path.join(process.env.OPENCLAW_UPGRADE_SURVIVOR_ARTIFACT_DIR, name);
+            const stat = fs.lstatSync(file);
+            assert(stat.isFile() && stat.size <= 32 * 1024 * 1024);
+            return fs.readFileSync(file, 'utf8');
+          };
+          const read = name => JSON.parse(readText(name));
+          const projectVersion = value => {
+            if (value == null) return null;
+            assert(typeof value === 'object' && !Array.isArray(value));
+            if (value.version != null) assert.match(value.version,
+              /^20\d{2}\.\d{1,2}\.\d{1,3}(?:-(?:\d+|(?:alpha|beta|rc)\.\d+))?$/);
+            if (value.sha != null) assert.match(value.sha, /^[a-f0-9]{40}$/);
+            return { version: value.version ?? null, sha: value.sha ?? null };
+          };
+          const projectUpdate = value => {
+            assert(['ok', 'error', 'skipped'].includes(value.status));
+            assert(['git', 'pnpm', 'bun', 'npm', 'unknown'].includes(value.mode));
+            if (value.reason != null) assert.match(value.reason, /^[a-z][a-z0-9-]{0,119}$/);
+            assert(Array.isArray(value.steps) && value.steps.length <= 500);
+            return { status: value.status, mode: value.mode, reason: value.reason ?? null,
+              before: projectVersion(value.before), after: projectVersion(value.after),
+              steps: value.steps.map(({ name, exitCode, termination }) => {
+                assert.match(name, /^[A-Za-z][A-Za-z0-9 ()_-]{0,119}$/);
+                assert(exitCode === null || (Number.isInteger(exitCode) && Math.abs(exitCode) <= 65535));
+                assert(termination == null || ['exit', 'timeout', 'no-output-timeout', 'signal'].includes(termination));
+                return { name, exitCode, termination: termination ?? null };
+              }) };
+          };
+          const proof = {
+            status: 'failed', sourceSha: process.env.CANDIDATE_SHA,
+            workflowSha: process.env.GITHUB_WORKFLOW_SHA,
+            runId: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT,
+            baselineVersion: process.env.BASELINE_VERSION,
+            scenario: 'sqlite-volume', fixture: { sessions: 8, eventsPerSession: 5, cronJobs: 8 },
+            outcomes: Object.fromEntries(['SOURCE', 'BASELINE', 'PACKAGE', 'SURVIVOR']
+              .map(key => [key.toLowerCase(), process.env[`${key}_OUTCOME`]])),
+          };
+          let summary;
+          try {
+            summary = read('summary.json');
+            assert(Array.isArray(summary.phases) && summary.phases.length <= 500);
+            proof.phases = summary.phases.map(({ phase, status }) => {
+              assert.match(phase, /^[a-z0-9-]{1,80}$/);
+              assert(['started', 'passed', 'failed'].includes(status));
+              return { phase, status };
+            });
+          } catch {
+            summary = undefined;
+          }
+          proof.cliUpdates = {};
+          proof.cliUpdateProjection = {};
+          for (const [label, file] of [['initial', 'update.json'], ['recovery', 'recovery-update.json']]) {
+            if (!fs.existsSync(path.join(process.env.OPENCLAW_UPGRADE_SURVIVOR_ARTIFACT_DIR, file))) {
+              proof.cliUpdateProjection[label] = 'missing';
+              continue;
+            }
+            try {
+              // Match the native assertion's parsing of CLI preamble followed by JSON.
+              const raw = readText(file);
+              const start = raw.indexOf('{');
+              assert(start >= 0);
+              proof.cliUpdates[label] = projectUpdate(JSON.parse(raw.slice(start)));
+              proof.cliUpdateProjection[label] = 'captured';
+            } catch {
+              proof.cliUpdateProjection[label] = 'rejected';
+            }
+          }
+          let stage = 'step-outcomes';
+          try {
+            for (const outcome of Object.values(proof.outcomes)) assert.equal(outcome, 'success');
+            stage = 'native-summary';
+            assert(summary);
+            assert.equal(summary.status, 'passed');
+            assert.equal(summary.baseline.spec, `openclaw@${process.env.BASELINE_VERSION}`);
+            assert.equal(summary.baseline.version, process.env.BASELINE_VERSION);
+            assert.equal(summary.scenario, 'sqlite-volume');
+            assert.equal(summary.candidateInstallMode, 'updater');
+            assert.equal(summary.installedVersion, process.env.BASELINE_VERSION);
+            assert.equal(summary.updateRestartMode, 'manual');
+            assert.equal(summary.updateOutcome, 'success');
+            const phases = proof.phases;
+            assert(!phases.some(row => row.status === 'failed'));
+            for (const phase of ['assert-baseline', 'candidate-package-identity', 'update-candidate',
+              'installed-package-identity', 'assert-automatic-migration', 'assert-survival',
+              'gateway-probes', 'gateway-status', 'gateway-volume-history',
+              'assert-volume-idempotence', 'gateway-restart-probes',
+              'gateway-restart-volume-history', 'assert-restarted-survival']) {
+              assert(phases.some(row => row.phase === phase && row.status === 'passed'), phase);
+            }
+            stage = 'installed-cli-output';
+            assert.equal(proof.cliUpdateProjection.initial, 'captured');
+            assert(!Object.values(proof.cliUpdateProjection).includes('rejected'));
+            stage = 'installed-payload-identity';
+            const candidate = read('candidate-package-identity.json');
+            const installed = read('installed-package-identity.json');
+            assert.equal(candidate.buildInfo.commit, process.env.CANDIDATE_SHA);
+            assert.deepEqual(installed.buildInfo, candidate.buildInfo);
+            assert.equal(installed.version, candidate.version);
+            assert.deepEqual(installed.files, candidate.files);
+            assert.equal(candidate.sha256, digest(fs.readFileSync(process.env.OPENCLAW_CURRENT_PACKAGE_TGZ)));
+            proof.package = { version: installed.version, commit: installed.buildInfo.commit,
+              tarballSha256: candidate.sha256, files: Object.keys(installed.files).length,
+              inventorySha256: digest(JSON.stringify(installed.files)), installedMatchesCandidate: true };
+            stage = 'retained-history';
+            const projectHistory = name => {
+              const result = read(name);
+              assert.equal(result.status, 'passed');
+              assert.equal(result.samples.length, 8);
+              return result.samples.map(({ index, agentId, messages, messagesSha256 }) => {
+                assert(Number.isInteger(index) && index >= 0 && index < 8);
+                assert(['main', 'ops'].includes(agentId));
+                assert(Number.isInteger(messages) && messages >= 0 && messages <= 4);
+                assert.match(messagesSha256, /^[a-f0-9]{64}$/);
+                return { index, agentId, messages, messagesSha256 };
+              });
+            };
+            const history = projectHistory('volume-gateway.json');
+            assert.deepEqual(projectHistory('volume-gateway-restarted.json'), history);
+            proof.history = { beforeAndAfterRestartMatch: true, samples: history };
+            stage = 'container-runtime';
+            const [image] = JSON.parse(execFileSync('docker', ['image', 'inspect',
+              process.env.OPENCLAW_UPGRADE_SURVIVOR_E2E_IMAGE], { encoding: 'utf8' }));
+            assert(image.Config.Env.includes('NODE_VERSION=24.22.1'));
+            assert.match(image.Id, /^sha256:[a-f0-9]{64}$/);
+            proof.runtime = { node: '24.22.1', imageId: image.Id };
+            proof.gatewayChecks = ['healthz/live', 'readyz/ready',
+              'gateway status --require-rpc', 'sessions.list', 'chat.history'];
+            proof.status = 'passed';
+          } catch {
+            proof.failureStage = stage;
+            process.exitCode = 1;
+          }
+          fs.mkdirSync(process.env.PUBLIC_PROOF_DIR, { recursive: true });
+          fs.writeFileSync(path.join(process.env.PUBLIC_PROOF_DIR, 'proof.json'),
+            JSON.stringify(proof, null, 2) + '\n');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            `Installed upgrade proof: **${proof.status}**. Candidate: ${proof.sourceSha}.\n`);
+          NODE
+
+      - name: Upload only the public evidence projection
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pr184452-installed-upgrade-6ce0c316-${{ github.run_attempt }}
+          path: |
+            .artifacts/pr184452-public/baseline.json
+            .artifacts/pr184452-public/proof.json
+          if-no-files-found: error
+          retention-days: 7
