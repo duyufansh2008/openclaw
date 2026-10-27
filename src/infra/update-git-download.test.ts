@@ -66,6 +66,7 @@ function fixture() {
   const fetches: string[] = [];
   const batches: Array<{ oids: string[]; completed: boolean }> = [];
   let failBatch = 0;
+  let failure: "signal" | "disk-full" = "signal";
   let nextInspection = 0;
   const runCommand: CommandRunner = async (argv, options) => {
     const actual = [...argv];
@@ -88,6 +89,14 @@ function fixture() {
     if (batch) {
       batches.push(batch);
       if (batches.length === failBatch) {
+        if (failure === "disk-full") {
+          return {
+            code: 128,
+            stdout: "",
+            stderr: "fatal: cannot write Git cache pack: No space left on device (ENOSPC)",
+            termination: "exit",
+          };
+        }
         return {
           code: null,
           stdout: "",
@@ -175,70 +184,85 @@ function fixture() {
     git,
     fetches,
     batches,
-    interruptBatch: (index: number) => {
+    interruptBatch: (index: number, kind: typeof failure) => {
       failBatch = index;
+      failure = kind;
     },
     create,
   };
 }
 
-it("keeps completed compressed Git batches after interruption and resumes only missing history objects", async () => {
-  const state = fixture();
-  state.interruptBatch(2);
-  const first = await state.create();
-  try {
-    expect((await first.fetch()).code).toBe(0);
-    await expect(first.download.hydrate(state.target)).rejects.toThrow(/interrupted/iu);
-    expect(state.batches).toHaveLength(2);
-    expect(state.batches[0]!.completed).toBe(true);
-    expect(state.batches[0]!.oids).toHaveLength(128);
-    expect(state.batches[1]!.completed).toBe(false);
-    expect(
-      state.git(first.inspection, "--no-lazy-fetch", "cat-file", "-t", state.batches[0]!.oids[0]!),
-    ).toBe("blob");
-  } finally {
-    await first.download.dispose(false);
-  }
-  fs.rmSync(first.inspection, { recursive: true });
-  const completed = new Set(state.batches[0]!.oids);
-  const resumed = await state.create();
-  try {
-    const metadata = await resumed.fetch();
-    expect(metadata.code).toBe(0);
-    expect(metadata.stderr).not.toContain("Receiving objects");
-    await resumed.download.hydrate(state.target);
-    expect(resumed.warnings).toEqual([]);
-    const retried = state.batches.slice(2).flatMap((batch) => batch.oids);
-    expect(retried.length).toBeGreaterThan(128);
-    expect(retried.some((oid) => completed.has(oid))).toBe(false);
-    expect(state.batches.every((batch) => batch.oids.length <= 128)).toBe(true);
-    expect(
-      state.git(
-        resumed.inspection,
-        "--no-lazy-fetch",
-        "rev-list",
-        "--objects",
-        "--missing=print",
-        state.target,
-        `^${state.beforeSha}`,
-      ),
-    ).not.toContain("?");
-    expect(
-      state.git(
-        resumed.inspection,
-        "--no-lazy-fetch",
-        "show",
-        `${state.fallback}:renamed #file.bin`,
-      ),
-    ).toBe(state.payloads[1]!.toString().trim());
-    expect(state.git(resumed.inspection, "rev-parse", `${state.target}^{tree}`)).toBe(
-      state.git(state.source, "rev-parse", `${state.target}^{tree}`),
-    );
-    expect(state.git(state.installed, "rev-parse", "HEAD")).toBe(state.beforeSha);
-  } finally {
-    await resumed.download.dispose(true);
-  }
-});
+it.each(["signal", "disk-full"] as const)(
+  "keeps completed compressed Git batches after %s and resumes only missing history objects",
+  async (failure) => {
+    const state = fixture();
+    state.interruptBatch(2, failure);
+    const first = await state.create();
+    try {
+      expect((await first.fetch()).code).toBe(0);
+      await expect(first.download.hydrate(state.target)).rejects.toThrow(
+        failure === "signal" ? /interrupted/iu : /failed/u,
+      );
+      if (failure === "disk-full") {
+        expect(first.warnings.join(" ")).toContain("Completed batches are retained");
+      }
+      expect(state.batches).toHaveLength(2);
+      expect(state.batches[0]!.completed).toBe(true);
+      expect(state.batches[0]!.oids).toHaveLength(128);
+      expect(state.batches[1]!.completed).toBe(false);
+      expect(
+        state.git(
+          first.inspection,
+          "--no-lazy-fetch",
+          "cat-file",
+          "-t",
+          state.batches[0]!.oids[0]!,
+        ),
+      ).toBe("blob");
+    } finally {
+      await first.download.dispose(false);
+    }
+    fs.rmSync(first.inspection, { recursive: true });
+    const completed = new Set(state.batches[0]!.oids);
+    const resumed = await state.create();
+    try {
+      const metadata = await resumed.fetch();
+      expect(metadata.code).toBe(0);
+      expect(metadata.stderr).not.toContain("Receiving objects");
+      await resumed.download.hydrate(state.target);
+      expect(resumed.warnings).toEqual([]);
+      const retried = state.batches.slice(2).flatMap((batch) => batch.oids);
+      expect(retried.length).toBeGreaterThan(128);
+      expect(retried.some((oid) => completed.has(oid))).toBe(false);
+      expect(state.batches.every((batch) => batch.oids.length <= 128)).toBe(true);
+      expect(
+        state.git(
+          resumed.inspection,
+          "--no-lazy-fetch",
+          "rev-list",
+          "--objects",
+          "--missing=print",
+          state.target,
+          `^${state.beforeSha}`,
+        ),
+      ).not.toContain("?");
+      expect(
+        state.git(
+          resumed.inspection,
+          "--no-lazy-fetch",
+          "show",
+          `${state.fallback}:renamed #file.bin`,
+        ),
+      ).toBe(state.payloads[1]!.toString().trim());
+      expect(state.git(resumed.inspection, "rev-parse", `${state.target}^{tree}`)).toBe(
+        state.git(state.source, "rev-parse", `${state.target}^{tree}`),
+      );
+      expect(state.git(state.installed, "rev-parse", "HEAD")).toBe(state.beforeSha);
+    } finally {
+      await resumed.download.dispose(true);
+    }
+  },
+);
 
 it("keeps a custom remote on its original Git path without a download cache", async () => {
   const state = fixture();
@@ -264,25 +288,26 @@ it("keeps a custom remote on its original Git path without a download cache", as
   }
 });
 
-it("hydrates a cached pinned commit through its official promisor without refreshing remote refs", async () => {
-  const state = fixture();
-  state.git(state.installed, "remote", "set-url", "origin", official);
-  state.git(
-    state.installed,
-    "-c",
-    `url.${pathToFileURL(state.source).href}.insteadOf=${official}`,
-    "fetch",
-    "--filter=blob:none",
-    "origin",
-    "refs/heads/main",
-  );
-  expect(state.git(state.installed, "--no-lazy-fetch", "cat-file", "-t", state.target)).toBe(
-    "commit",
-  );
-  const active = await state.create({}, official, true);
-  const refs = state.git(active.inspection, "for-each-ref", "--format=%(refname) %(objectname)");
-  expect(
+it.each(["blob:none", "tree:0"] as const)(
+  "hydrates a cached pinned commit from %s through its official promisor without refreshing remote refs",
+  async (filter) => {
+    const state = fixture();
+    state.git(state.installed, "remote", "set-url", "origin", official);
     state.git(
+      state.installed,
+      "-c",
+      `url.${pathToFileURL(state.source).href}.insteadOf=${official}`,
+      "fetch",
+      `--filter=${filter}`,
+      "origin",
+      "refs/heads/main",
+    );
+    expect(state.git(state.installed, "--no-lazy-fetch", "cat-file", "-t", state.target)).toBe(
+      "commit",
+    );
+    const active = await state.create({}, official, true);
+    const refs = state.git(active.inspection, "for-each-ref", "--format=%(refname) %(objectname)");
+    const missingBefore = state.git(
       active.inspection,
       "--no-lazy-fetch",
       "rev-list",
@@ -290,39 +315,49 @@ it("hydrates a cached pinned commit through its official promisor without refres
       "--missing=print",
       state.target,
       `^${state.beforeSha}`,
-    ),
-  ).toContain("?");
-  try {
-    // The target commit is already cached, so the updater intentionally skips discovery fetch.
-    await active.download.hydrate(state.target);
-    expect(active.warnings).toEqual([]);
-    expect(state.batches.length).toBeGreaterThan(0);
-    expect(state.batches.every((batch) => batch.completed && batch.oids.length <= 128)).toBe(true);
-    expect(state.fetches).toHaveLength(state.batches.length);
-    expect(state.git(active.inspection, "for-each-ref", "--format=%(refname) %(objectname)")).toBe(
-      refs,
     );
-    expect(
-      state.git(
-        active.inspection,
-        "--no-lazy-fetch",
-        "rev-list",
-        "--objects",
-        "--missing=print",
-        state.target,
-        `^${state.beforeSha}`,
-      ),
-    ).not.toContain("?");
-  } finally {
-    await active.download.dispose(false);
-  }
-  fs.rmSync(active.inspection, { recursive: true });
-  const repository = path.join(state.installed, ".artifacts/git-downloads/official/repository.git");
-  expect(
-    state.git(repository, "--no-lazy-fetch", "cat-file", "-t", state.batches[0]!.oids[0]!),
-  ).toBe("blob");
-  expect(state.git(state.installed, "rev-parse", "HEAD")).toBe(state.beforeSha);
-});
+    expect(missingBefore).toContain("?");
+    if (filter === "tree:0") {
+      const targetTree = state.git(state.source, "rev-parse", `${state.target}^{tree}`);
+      expect(missingBefore.split("\n")).toContain(`?${targetTree}`);
+    }
+    try {
+      // The target commit is already cached, so the updater intentionally skips discovery fetch.
+      await active.download.hydrate(state.target);
+      expect(active.warnings).toEqual([]);
+      expect(state.batches.length).toBeGreaterThan(0);
+      expect(state.batches.every((batch) => batch.completed && batch.oids.length <= 128)).toBe(
+        true,
+      );
+      expect(state.fetches).toHaveLength(state.batches.length);
+      expect(
+        state.git(active.inspection, "for-each-ref", "--format=%(refname) %(objectname)"),
+      ).toBe(refs);
+      expect(
+        state.git(
+          active.inspection,
+          "--no-lazy-fetch",
+          "rev-list",
+          "--objects",
+          "--missing=print",
+          state.target,
+          `^${state.beforeSha}`,
+        ),
+      ).not.toContain("?");
+      state.git(active.inspection, "--no-lazy-fetch", "fsck", "--strict", "--no-dangling");
+    } finally {
+      await active.download.dispose(false);
+    }
+    fs.rmSync(active.inspection, { recursive: true });
+    const repository = path.join(
+      state.installed,
+      ".artifacts/git-downloads/official/repository.git",
+    );
+    const newBlob = state.git(state.source, "rev-parse", `${state.target}:bulk-0.txt`);
+    expect(state.git(repository, "--no-lazy-fetch", "cat-file", "-t", newBlob)).toBe("blob");
+    expect(state.git(state.installed, "rev-parse", "HEAD")).toBe(state.beforeSha);
+  },
+);
 
 it("hydrates a pre-existing partial clone's small promised objects through compressed Git batches", async () => {
   const state = fixture();

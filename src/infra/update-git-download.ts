@@ -308,7 +308,9 @@ export async function createGitUpdateDownload(params: {
     const history = [revision, ...(params.beforeSha ? [`^${params.beforeSha}`] : [])];
     const inventory = async () => {
       const missing = new Set<string>();
-      for (const revisions of [history, [`${revision}^{tree}`]]) {
+      // Resolve the tree while walking the commit: a promised root tree cannot
+      // be parsed as a revision argument before --missing=print takes effect.
+      for (const revisions of [history, ["--max-count=1", revision]]) {
         const objects = await git([
           "rev-list",
           "--objects",
