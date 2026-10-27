@@ -544,7 +544,7 @@ export function assertUpgradeVolumeMigrated(stateDir, stage) {
         continue;
       }
       for (const move of target.completedMoves) {
-        if (["legacy-store", "transcript"].includes(move.kind)) {
+        if (["legacy-store", "transcript", "unreferenced-jsonl"].includes(move.kind)) {
           archiveMoves.set(JSON.stringify([move.sourcePath, move.archivePath]), move);
         }
       }
@@ -568,7 +568,7 @@ export function assertUpgradeVolumeMigrated(stateDir, stage) {
 
     const transcriptsByName = new Map();
     for (const move of moves) {
-      if (move.kind === "transcript") {
+      if (["transcript", "unreferenced-jsonl"].includes(move.kind)) {
         transcriptsByName.set(path.basename(move.sourcePath), readSessionArchiveBytes(move));
       }
     }
