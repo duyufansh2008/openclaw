@@ -23,20 +23,20 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      CANDIDATE_SHA: 6ce0c31649d010d8dfb7a27672e81760f7bd5962
+      CANDIDATE_SHA: 4855aa1864536232628d6d8507f4c7646df21c35
       BASELINE_VERSION: 2026.10.7
       NODE_OPTIONS: --max-old-space-size=8192
       PUBLIC_PROOF_DIR: ${{ github.workspace }}/.artifacts/pr184452-public
       OPENCLAW_CURRENT_PACKAGE_TGZ: ${{ github.workspace }}/.artifacts/pr184452-package/openclaw-candidate.tgz
       OPENCLAW_UPGRADE_SURVIVOR_ARTIFACT_DIR: ${{ github.workspace }}/.artifacts/pr184452-private
       OPENCLAW_DOCKER_ALL_LOG_DIR: ${{ github.workspace }}/.artifacts/pr184452-native-diagnostics
-      OPENCLAW_UPGRADE_SURVIVOR_E2E_IMAGE: openclaw-pr184452-proof:6ce0c316
+      OPENCLAW_UPGRADE_SURVIVOR_E2E_IMAGE: openclaw-pr184452-proof:4855aa18
     steps:
       - name: Checkout the exact public candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: duyufansh2008/openclaw
-          ref: 6ce0c31649d010d8dfb7a27672e81760f7bd5962
+          ref: 4855aa1864536232628d6d8507f4c7646df21c35
           fetch-depth: 1
           persist-credentials: false
 
@@ -110,7 +110,7 @@ jobs:
         id: survivor
         shell: bash
         env:
-          OPENCLAW_DOCKER_E2E_SELECTED_SHA: 6ce0c31649d010d8dfb7a27672e81760f7bd5962
+          OPENCLAW_DOCKER_E2E_SELECTED_SHA: 4855aa1864536232628d6d8507f4c7646df21c35
           OPENCLAW_UPGRADE_SURVIVOR_PUBLISHED_BASELINE: "1"
           OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC: openclaw@2026.10.7
           OPENCLAW_UPGRADE_SURVIVOR_SCENARIO: sqlite-volume
@@ -306,7 +306,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: pr184452-installed-upgrade-6ce0c316-${{ github.run_attempt }}
+          name: pr184452-installed-upgrade-4855aa18-${{ github.run_attempt }}
           path: |
             .artifacts/pr184452-public/baseline.json
             .artifacts/pr184452-public/proof.json
