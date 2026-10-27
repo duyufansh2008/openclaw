@@ -1609,7 +1609,7 @@ update_candidate() {
   if [ -n "${OPENCLAW_UPGRADE_SURVIVOR_NPM_REGISTRY:-}" ]; then
     update_node_options+=" --import=$PWD/scripts/e2e/lib/upgrade-survivor/plugin-registry-redirect.mjs"
   fi
-  if [ "$SCENARIO" = "legacy-operator-state" ]; then
+  if [ "$SCENARIO" = "legacy-operator-state" ] || [ "$SCENARIO" = "sqlite-volume" ]; then
     update_node_options+=" --import=$PWD/scripts/e2e/lib/upgrade-survivor/session-archive-proof.mjs"
   fi
   if [ "$SCENARIO" = "custom-plugin-siblings" ]; then

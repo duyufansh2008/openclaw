@@ -72,7 +72,9 @@ const delegatedDoctor =
   path.basename(process.argv[1] ?? "") === "update-migrated-finalize.worker.js";
 if (
   isMainThread &&
-  process.env.OPENCLAW_UPGRADE_SURVIVOR_SCENARIO === "legacy-operator-state" &&
+  ["legacy-operator-state", "sqlite-volume"].includes(
+    process.env.OPENCLAW_UPGRADE_SURVIVOR_SCENARIO,
+  ) &&
   process.env.OPENCLAW_UPGRADE_SURVIVOR_ARCHIVE_PROOF_ROOT &&
   (process.argv[2] === "doctor" || delegatedDoctor)
 ) {

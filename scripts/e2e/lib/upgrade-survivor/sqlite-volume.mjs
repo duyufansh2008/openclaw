@@ -9,6 +9,7 @@ import {
 import { assert, readJson, write, writeJson } from "../fixtures/common.mjs";
 import { readPluginInstallIndex } from "../plugin-index-sqlite.mjs";
 import { readDatabase } from "./observations.mjs";
+import { readSessionArchiveBytes } from "./session-archive-proof.mjs";
 import {
   assertUpgradeVolumeSharedState,
   seedUpgradeVolumeSharedState,
@@ -528,23 +529,47 @@ export function assertUpgradeVolumeMigrated(stateDir, stage) {
   }
   assert(migratedSessions === spec.sessions, `volume session count changed: ${migratedSessions}`);
 
+  // Successful update finalization may retire verified originals. Follow the
+  // producer's completed moves; the strict reader requires observed bytes and
+  // matching disposal identity when the physical archive has been retired.
+  const manifestDir = path.join(stateDir, "session-sqlite-migration-runs");
+  const archiveMoves = new Map();
+  for (const name of fs.readdirSync(manifestDir).filter((entry) => entry.endsWith(".json"))) {
+    const manifest = readJson(path.join(manifestDir, name));
+    if (!manifest.completedAt || manifest.failedAt) {
+      continue;
+    }
+    for (const target of manifest.targets) {
+      if (target.validationBeforeArchive !== "passed") {
+        continue;
+      }
+      for (const move of target.completedMoves) {
+        if (["legacy-store", "transcript"].includes(move.kind)) {
+          archiveMoves.set(JSON.stringify([move.sourcePath, move.archivePath]), move);
+        }
+      }
+    }
+  }
   const archivedStores = new Map();
   const archivedTranscripts = new Map();
   for (const agentId of VOLUME_AGENT_IDS) {
-    const archiveDir = path.join(stateDir, "agents", agentId, "session-sqlite-import-archive");
-    assert(fs.existsSync(archiveDir), `${agentId} volume session migration archive missing`);
-    const entries = fs.readdirSync(archiveDir);
-    const storeEntries = entries.filter((entry) =>
-      /\.sessions\.json\.imported-\d+(?:\.\d+)?$/u.test(entry),
+    const sessionsDir = path.join(fs.realpathSync(stateDir), "agents", agentId, "sessions");
+    const moves = [...archiveMoves.values()].filter(
+      (move) => path.dirname(move.sourcePath) === sessionsDir,
     );
-    assert(storeEntries.length === 1, `${agentId} volume legacy session-store archive changed`);
-    archivedStores.set(agentId, readJson(path.join(archiveDir, storeEntries[0])));
+    const storeMoves = moves.filter(
+      (move) => move.kind === "legacy-store" && path.basename(move.sourcePath) === "sessions.json",
+    );
+    assert(storeMoves.length === 1, `${agentId} volume legacy session-store archive changed`);
+    archivedStores.set(
+      agentId,
+      JSON.parse(readSessionArchiveBytes(storeMoves[0]).toString("utf8")),
+    );
 
     const transcriptsByName = new Map();
-    for (const entry of entries) {
-      const match = /\.([^.]+\.jsonl)\.imported-\d+(?:\.\d+)?$/u.exec(entry);
-      if (match?.[1]) {
-        transcriptsByName.set(match[1], entry);
+    for (const move of moves) {
+      if (move.kind === "transcript") {
+        transcriptsByName.set(path.basename(move.sourcePath), readSessionArchiveBytes(move));
       }
     }
     const expectedTranscriptCount =
@@ -558,7 +583,7 @@ export function assertUpgradeVolumeMigrated(stateDir, stage) {
       transcriptsByName.size === expectedTranscriptCount,
       `${agentId} volume transcript archive count changed: ${transcriptsByName.size}`,
     );
-    archivedTranscripts.set(agentId, { archiveDir, transcriptsByName });
+    archivedTranscripts.set(agentId, { transcriptsByName });
   }
   assertVolumeSessionStores(archivedStores, fixtures, "archived volume");
   for (const fixture of fixtures) {
@@ -589,8 +614,8 @@ export function assertUpgradeVolumeMigrated(stateDir, stage) {
     const archived = archivedTranscripts.get(fixture.agentId);
     const entry = archived?.transcriptsByName.get(`${fixture.sessionId}.jsonl`);
     assert(archived && entry, `archived volume transcript sample missing: ${index}`);
-    const events = fs
-      .readFileSync(path.join(archived.archiveDir, entry), "utf8")
+    const events = entry
+      .toString("utf8")
       .trimEnd()
       .split("\n")
       .map((line) => JSON.parse(line));
