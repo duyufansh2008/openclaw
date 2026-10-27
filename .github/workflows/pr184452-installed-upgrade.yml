@@ -180,6 +180,26 @@ jobs:
             outcomes: Object.fromEntries(['SOURCE', 'BASELINE', 'PACKAGE', 'SURVIVOR']
               .map(key => [key.toLowerCase(), process.env[`${key}_OUTCOME`]])),
           };
+          // Publish only verified public source locations from a failed fixture stack.
+          // Error messages, paths outside fixture source, and assertion values stay private.
+          proof.failureLocations = [];
+          if (process.env.SURVIVOR_OUTCOME === 'failure') {
+            const logPath = path.join(process.env.RUNNER_TEMP, 'pr184452-survivor-private.log');
+            if (fs.existsSync(logPath)) {
+              const log = fs.readFileSync(logPath).subarray(-1024 * 1024).toString('utf8');
+              const sites = new Map();
+              const pattern = /scripts\/e2e\/lib\/upgrade-survivor\/([a-z][a-z0-9-]{0,79}\.mjs):([1-9]\d{0,5}):([1-9]\d{0,5})/g;
+              for (const match of log.matchAll(pattern)) {
+                const file = `scripts/e2e/lib/upgrade-survivor/${match[1]}`;
+                if (!fs.existsSync(file)) continue;
+                const line = Number(match[2]), column = Number(match[3]);
+                const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+                if (line > lines.length || column > lines[line - 1].length + 2) continue;
+                sites.set(`${file}:${line}:${column}`, { file, line, column });
+              }
+              proof.failureLocations = [...sites.values()].slice(-16);
+            }
+          }
           let summary;
           try {
             summary = read('summary.json');
