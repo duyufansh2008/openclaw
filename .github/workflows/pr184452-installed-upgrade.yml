@@ -114,6 +114,9 @@ jobs:
           OPENCLAW_UPGRADE_SURVIVOR_PUBLISHED_BASELINE: "1"
           OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC: openclaw@2026.10.7
           OPENCLAW_UPGRADE_SURVIVOR_SCENARIO: sqlite-volume
+          # Full stable install/update/Doctor/restart exceeded the default 20m envelope.
+          # Keep native per-command, startup, status, and idempotence budgets unchanged.
+          OPENCLAW_UPGRADE_SURVIVOR_DOCKER_RUN_TIMEOUT: "2400s"
           OPENCLAW_UPGRADE_SURVIVOR_VOLUME_SESSIONS: "8"
           OPENCLAW_UPGRADE_SURVIVOR_VOLUME_EVENTS_PER_SESSION: "5"
           OPENCLAW_UPGRADE_SURVIVOR_VOLUME_CRON_JOBS: "8"
