@@ -1,5 +1,9 @@
 [
   {
+    "source": "Resumable Git update downloads",
+    "target": "Git 更新下载断点续传"
+  },
+  {
     "source": "Get support",
     "target": "获取支持"
   },
